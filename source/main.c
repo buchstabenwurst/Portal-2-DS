@@ -5,11 +5,14 @@
 // This file is part of Nitro Engine
 
 #include <NEMain.h>
+#include "load.h"
+#include "main.h"
 
 #include "cube_bin.h"
 #include "debug_plane_bin.h"
 
-NE_Camera *Camara;
+NE_Camera* Camara = NULL;
+Block* block = NULL;
 NE_Model *Model[7];
 NE_Physics *Physics[7];
 
@@ -30,8 +33,7 @@ void Draw3DScene(void)
 
     //Draw Map (just Blocks for now)
     NE_PolyFormat(31, 1, NE_LIGHT_0, NE_CULL_NONE, 0);
-    for (int i = 6; i < 7; i++)
-        NE_ModelDraw(Model[i]);
+    NE_ModelDraw(block->Model);
 }
 
 int main(void)
@@ -64,23 +66,7 @@ int main(void)
         NE_PhysicsSetSize(Physics[i], 1, 1, 1);
     }
 
-    //TODO Bessere physics: 
-    //Oriented bounding box [ ]
-    //(Convex hull [ ])
-    //(Bounding Sphere [ ])
-    for (int i = 6; i < 7; i++)
-    {
-        Model[i] = NE_ModelCreate(NE_Static);
-        Physics[i] = NE_PhysicsCreate(NE_BoundingBox);
-
-        NE_ModelLoadStaticMesh(Model[i], (u32*)debug_plane_bin);
-
-        NE_PhysicsSetModel(Physics[i], // Physics object
-            (void*)Model[i]); // Model assigned to it
-
-        NE_PhysicsEnable(Physics[i], false);
-        NE_PhysicsSetSize(Physics[i], 1, 1, 1);
-    }
+    CreateBlockSide(-256, -320, 64, -256, -384, 64, 128, -384, 64, 0, 8);
 
     // Enable only the ones we will move
     NE_PhysicsEnable(Physics[0], true);
@@ -119,7 +105,7 @@ int main(void)
     NE_PhysicsSetBounceEnergy(Physics[2], 50);
 
     // Lights
-    NE_LightSet(0, NE_Green, -1, -1, 0);
+    NE_LightSet(0, NE_White, -1, -1, 0);
     NE_LightSet(1, NE_Blue, -1, -1, 0);
 
     // Background

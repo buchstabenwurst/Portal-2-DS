@@ -1,4 +1,4 @@
-main.o: D:/dev/DS/Portal/source/main.c \
+load.o: D:/dev/DS/Portal/source/load.c \
  D:\devkitPro/nitro-engine/include/NEMain.h \
  D:\devkitPro/libnds/include/nds.h \
  D:\devkitPro/libnds/include/nds/libversion.h \
@@ -74,9 +74,7 @@ main.o: D:/dev/DS/Portal/source/main.c \
  D:\devkitPro/nitro-engine/include/NEModel.h \
  D:\devkitPro/nitro-engine/include/NEPhysics.h \
  D:\devkitPro/nitro-engine/include/NEText.h \
- D:/dev/DS/Portal/source/load.h D:/dev/DS/Portal/source/main.h \
- D:/dev/DS/Portal/build/cube_bin.h \
- D:/dev/DS/Portal/build/debug_plane_bin.h
+ D:/dev/DS/Portal/source/main.h D:/dev/DS/Portal/build/plane_bin.h
 D:\devkitPro/nitro-engine/include/NEMain.h:
 D:\devkitPro/libnds/include/nds.h:
 D:\devkitPro/libnds/include/nds/libversion.h:
@@ -152,7 +150,5 @@ D:\devkitPro/nitro-engine/include/NEGUI.h:
 D:\devkitPro/nitro-engine/include/NEModel.h:
 D:\devkitPro/nitro-engine/include/NEPhysics.h:
 D:\devkitPro/nitro-engine/include/NEText.h:
-D:/dev/DS/Portal/source/load.h:
 D:/dev/DS/Portal/source/main.h:
-D:/dev/DS/Portal/build/cube_bin.h:
-D:/dev/DS/Portal/build/debug_plane_bin.h:
+D:/dev/DS/Portal/build/plane_bin.h:
