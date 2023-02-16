@@ -35,5 +35,8 @@ typedef struct // Physics values for raycasting
 	NE_Physics* Physics;
 } Block;
 
+extern NE_Material* white_wall_tile003a;
+extern NE_Material* black_floor_metal_001c;
+extern NE_Material* Debug_Material;
+extern NE_Material* debugempty;
 extern Block* block;
-extern NE_Camera* Camara;

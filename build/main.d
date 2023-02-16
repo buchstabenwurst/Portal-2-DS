@@ -76,7 +76,11 @@ main.o: D:/dev/DS/Portal/source/main.c \
  D:\devkitPro/nitro-engine/include/NEText.h \
  D:/dev/DS/Portal/source/load.h D:/dev/DS/Portal/source/main.h \
  D:/dev/DS/Portal/build/cube_bin.h \
- D:/dev/DS/Portal/build/debug_plane_bin.h
+ D:/dev/DS/Portal/build/debug_plane_bin.h \
+ D:/dev/DS/Portal/build/white_wall_tile003a_tex_bin.h \
+ D:/dev/DS/Portal/build/black_floor_metal_001c_tex_bin.h \
+ D:/dev/DS/Portal/build/Debug_tex_bin.h \
+ D:/dev/DS/Portal/build/debugempty_tex_bin.h
 D:\devkitPro/nitro-engine/include/NEMain.h:
 D:\devkitPro/libnds/include/nds.h:
 D:\devkitPro/libnds/include/nds/libversion.h:
@@ -156,3 +160,7 @@ D:/dev/DS/Portal/source/load.h:
 D:/dev/DS/Portal/source/main.h:
 D:/dev/DS/Portal/build/cube_bin.h:
 D:/dev/DS/Portal/build/debug_plane_bin.h:
+D:/dev/DS/Portal/build/white_wall_tile003a_tex_bin.h:
+D:/dev/DS/Portal/build/black_floor_metal_001c_tex_bin.h:
+D:/dev/DS/Portal/build/Debug_tex_bin.h:
+D:/dev/DS/Portal/build/debugempty_tex_bin.h:
