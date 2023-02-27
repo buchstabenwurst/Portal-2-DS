@@ -7,7 +7,7 @@ Right now it only creates basic walls using 3 vertecies like in a .vmf file
 
 DS
 
-![grafik](https://user-images.githubusercontent.com/45313228/219500430-da4b451e-2ff7-4480-ae03-505d1cc393de.png)
+![grafik](https://user-images.githubusercontent.com/45313228/221710351-308a0b8b-6a32-4671-9e4f-b7a135d33bcf.png)
 
 Hammer Editor (How it's suppost to look like)
 ![grafik](https://user-images.githubusercontent.com/45313228/219500441-011ee88b-9470-45a1-ba7b-2a4d5e5ecd2b.png)
