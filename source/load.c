@@ -16,31 +16,37 @@
 // @param x3,y3,z3 vertex 3 position
 // @param id is id
 
-void CreateBlockSide(s16 x1, s16 y1, s16 z1, s16 x2, s16 y2, s16 z2, s16 x3, s16 y3, s16 z3, double u, double v, NE_Material *Material, int Zone, int id) {
+void CreateBlockSide(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, double u, double v, NE_Material *Material, int Zone, int id) {
     int u0;
     int v0;
     int u1;
     int v1;
-    int x4;
-    int y4;
-    int z4;
-    if (z1 == z3) {  //look if side is floor and create vertex x4/y4/z4
+    float nx;
+    float ny;
+    float nz;
+    float x4;
+    float y4;
+    float z4;
+
+    if (z1 == z3) {  //look if side is floor or cieling and create vertex x4/y4/z4
         x4 = x3;
         y4 = y1;
         z4 = z2;
+
         u0 = 0;
         v0 = 0;
-        u1 = (-y1 * 10 + y2 * 10) * u;
-        v1 = (-x1 * 10 + x3 * 10) * v;
+        u1 = 2 * (y2 - y1) * u * 4; //auflösung ergänzen
+        v1 = 2 * (x3 - x2) * v * 4;
 
         if (x2 == x3) {
             x4 = x1;
             y4 = y3;
             z4 = z2;
+
             u0 = 0;
             v0 = 0;
-            u1 = (-y1 * 10 + y2 * 10) * u;
-            v1 = (-x1 * 10 + x3 * 10) * v;
+            u1 = 2 * (x1 - x2) * u * 4;
+            v1 = 2 * (y2 - y3) * v * 4;
         }
     }
 
@@ -48,47 +54,38 @@ void CreateBlockSide(s16 x1, s16 y1, s16 z1, s16 x2, s16 y2, s16 z2, s16 x3, s16
         x4 = x1;
         y4 = y3;
         z4 = z3;
-        u0 = 0;
-        v0 = (-z1 * 10 + z3 * 10) * v;
-        u1 = (-x1 * 10 + x2 * 10) * u;
-        v1 = 0;
 
-        if (x1 == x2) {
-            x4 = x1;
-            y4 = y3;
-            z4 = z3;
-            u1 = (x1 * 10 + x2 * 10) * u;
-            v1 = (z1 * 10 + z3 * 10) * v;
-        }
+        u0 = 0;
+        v0 = 0;
+        u1 = 2 * (x2 - x1) * u * 4;
+        v1 = 2 * (z3 - z1) * v * 4;
+
+        nx = x2 + 1;
+        ny = y2;
+        nz = z2 - z3;
+
     }
     else if(x2 == x3){  //else side is x aligned wall, create vertex x4
         x4 = x3;
         y4 = y1;
         z4 = z3;
-        u0 = (-y1 * 10 + y2 * 10) * u;
-        v0 = (-z1 * 10 + z3 * 10) * v;
-        u1 = 0;
-        v1 = 0;
-
-        if (x1 == x2) {
-            x4 = x3;
-            y4 = y1;
-            z4 = z3;
-            u1 = 0;
-            v1 = 0;
-            u0 = (y1 * 10 + y2 * 10) * u;
-            v0 = (z1 * 10 + z3 * 10) * v;
-        }
+        u0 = 0;
+        v0 = 0;
+        u1 = 2 * (y2 - y1) * u * 4;
+        v1 = 2 * (z3 - z1) * v * 4;
     }
-
 
     //NE_MaterialUse(white_wall_tile003a);
     //NE_MaterialUse(black_floor_metal_001c);
     //NE_MaterialUse(Debug_Material);
     //NE_MaterialUse(debugempty);
 
+    NE_PolyFormat(31, 1, NE_LIGHT_0 ,NE_CULL_BACK , 0);
+
     NE_MaterialUse(Material);
+
     NE_PolyBegin(GL_QUAD);
+        //NE_PolyNormal(nx / 100, nz / 100, ny / 100);
 
         NE_PolyTexCoord(v0, u0);
         NE_PolyVertex(x1 / 100, z1 / 100, y1 / 100);

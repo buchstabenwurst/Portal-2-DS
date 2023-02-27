@@ -26,7 +26,7 @@ INCLUDES := include
 DATA     := data
 GRAPHICS :=
 AUDIO    :=
-ICON     := icon.bmp
+ICON     :=
 
 # specify a directory which contains the nitro filesystem
 # this is relative to the Makefile
@@ -34,8 +34,8 @@ NITRO    :=
 
 # These set the information text in the nds file
 GAME_TITLE     := Portal DS
-GAME_SUBTITLE1 := built with devkitARM
-GAME_SUBTITLE2 := http://devitpro.org
+GAME_SUBTITLE1 := by Buchstabenwurst
+GAME_SUBTITLE2 := built with devkitARM
 
 #---------------------------------------------------------------------------------
 # options for code generation

@@ -5,23 +5,30 @@
 // This file is part of Nitro Engine
 
 #include <NEMain.h>
+#include <time.h>
 #include "load.h"
 #include "main.h"
 
 #include "cube_bin.h"
 #include "debug_plane_bin.h"
 #include "white_wall_tile003a_tex_bin.h"
+#include "white_wall_tile003a_pal_bin.h"
+#include "white_ceiling_tile002a_tex_bin.h"
+#include "white_ceiling_tile002a_pal_bin.h"
+#include "white_floor_tile002a_tex_bin.h"
+#include "white_floor_tile002a_pal_bin.h"
 #include "black_floor_metal_001c_tex_bin.h"
+#include "black_floor_metal_001c_pal_bin.h"
+#include "black_wall_metal_002c_tex_bin.h"
+#include "black_wall_metal_002c_pal_bin.h"
 #include "Debug_tex_bin.h"
 #include "debugempty_tex_bin.h"
 
 NE_Camera* Camara;
 Block* block = NULL;
 NE_Model* Model[7];
-NE_Material* white_wall_tile003a;
-NE_Material* black_floor_metal_001c;
-NE_Material* Debug_Material;
-NE_Material* debugempty;
+NE_Material *white_wall_tile003a, *white_ceiling_tile002a, *white_floor_tile002a, *black_floor_metal_001c, *black_wall_metal_002c, *Debug_Material, *debugempty;
+NE_Palette *white_wall_tile003aPal, *white_ceiling_tile002aPal, *white_floor_tile002aPal, *black_floor_metal_001cPal, *black_wall_metal_002cPal;
 NE_Physics* Physics[7];
 
 
@@ -29,15 +36,12 @@ void Draw3DScene(void)
 {
     NE_CameraUse(Camara);
 
-    // The first 3 boxes will be affected by one light and 3 last boxes by
-    // another one
+     //The first 3 boxes will be affected by one light and 3 last boxes by
+     //another one
     //NE_PolyFormat(31, 0, NE_LIGHT_0,NE_CULL_BACK, 0);
     //for (int i = 0; i < 3; i++)
     //    NE_ModelDraw(Model[i]);
 
-    //NE_PolyFormat(31, 0, NE_LIGHT_1,NE_CULL_BACK, 0);
-    //for (int i = 3; i < 6; i++)
-    //    NE_ModelDraw(Model[i]);
 
     //Draw Map (just Blocks for now)
     //NE_PolyFormat(31, 1, NE_LIGHT_0, NE_CULL_NONE, 0);
@@ -51,11 +55,11 @@ void Draw3DScene(void)
     CreateBlockSide(320, 256, 64, -256, 256, 64, -256, 256, 320, 0.25, 0.25, white_wall_tile003a, 0, 104); //wall
     CreateBlockSide(-256, 256, 64, -256, -320, 64, -256, -320, 320, 0.25, 0.25, white_wall_tile003a, 0, 110); //wall
     CreateBlockSide(128, -320, 64, 128, -128, 64, 320, -128, 64, 0.25, 0.25, black_floor_metal_001c, 0, 13); //floor
-    CreateBlockSide(-256, -320, 64, -256, -128, 64, 128, -128, 64, 0.25, 0.25, white_wall_tile003a, 0, 42); //floor
-    CreateBlockSide(-256, -128, 64, -256, 256, 64, 320, 256, 64, 0.25, 0.25, white_wall_tile003a, 0, 66); //floor
+    CreateBlockSide(-256, -320, 64, -256, -128, 64, 128, -128, 64, 0.25, 0.25, white_floor_tile002a, 0, 42); //floor
+    CreateBlockSide(-256, -128, 64, -256, 256, 64, 320, 256, 64, 0.25, 0.25, white_floor_tile002a, 0, 66); //floor
     CreateBlockSide(320, -128, 320, 128, -128, 320, 128, -320, 320, 0.25, 0.25, black_floor_metal_001c, 0, 138); //ceiling
-    CreateBlockSide(128, 256, 320, -256, 256, 320, -256, -320, 320, 0.25, 0.25, white_wall_tile003a, 0, 144); //ceiling
-    CreateBlockSide(320, 256, 320, 128, 256, 320, 128, -128, 320, 0.25, 0.25, white_wall_tile003a, 0, 150); //ceiling
+    CreateBlockSide(128, 256, 320, -256, 256, 320, -256, -320, 320, 0.25, 0.25, white_ceiling_tile002a, 0, 144); //ceiling
+    CreateBlockSide(320, 256, 320, 128, 256, 320, 128, -128, 320, 0.25, 0.25, white_ceiling_tile002a, 0, 150); //ceiling
 
 
     //NE_MaterialUse(debugempty);
@@ -91,11 +95,25 @@ int main(void)
 
     NE_Init3D();
 
+    // libnds uses VRAM_C for the text console, reserve A and B only
+    NE_TextureSystemReset(0, 0, NE_VRAM_AB);
+    // Init console in non-3D screen
+    consoleDemoInit();
+
     Camara = NE_CameraCreate();
     white_wall_tile003a = NE_MaterialCreate();
+    white_floor_tile002a = NE_MaterialCreate();
+    white_ceiling_tile002a = NE_MaterialCreate();
     black_floor_metal_001c = NE_MaterialCreate();
+    black_wall_metal_002c = NE_MaterialCreate();
     Debug_Material = NE_MaterialCreate();
     debugempty = NE_MaterialCreate();
+
+    white_wall_tile003aPal = NE_PaletteCreate();
+    white_floor_tile002aPal = NE_PaletteCreate();
+    white_ceiling_tile002aPal = NE_PaletteCreate();
+    black_floor_metal_001cPal = NE_PaletteCreate();
+    black_wall_metal_002cPal = NE_PaletteCreate();
 
     NE_CameraSet(Camara,
                  -4, 3, 1,
@@ -103,7 +121,7 @@ int main(void)
                   0, 1, 0);
 
     // Create objects
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 3; i++)
     {
         Model[i] = NE_ModelCreate(NE_Static);
         Physics[i] = NE_PhysicsCreate(NE_BoundingBox);
@@ -123,26 +141,17 @@ int main(void)
     // Enable only the ones we will move
     NE_PhysicsEnable(Physics[0], true);
     NE_PhysicsEnable(Physics[1], true);
-    NE_PhysicsEnable(Physics[2], true);
-    NE_PhysicsEnable(Physics[3], false);
-    NE_PhysicsEnable(Physics[4], false);
-    NE_PhysicsEnable(Physics[5], false);
+    NE_PhysicsEnable(Physics[2], false);
 
     // Object coordinates
     NE_ModelSetCoord(Model[0], 0, 4,  1.5);
     NE_ModelSetCoord(Model[1], 0, 4,  0);
-    NE_ModelSetCoord(Model[2], 0, 4, -1.5);
-    NE_ModelSetCoord(Model[3], 0, 0,  1.5);
-    NE_ModelSetCoord(Model[4], 0, -5,  0);
-    NE_ModelSetCoord(Model[5], 0, 0, -1.5);
+    NE_ModelSetCoord(Model[2], 0, 1, -1.5);
 
     // Set gravity
     NE_PhysicsSetGravity(Physics[0], 0.001);
     NE_PhysicsSetGravity(Physics[1], 0.001);
     NE_PhysicsSetGravity(Physics[2], 0.001);
-    NE_PhysicsSetGravity(Physics[3], 0.001);
-    NE_PhysicsSetGravity(Physics[4], 0.001);
-    NE_PhysicsSetGravity(Physics[5], 0.001);
 
 
     // Tell the engine what to do if there is a collision
@@ -161,20 +170,66 @@ int main(void)
     NE_LightSet(1, NE_Blue, -1, -1, 0);
 
     // Background
-    NE_ClearColorSet(NE_Red, 31, 63);
+    NE_ClearColorSet(NE_White, 31, 63);
 
 
     int angle = 0;
 
+    int fpscount = 0;
 
-    NE_MaterialTexLoad(white_wall_tile003a, NE_A1RGB5, 256,256, NE_TEXGEN_TEXCOORD,
+    // This is used to see if second has changed
+    int oldsec = 0;
+    int seconds = 0;
+
+
+    NE_MaterialTexLoad(white_wall_tile003a, NE_PAL256, 256, 256, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T,
         (u8*)white_wall_tile003a_tex_bin);
 
-    NE_MaterialTexLoad(black_floor_metal_001c, NE_A1RGB5, 256,256, NE_TEXGEN_TEXCOORD,
+    NE_PaletteLoad(white_wall_tile003aPal, (void*)white_wall_tile003a_pal_bin, 256, NE_PAL256);
+
+    NE_MaterialSetPalette(white_wall_tile003a, white_wall_tile003aPal);
+
+
+
+    NE_MaterialTexLoad(white_ceiling_tile002a, NE_PAL256, 256, 256, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T,
+        (u8*)white_ceiling_tile002a_tex_bin);
+
+    NE_PaletteLoad(white_ceiling_tile002aPal, (void*)white_ceiling_tile002a_pal_bin, 256, NE_PAL256);
+
+    NE_MaterialSetPalette(white_ceiling_tile002a, white_ceiling_tile002aPal);
+
+
+
+    NE_MaterialTexLoad(white_floor_tile002a, NE_PAL256, 256, 256, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T,
+        (u8*)white_floor_tile002a_tex_bin);
+
+    NE_PaletteLoad(white_floor_tile002aPal, (void*)white_floor_tile002a_pal_bin, 256, NE_PAL256);
+
+    NE_MaterialSetPalette(white_floor_tile002a, white_floor_tile002aPal);
+
+
+
+    NE_MaterialTexLoad(black_floor_metal_001c, NE_PAL256, 256,256, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T,
         (u8*)black_floor_metal_001c_tex_bin);
+
+    NE_PaletteLoad(black_floor_metal_001cPal, (void*)black_floor_metal_001c_pal_bin, 256, NE_PAL256);
+
+    NE_MaterialSetPalette(black_floor_metal_001c, black_floor_metal_001cPal);
+
+
+
+    NE_MaterialTexLoad(black_wall_metal_002c, NE_PAL256, 256, 256, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T,
+        (u8*)black_wall_metal_002c_tex_bin);
+
+    NE_PaletteLoad(black_wall_metal_002cPal, (void*)black_wall_metal_002c_pal_bin, 256, NE_PAL256);
+
+    NE_MaterialSetPalette(black_wall_metal_002c, black_wall_metal_002cPal);
+
+
 
     NE_MaterialTexLoad(Debug_Material, NE_A1RGB5, 128, 128, NE_TEXGEN_TEXCOORD,
         (u8*)Debug_tex_bin);
+
 
     NE_MaterialTexLoad(debugempty, NE_A1RGB5, 64, 64, NE_TEXGEN_POSITION,
         (u8*)debugempty_tex_bin);
@@ -183,11 +238,28 @@ int main(void)
     {
         NE_WaitForVBL(NE_UPDATE_PHYSICS);
 
+        //FPS counter
+        // Get time
+        time_t unixTime = time(NULL);
+        struct tm* timeStruct = gmtime((const time_t*)&unixTime);
+        seconds = timeStruct->tm_sec;
+
+        // If new second
+        if (seconds != oldsec)
+        {
+            // Reset fps count and print current
+            oldsec = seconds;
+            printf("\x1b[6;1HFPS: %d", fpscount);
+            fpscount = 0;
+        }
+
+        //Camera
         // Get keys information
         scanKeys();
         uint32 keys = keysHeld();
 
-        printf("\x1b[0;0HPad: Rotate.\nA/B: Move forward/back.");
+
+        printf("\x1b[1;1HPad: Rotate.\n\x1b[2;1HA/B: Move forward/back.");
 
         if (keys & KEY_DOWN && angle < 92)
         {
@@ -211,6 +283,9 @@ int main(void)
             NE_CameraMoveFree(Camara, -0.05, 0, 0);
 
         NE_Process(Draw3DScene);
+
+        // Increase frame count
+        fpscount++;
     }
 
     return 0;
