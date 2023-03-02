@@ -6,29 +6,13 @@
 
 #include <NEMain.h>
 #include <time.h>
-#include "load.h"
 #include "main.h"
+#include "load.h"
 
-#include "cube_bin.h"
-#include "debug_plane_bin.h"
-#include "white_wall_tile003a_tex_bin.h"
-#include "white_wall_tile003a_pal_bin.h"
-#include "white_ceiling_tile002a_tex_bin.h"
-#include "white_ceiling_tile002a_pal_bin.h"
-#include "white_floor_tile002a_tex_bin.h"
-#include "white_floor_tile002a_pal_bin.h"
-#include "black_floor_metal_001c_tex_bin.h"
-#include "black_floor_metal_001c_pal_bin.h"
-#include "black_wall_metal_002c_tex_bin.h"
-#include "black_wall_metal_002c_pal_bin.h"
-#include "Debug_tex_bin.h"
-#include "debugempty_tex_bin.h"
+int textureMode = 0;
 
 NE_Camera* Camara;
-Block* block = NULL;
 NE_Model* Model[7];
-NE_Material *white_wall_tile003a, *white_ceiling_tile002a, *white_floor_tile002a, *black_floor_metal_001c, *black_wall_metal_002c, *Debug_Material, *debugempty;
-NE_Palette *white_wall_tile003aPal, *white_ceiling_tile002aPal, *white_floor_tile002aPal, *black_floor_metal_001cPal, *black_wall_metal_002cPal;
 NE_Physics* Physics[7];
 
 
@@ -101,24 +85,13 @@ int main(void)
     consoleDemoInit();
 
     Camara = NE_CameraCreate();
-    white_wall_tile003a = NE_MaterialCreate();
-    white_floor_tile002a = NE_MaterialCreate();
-    white_ceiling_tile002a = NE_MaterialCreate();
-    black_floor_metal_001c = NE_MaterialCreate();
-    black_wall_metal_002c = NE_MaterialCreate();
-    Debug_Material = NE_MaterialCreate();
-    debugempty = NE_MaterialCreate();
-
-    white_wall_tile003aPal = NE_PaletteCreate();
-    white_floor_tile002aPal = NE_PaletteCreate();
-    white_ceiling_tile002aPal = NE_PaletteCreate();
-    black_floor_metal_001cPal = NE_PaletteCreate();
-    black_wall_metal_002cPal = NE_PaletteCreate();
 
     NE_CameraSet(Camara,
                  -4, 3, 1,
                   0, 2, 0,
                   0, 1, 0);
+
+    LoadTextures(0);
 
     // Create objects
     for (int i = 0; i < 3; i++)
@@ -182,57 +155,6 @@ int main(void)
     int seconds = 0;
 
 
-    NE_MaterialTexLoad(white_wall_tile003a, NE_PAL256, 256, 256, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T,
-        (u8*)white_wall_tile003a_tex_bin);
-
-    NE_PaletteLoad(white_wall_tile003aPal, (void*)white_wall_tile003a_pal_bin, 256, NE_PAL256);
-
-    NE_MaterialSetPalette(white_wall_tile003a, white_wall_tile003aPal);
-
-
-
-    NE_MaterialTexLoad(white_ceiling_tile002a, NE_PAL256, 256, 256, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T,
-        (u8*)white_ceiling_tile002a_tex_bin);
-
-    NE_PaletteLoad(white_ceiling_tile002aPal, (void*)white_ceiling_tile002a_pal_bin, 256, NE_PAL256);
-
-    NE_MaterialSetPalette(white_ceiling_tile002a, white_ceiling_tile002aPal);
-
-
-
-    NE_MaterialTexLoad(white_floor_tile002a, NE_PAL256, 256, 256, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T,
-        (u8*)white_floor_tile002a_tex_bin);
-
-    NE_PaletteLoad(white_floor_tile002aPal, (void*)white_floor_tile002a_pal_bin, 256, NE_PAL256);
-
-    NE_MaterialSetPalette(white_floor_tile002a, white_floor_tile002aPal);
-
-
-
-    NE_MaterialTexLoad(black_floor_metal_001c, NE_PAL256, 256,256, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T,
-        (u8*)black_floor_metal_001c_tex_bin);
-
-    NE_PaletteLoad(black_floor_metal_001cPal, (void*)black_floor_metal_001c_pal_bin, 256, NE_PAL256);
-
-    NE_MaterialSetPalette(black_floor_metal_001c, black_floor_metal_001cPal);
-
-
-
-    NE_MaterialTexLoad(black_wall_metal_002c, NE_PAL256, 256, 256, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T,
-        (u8*)black_wall_metal_002c_tex_bin);
-
-    NE_PaletteLoad(black_wall_metal_002cPal, (void*)black_wall_metal_002c_pal_bin, 256, NE_PAL256);
-
-    NE_MaterialSetPalette(black_wall_metal_002c, black_wall_metal_002cPal);
-
-
-
-    NE_MaterialTexLoad(Debug_Material, NE_A1RGB5, 128, 128, NE_TEXGEN_TEXCOORD,
-        (u8*)Debug_tex_bin);
-
-
-    NE_MaterialTexLoad(debugempty, NE_A1RGB5, 64, 64, NE_TEXGEN_POSITION,
-        (u8*)debugempty_tex_bin);
 
     while (1)
     {
@@ -261,26 +183,31 @@ int main(void)
 
         printf("\x1b[1;1HPad: Rotate.\n\x1b[2;1HA/B: Move forward/back.");
 
-        if (keys & KEY_DOWN && angle < 92)
+        if (keys & KEY_DOWN)
+            NE_CameraMoveFree(Camara, -0.05, 0, 0);
+        else if (keys & KEY_UP)
+            NE_CameraMoveFree(Camara, 0.05, 0, 0);
+
+        if (keys & KEY_LEFT)
+            NE_CameraMoveFree(Camara, 0, -0.05, 0);
+        else if (keys & KEY_RIGHT)
+            NE_CameraMoveFree(Camara, 0, 0.05, 0);
+
+        if (keys & KEY_A)
+            NE_CameraRotateFree(Camara, 0, 3, 0);
+        else if (keys & KEY_Y)
+            NE_CameraRotateFree(Camara, 0, -3, 0);
+
+        if (keys & KEY_B && angle < 92)
         {
             angle += 3;
             NE_CameraRotateFree(Camara, 3, 0, 0);
         }
-        else if (keys & KEY_UP && angle > -92)
+        else if (keys & KEY_X && angle > -92)
         {
             angle -= 3;
             NE_CameraRotateFree(Camara, -3, 0, 0);
         }
-
-        if (keys & KEY_LEFT)
-            NE_CameraRotateFree(Camara, 0, -3, 0);
-        else if (keys & KEY_RIGHT)
-            NE_CameraRotateFree(Camara, 0, 3, 0);
-
-        if (keys & KEY_A)
-            NE_CameraMoveFree(Camara, 0.05, 0, 0);
-        else if (keys & KEY_B)
-            NE_CameraMoveFree(Camara, -0.05, 0, 0);
 
         NE_Process(Draw3DScene);
 

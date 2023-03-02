@@ -74,7 +74,21 @@ load.o: D:/dev/DS/Portal/source/load.c \
  D:/devkitPro/nitro-engine/include/NEModel.h \
  D:/devkitPro/nitro-engine/include/NEPhysics.h \
  D:/devkitPro/nitro-engine/include/NEText.h \
- D:/dev/DS/Portal/source/main.h D:/dev/DS/Portal/build/plane_bin.h
+ D:/dev/DS/Portal/source/main.h D:/dev/DS/Portal/source/load.h \
+ D:/dev/DS/Portal/build/cube_bin.h \
+ D:/dev/DS/Portal/build/debug_plane_bin.h \
+ D:/dev/DS/Portal/build/white_wall_tile003a_tex_bin.h \
+ D:/dev/DS/Portal/build/white_wall_tile003a_pal_bin.h \
+ D:/dev/DS/Portal/build/white_ceiling_tile002a_tex_bin.h \
+ D:/dev/DS/Portal/build/white_ceiling_tile002a_pal_bin.h \
+ D:/dev/DS/Portal/build/white_floor_tile002a_tex_bin.h \
+ D:/dev/DS/Portal/build/white_floor_tile002a_pal_bin.h \
+ D:/dev/DS/Portal/build/black_floor_metal_001c_tex_bin.h \
+ D:/dev/DS/Portal/build/black_floor_metal_001c_pal_bin.h \
+ D:/dev/DS/Portal/build/black_wall_metal_002c_tex_bin.h \
+ D:/dev/DS/Portal/build/black_wall_metal_002c_pal_bin.h \
+ D:/dev/DS/Portal/build/Debug_tex_bin.h \
+ D:/dev/DS/Portal/build/debugempty_tex_bin.h
 D:/devkitPro/nitro-engine/include/NEMain.h:
 D:/devkitPro/libnds/include/nds.h:
 D:/devkitPro/libnds/include/nds/libversion.h:
@@ -151,4 +165,18 @@ D:/devkitPro/nitro-engine/include/NEModel.h:
 D:/devkitPro/nitro-engine/include/NEPhysics.h:
 D:/devkitPro/nitro-engine/include/NEText.h:
 D:/dev/DS/Portal/source/main.h:
-D:/dev/DS/Portal/build/plane_bin.h:
+D:/dev/DS/Portal/source/load.h:
+D:/dev/DS/Portal/build/cube_bin.h:
+D:/dev/DS/Portal/build/debug_plane_bin.h:
+D:/dev/DS/Portal/build/white_wall_tile003a_tex_bin.h:
+D:/dev/DS/Portal/build/white_wall_tile003a_pal_bin.h:
+D:/dev/DS/Portal/build/white_ceiling_tile002a_tex_bin.h:
+D:/dev/DS/Portal/build/white_ceiling_tile002a_pal_bin.h:
+D:/dev/DS/Portal/build/white_floor_tile002a_tex_bin.h:
+D:/dev/DS/Portal/build/white_floor_tile002a_pal_bin.h:
+D:/dev/DS/Portal/build/black_floor_metal_001c_tex_bin.h:
+D:/dev/DS/Portal/build/black_floor_metal_001c_pal_bin.h:
+D:/dev/DS/Portal/build/black_wall_metal_002c_tex_bin.h:
+D:/dev/DS/Portal/build/black_wall_metal_002c_pal_bin.h:
+D:/dev/DS/Portal/build/Debug_tex_bin.h:
+D:/dev/DS/Portal/build/debugempty_tex_bin.h:
