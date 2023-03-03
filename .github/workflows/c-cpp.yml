@@ -8,14 +8,17 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-    container:
-      image: devkitpro/devkitarm:latest
+    runs-on: ubuntu-lastest
     steps:
     - uses: actions/checkout@v3
+      with:
+        submodules: recursive
     - name: make
-      run: make
+      run: |
+        docker run --rm -v ${PWD}:/project Buchstabenwurst/PartalDS make
+    - uses: actions/upload-artifact@v3
+      with:
+       name: Portal DS
+       path: "*.nds"
