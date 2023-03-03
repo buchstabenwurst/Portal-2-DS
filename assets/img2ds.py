@@ -91,7 +91,6 @@ def convert_pal256(img):
 
     return texture, palette
 
-
 def convert_pal16(img):
     print("Converting to RGB16:")
     print("- If image alpha == 0 -> Color index = 0")
@@ -99,9 +98,34 @@ def convert_pal16(img):
     print("- Use NE_TEXTURE_COLOR0_TRANSPARENT to make color 0 transparent")
 
     texture = []
-    palette = []
 
     rgba = img.convert(mode="RGBA")
+    
+    pal = Palette()
+        
+    # Generate texture
+    temp_texture = []
+    for pixel in list(rgba.getdata()):
+        r, g, b, a = pixel
+        if a < 255:
+            temp_texture.append(0)
+        else:
+            temp_texture.append(pal.get_index(r >> 3, g >> 3, b >> 3))
+
+    for i in range(0, len(temp_texture), 2):
+        index0 = temp_texture[i + 0]
+        index1 = temp_texture[i + 1]
+        v = index0 | (index1 << 4)
+        texture.append(v)
+
+    return texture
+
+
+def convert_pal16pal(pal_img):
+
+    palette = []
+
+    rgba = pal_img.convert(mode="RGBA")
 
     # Generate palette
     pal = Palette()
@@ -123,23 +147,7 @@ def convert_pal16(img):
         color = entry[0] | (entry[1] << 5) | (entry[2] << 10)
         palette.extend([color & 0xFF, color >> 8])
 
-    # Generate texture
-    temp_texture = []
-    for pixel in list(rgba.getdata()):
-        r, g, b, a = pixel
-        if a < 255:
-            temp_texture.append(0)
-        else:
-            temp_texture.append(pal.get_index(r >> 3, g >> 3, b >> 3))
-
-    for i in range(0, len(temp_texture), 2):
-        index0 = temp_texture[i + 0]
-        index1 = temp_texture[i + 1]
-        v = index0 | (index1 << 4)
-        texture.append(v)
-
-    return texture, palette
-
+    return palette
 
 def convert_pal4(img):
     print("Converting to RGB4:")
@@ -242,24 +250,6 @@ def convert_a5pal8(img):
 
     rgba = img.convert(mode="RGBA")
 
-    # Generate palette
-    pal = Palette()
-    for pixel in list(rgba.getdata()):
-        r, g, b, a = pixel
-        alpha = a >> 3
-        if alpha > 0:
-            pal.add_color(r >> 3, g >> 3, b >> 3)
-
-    num_colors = len(pal.get_palette())
-
-    print(f"Number of colors = {num_colors}")
-
-    if num_colors > 8:
-        raise Exception(f"Too many colors: {num_colors} > 8")
-
-    for entry in pal.get_palette():
-        color = entry[0] | (entry[1] << 5) | (entry[2] << 10)
-        palette.extend([color & 0xFF, color >> 8])
 
     # Generate texture
     for pixel in list(rgba.getdata()):
@@ -273,7 +263,7 @@ def convert_a5pal8(img):
             index = pal.get_index(r >> 3, g >> 3, b >> 3)
             texture.append(index | (alpha << 3))
 
-    return texture, palette
+    return texture
 
 
 def convert_depthbmp(img):
@@ -305,7 +295,7 @@ def convert_depthbmp(img):
     return texture, palette
 
 
-def convert_img(in_path, out_name, out_folder, out_format):
+def convert_img(in_path, pal_input, out_name, out_folder, out_format):
 
     if out_format not in VALID_FORMATS:
         raise Exception(f"Unknown format {out_format}. Valid: {VALID_FORMATS}")
@@ -313,6 +303,12 @@ def convert_img(in_path, out_name, out_folder, out_format):
     texture_path = os.path.join(out_folder, f"{out_name}_tex.bin")
     palette_path = os.path.join(out_folder, f"{out_name}_pal.bin")
 
+    with Image.open(pal_input, "r") as pal_img:
+        if out_format == "PAL256":
+            palette = convert_pal256pal(pal_img)
+        elif out_format == "PAL16":
+            palette = convert_pal16pal(pal_img)
+    
     with Image.open(in_path, "r") as img:
         print(f"Original format: {img.mode}")
 
@@ -327,9 +323,9 @@ def convert_img(in_path, out_name, out_folder, out_format):
         elif out_format == "DEPTHBMP":
             texture, palette = convert_depthbmp(img)
         elif out_format == "PAL256":
-            texture, palette = convert_pal256(img)
+            texture = convert_pal256(img)
         elif out_format == "PAL16":
-            texture, palette = convert_pal16(img)
+            texture = convert_pal16(img)
         elif out_format == "PAL4":
             texture, palette = convert_pal4(img)
         elif out_format == "A3PAL32":
@@ -353,6 +349,7 @@ if __name__ == "__main__":
 
     print("img2ds v0.1.0")
     print("Copyright (c) 2022 Antonio Niño Díaz <antonio_nd@outlook.com>")
+    print("Modified by buchstabenwurst")
     print("All rights reserved")
     print("")
 
@@ -362,6 +359,8 @@ if __name__ == "__main__":
     # Required arguments
     parser.add_argument("--input", required=True,
                         help="input file")
+    parser.add_argument("--palinput", required=False,
+                        help="File to generate Pallette")
     parser.add_argument("--name", required=True,
                         help="output name: [name]_tex.bin, [name]_pal.bin")
     parser.add_argument("--output", required=True,
@@ -372,7 +371,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     try:
-        convert_img(args.input, args.name, args.output, args.format)
+        convert_img(args.input, args.palinput, args.name, args.output, args.format)
     except BaseException as e:
         print("ERROR: " + str(e))
         traceback.print_exc()
