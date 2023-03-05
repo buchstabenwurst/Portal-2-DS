@@ -91,7 +91,7 @@ int main(void)
                   0, 2, 0,
                   0, 1, 0);
 
-    LoadTextures(0);
+    LoadTextures(textureMode);
 
     // Create objects
     for (int i = 0; i < 3; i++)

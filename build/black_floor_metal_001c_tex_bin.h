@@ -6,7 +6,7 @@
 extern const uint8_t black_floor_metal_001c_tex_bin[];
 extern const uint8_t black_floor_metal_001c_tex_bin_end[];
 #if __cplusplus >= 201103L
-static constexpr size_t black_floor_metal_001c_tex_bin_size=65536;
+static constexpr size_t black_floor_metal_001c_tex_bin_size=8192;
 #else
-static const size_t black_floor_metal_001c_tex_bin_size=65536;
+static const size_t black_floor_metal_001c_tex_bin_size=8192;
 #endif
