@@ -1,7 +1,7 @@
 # Portal-DS
 Portal 2 fan port for the Nintendo ds
 
-Right now it only creates basic walls and floors a .vmf file
+Right now it only creates basic walls and floors from a .vmf file
 
 
 
