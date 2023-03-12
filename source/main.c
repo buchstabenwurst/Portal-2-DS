@@ -5,9 +5,13 @@
 // This file is part of Nitro Engine
 
 #include <NEMain.h>
+#include <fat.h>
+#include <dirent.h>
+#include <stdio.h>
 #include <time.h>
 #include "main.h"
 #include "load.h"
+#include "save.h"
 
 int textureMode = 0;
 
@@ -32,18 +36,20 @@ void Draw3DScene(void)
     //NE_ModelDraw(block->Model);
 
 
-    CreateBlockSide(-256, -320, 64, 128, -320, 64, 128, -320, 320, 0.25, 0.25, white_wall_tile003a, 0, 11); //wall
-    CreateBlockSide(320, -128, 64, 320, 256, 64, 320, 256, 320, 0.25, 0.25, white_wall_tile003a, 0, 50); //wall
-    CreateBlockSide(128, -320, 64, 320, -320, 64, 320, -320, 320, 0.25, 0.25, black_floor_metal_001c, 0, 74); //wall
-    CreateBlockSide(320, -320, 64, 320, -128, 64, 320, -128, 320, 0.25, 0.25, black_floor_metal_001c, 0, 86); //wall
-    CreateBlockSide(320, 256, 64, -256, 256, 64, -256, 256, 320, 0.25, 0.25, white_wall_tile003a, 0, 104); //wall
-    CreateBlockSide(-256, 256, 64, -256, -320, 64, -256, -320, 320, 0.25, 0.25, white_wall_tile003a, 0, 110); //wall
-    CreateBlockSide(128, -320, 64, 128, -128, 64, 320, -128, 64, 0.25, 0.25, black_floor_metal_001c, 0, 13); //floor
-    CreateBlockSide(-256, -320, 64, -256, -128, 64, 128, -128, 64, 0.25, 0.25, white_floor_tile002a, 0, 42); //floor
-    CreateBlockSide(-256, -128, 64, -256, 256, 64, 320, 256, 64, 0.25, 0.25, white_floor_tile002a, 0, 66); //floor
-    CreateBlockSide(320, -128, 320, 128, -128, 320, 128, -320, 320, 0.25, 0.25, black_floor_metal_001c, 0, 138); //ceiling
-    CreateBlockSide(128, 256, 320, -256, 256, 320, -256, -320, 320, 0.25, 0.25, white_ceiling_tile002a, 0, 144); //ceiling
-    CreateBlockSide(320, 256, 320, 128, 256, 320, 128, -128, 320, 0.25, 0.25, white_ceiling_tile002a, 0, 150); //ceiling
+    char* Level = "test_map";
+    loadLevel(Level);
+    //CreateBlockSideManual(-256, -320, 64, 128, -320, 64, 128, -320, 320, 0.25, 0.25, white_wall_tile003a, 0, 11); //wall
+    //CreateBlockSideManual(320, -128, 64, 320, 256, 64, 320, 256, 320, 0.25, 0.25, white_wall_tile003a, 0, 50); //wall
+    //CreateBlockSideManual(128, -320, 64, 320, -320, 64, 320, -320, 320, 0.25, 0.25, black_wall_metal_002c, 0, 74); //wall
+    //CreateBlockSideManual(320, -320, 64, 320, -128, 64, 320, -128, 320, 0.25, 0.25, black_wall_metal_002a, 0, 86); //wall
+    //CreateBlockSideManual(320, 256, 64, -256, 256, 64, -256, 256, 320, 0.25, 0.25, white_wall_tile003a, 0, 104); //wall
+    //CreateBlockSideManual(-256, 256, 64, -256, -320, 64, -256, -320, 320, 0.25, 0.25, white_wall_tile003a, 0, 110); //wall
+    //CreateBlockSideManual(128, -320, 64, 128, -128, 64, 320, -128, 64, 0.25, 0.25, black_floor_metal_001c, 0, 13); //floor
+    //CreateBlockSideManual(-256, -320, 64, -256, -128, 64, 128, -128, 64, 0.25, 0.25, white_floor_tile002a, 0, 42); //floor
+    //CreateBlockSideManual(-256, -128, 64, -256, 256, 64, 320, 256, 64, 0.25, 0.25, white_floor_tile002a, 0, 66); //floor
+    //CreateBlockSideManual(320, -128, 320, 128, -128, 320, 128, -320, 320, 0.25, 0.25, black_wall_metal_002b, 0, 138); //ceiling
+    //CreateBlockSideManual(128, 256, 320, -256, 256, 320, -256, -320, 320, 0.25, 0.25, white_ceiling_tile002a, 0, 144); //ceiling
+    //CreateBlockSideManual(320, 256, 320, 128, 256, 320, 128, -128, 320, 0.25, 0.25, white_ceiling_tile002a, 0, 150); //ceiling
 
 
     //NE_MaterialUse(debugempty);
@@ -79,6 +85,8 @@ int main(void)
 
     NE_Init3D();
 
+    fatInitDefault();
+
     // libnds uses VRAM_C for the text console, reserve A and B only
     NE_TextureSystemReset(0, 0, NE_VRAM_AB);
     // Init console in non-3D screen
@@ -92,6 +100,10 @@ int main(void)
                   0, 1, 0);
 
     LoadTextures(textureMode);
+
+    mkdir("/_nds", 0777);
+    mkdir("/_nds/PortalDS", 0777);
+    mkdir("/_nds/PortalDS/levels", 0777);
 
     // Create objects
     for (int i = 0; i < 3; i++)
@@ -143,7 +155,7 @@ int main(void)
     NE_LightSet(1, NE_Blue, -1, -1, 0);
 
     // Background
-    NE_ClearColorSet(NE_White, 31, 63);
+    NE_ClearColorSet(NE_Black, 31, 63);
 
 
     int angle = 0;
@@ -154,7 +166,7 @@ int main(void)
     int oldsec = 0;
     int seconds = 0;
 
-
+    save();
 
     while (1)
     {
@@ -171,7 +183,7 @@ int main(void)
         {
             // Reset fps count and print current
             oldsec = seconds;
-            printf("\x1b[6;1HFPS: %d", fpscount);
+            printf("\x1b[1;24HFPS: %d", fpscount);
             fpscount = 0;
         }
 
@@ -180,8 +192,6 @@ int main(void)
         scanKeys();
         uint32 keys = keysHeld();
 
-
-        printf("\x1b[1;1HPad: Rotate.\n\x1b[2;1HA/B: Move forward/back.");
 
         if (keys & KEY_DOWN)
             NE_CameraMoveFree(Camara, -0.05, 0, 0);
@@ -208,6 +218,9 @@ int main(void)
             angle -= 3;
             NE_CameraRotateFree(Camara, -3, 0, 0);
         }
+
+        if (keys & KEY_START)
+            break;
 
         NE_Process(Draw3DScene);
 

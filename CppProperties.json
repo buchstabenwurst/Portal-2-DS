@@ -1,0 +1,23 @@
+{
+  "configurations": [
+    {
+      "inheritEnvironments": [
+        "msvc_x64"
+      ],
+      "name": "x64-Release",
+      "includePath": [
+        "${env.INCLUDE}",
+        "${workspaceRoot}\\**",
+        "D:\\devkitPro\\libnds\\include\\**",
+        "D:\\devkitPro\\libctru\\include\\**",
+        "D:\\devkitPro\\devkitARM\\include\\**",
+        "D:\\devkitPro\\devkitARM\\arm-none-eabi\\include\\**",
+        "D:\\devkitPro\\nitro-engine\\include\\**"
+      ],
+      "defines": [
+        "ARM9"
+      ],
+      "intelliSenseMode": "windows-msvc-x64"
+    }
+  ]
+}
