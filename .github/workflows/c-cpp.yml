@@ -17,7 +17,7 @@ jobs:
         submodules: recursive
     - name: make
       run: |
-        docker run --rm -v ${PWD}:/project Buchstabenwurst/PartalDS make
+        docker run --rm -v ${PWD}:/project buchstabenwurst/portalds make
     - uses: actions/upload-artifact@v3
       with:
        name: Portal DS
