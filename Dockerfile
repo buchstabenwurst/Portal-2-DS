@@ -34,3 +34,7 @@ RUN dkp-pacman -Syyu --noconfirm 3ds-dev nds-dev gp32-dev gba-dev gp2x-dev && \
     yes | dkp-pacman -Scc
 
 ENV DEVKITARM=${DEVKITPRO}/devkitARM
+
+WORKDIR /opt/devkitpro
+RUN git clone https://github.com/AntonioND/nitro-engine
+WORKDIR /
