@@ -17,7 +17,9 @@ jobs:
         submodules: recursive
     - name: make
       run: |
-        docker run --rm devkitpro/devkitarm make
+        #docker run --rm devkitpro/devkitarm make
+        cd "D:\dev\DS\Portal"
+        make
     - uses: actions/upload-artifact@v3
       with:
        name: Portal DS
