@@ -50,12 +50,12 @@ extern NE_Palette* white_ceiling_tile002aPal, * white_floor_tile002aPal, * white
 
 void LoadTextures(int textureMode);
 
-int loadLevel(char* levelName);
+int loadLevel();
 
 //i split blocks to sides for using the nodraw texture
 // @param x1,y1,z1 vertex 1 position
 // @param x2,y2,z2 vertex 2 position
 // @param x3,y3,z3 vertex 3 position
 // @param id is id
-void CreateBlockSide(PLANE* Plane);
-void CreateBlockSideManual(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, double u, double v, NE_Material *Material, int Zone, int id);
+void RenderPlanes(Level level);
+void RenderPlanesManual(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, double u, double v, NE_Material *Material, int Zone, int id);

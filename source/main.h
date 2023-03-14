@@ -1,6 +1,6 @@
 #include <NEMain.h>
 
-extern int textureMode;
+#define MAX_PLANES 500
 
 // 3D point 
 typedef struct
@@ -19,6 +19,22 @@ typedef struct
 	Vector3 vertex3;
 	Vector3 vertex4;
 	NE_Material* material;
+	int u0;
+	int u1;
+	int v0;
+	int v1;
+	float nx;
+	float ny;
+	float nz;
 	bool isDrawn;
 	NE_Physics* Physics;
 } PLANE;
+
+typedef struct
+{
+	char* name;
+	PLANE Plane[MAX_PLANES];
+} Level;
+
+extern int textureMode;
+extern Level level;

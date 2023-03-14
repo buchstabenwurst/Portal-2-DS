@@ -89,144 +89,37 @@ void LoadTextures(int textureMode)
     NE_MaterialTexLoad(debugempty, NE_A1RGB5, 64, 64, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T,
         (u8*)debugempty_tex_bin);
 }
-//i split blocks to sides for using the nodraw texture
-// @param x1,y1,z1 vertex 1 position
-// @param x2,y2,z2 vertex 2 position
-// @param x3,y3,z3 vertex 3 position
-// @param id is id
-void CreateBlockSide(PLANE* Plane) {
-    if (Plane->isDrawn)
+
+//Render all Planes in the level
+void RenderPlanes(Level level) {
+    int i;
+    for (i = 0; i < 500; i++)
     {
-        float u = 0.25;
-        float v = 0.25;
-        int u0 = 0;
-        int v0 = 0;
-        int u1 = 0;
-        int v1 = 0;
-        //float nx = 0;
-        //float ny = 0;
-        //float nz = 0;
-        float x4 = 0;
-        float y4 = 0;
-        float z4 = 0;
-
-        if (Plane->vertex1.z == Plane->vertex3.z) {  //look if side is floor
-            //create vertex x4/y4/z4
-            y4 = Plane->vertex3.y;
-            x4 = Plane->vertex1.x;
-            z4 = Plane->vertex2.z;
-            //create texture coordinates
-            if (textureMode == 0) {
-                u0 = 0;
-                v0 = 0;
-                u1 = 1 * (Plane->vertex3.y - Plane->vertex2.y) * u * 4;
-                v1 = 1 * (Plane->vertex2.x - Plane->vertex1.x) * v * 4;
-            }
-            if (textureMode == 1) {
-                u0 = 0;
-                v0 = 0;
-                u1 = 2 * (Plane->vertex3.y - Plane->vertex2.y) * u * 4;
-                v1 = 2 * (Plane->vertex2.x - Plane->vertex1.x) * v * 4;
-            }
-            if (Plane->vertex2.y == Plane->vertex3.y) { //look if side cieling
-                //create vertex x4/y4/z4
-                y4 = Plane->vertex1.y;
-                x4 = Plane->vertex3.x;
-                z4 = Plane->vertex2.z;
-                //create texture coordinates
-                if (textureMode == 0) {
-                    u0 = 0;
-                    v0 = 0;
-                    u1 = 1 * (Plane->vertex2.x - Plane->vertex3.x) * u * 4;
-                    v1 = 1 * (Plane->vertex1.y - Plane->vertex2.y) * v * 4;
-                }
-                if (textureMode == 1) {
-                    u0 = 0;
-                    v0 = 0;
-                    u1 = 2 * (Plane->vertex2.x - Plane->vertex3.x) * u * 4;
-                    v1 = 2 * (Plane->vertex1.y - Plane->vertex2.y) * v * 4;
-                }
-            }
-        }
-
-        else if (Plane->vertex1.x == Plane->vertex2.x) {  //look if side is y aligned wall and create vertex x4/y4/z4
-            //create vertex x4/y4/z4
-            y4 = Plane->vertex1.y;
-            x4 = Plane->vertex3.x;
-            z4 = Plane->vertex3.z;
-            //nx = x2 + 1;
-            //ny = y2;
-            //nz = z2 - z3;
-            //create texture coordinates
-            if (textureMode == 0) {
-                u0 = 0;
-                v0 = 0;
-                u1 = 1 * (Plane->vertex3.z - Plane->vertex1.z) * u * 4;
-                v1 = 1 * (Plane->vertex2.y - Plane->vertex1.y) * v * 4;
-            }
-            else if (textureMode == 1) {
-                u0 = 0;
-                v0 = 0;
-                u1 = 2 * (Plane->vertex3.z - Plane->vertex1.z) * u * 4;
-                v1 = 2 * (Plane->vertex2.y - Plane->vertex1.y) * v * 4;
-            }
-        }
-        else if (Plane->vertex2.y == Plane->vertex3.y) {  //else side is x aligned wall, create vertex x4
-            //create vertex x4/y4/z4
-            y4 = Plane->vertex3.y;
-            x4 = Plane->vertex1.x;
-            z4 = Plane->vertex3.z;
-            //create texture coordinates
-            if (textureMode == 0) {
-                u0 = 0;
-                v0 = 0;
-                u1 = 1 * (Plane->vertex3.z - Plane->vertex1.z) * u * 4;
-                v1 = 1 * (Plane->vertex2.x - Plane->vertex1.x) * v * 4;
-            }
-            else if (textureMode == 1) {
-                u0 = 0;
-                v0 = 0;
-                u1 = 2 * (Plane->vertex3.z - Plane->vertex1.z) * u * 4;
-                v1 = 2 * (Plane->vertex2.x - Plane->vertex1.x) * v * 4;
-            }
-        }
-
-
-        // Create a block side
+        // Render a plane
         NE_PolyFormat(31, 1, NE_LIGHT_0, NE_CULL_BACK, 0);
 
-        NE_MaterialUse(Plane->material);
+        NE_MaterialUse(level.Plane[i].material);
 
         NE_PolyBegin(GL_QUAD);
-        //NE_PolyNormal(nx / 100, nz / 100, ny / 100);
+        //NE_PolyNormal(level.Plane[i].nx / 100, level.Plane[i].nz / 100, level.Plane[i].ny / 100);
 
-        NE_PolyTexCoord(v0, u1);
-        NE_PolyVertex(Plane->vertex1.y / 100, Plane->vertex1.z / 100, Plane->vertex1.x / 100);
+        NE_PolyTexCoord(level.Plane[i].v0, level.Plane[i].u1);
+        NE_PolyVertex(level.Plane[i].vertex1.y / 100, level.Plane[i].vertex1.z / 100, level.Plane[i].vertex1.x / 100);
 
-        NE_PolyTexCoord(v0, u0);
-        NE_PolyVertex(y4 / 100, z4 / 100, x4 / 100);
+        NE_PolyTexCoord(level.Plane[i].v0, level.Plane[i].u0);
+        NE_PolyVertex(level.Plane[i].vertex4.y / 100, level.Plane[i].vertex4.z / 100, level.Plane[i].vertex4.x / 100);
 
-        NE_PolyTexCoord(v1, u0);
-        NE_PolyVertex(Plane->vertex3.y / 100, Plane->vertex3.z / 100, Plane->vertex3.x / 100);
+        NE_PolyTexCoord(level.Plane[i].v1, level.Plane[i].u0);
+        NE_PolyVertex(level.Plane[i].vertex3.y / 100, level.Plane[i].vertex3.z / 100, level.Plane[i].vertex3.x / 100);
 
-        NE_PolyTexCoord(v1, u1);
-        NE_PolyVertex(Plane->vertex2.y / 100, Plane->vertex2.z / 100, Plane->vertex2.x / 100);
+        NE_PolyTexCoord(level.Plane[i].v1, level.Plane[i].u1);
+        NE_PolyVertex(level.Plane[i].vertex2.y / 100, level.Plane[i].vertex2.z / 100, level.Plane[i].vertex2.x / 100);
 
         NE_PolyEnd();
-
-        //block->Model = NE_ModelCreate(NE_Static);
-        //block->Physics = NE_PhysicsCreate(NE_BoundingBox);
-        //NE_ModelLoadStaticMesh(block->Model, (u32*)plane_bin);
-        //NE_PhysicsSetSize(block->Physics, x1 + x2, -y1 + y2, z2 - z3);    //collision anwenden
-
-        //NE_PhysicsSetModel(block->Physics, // Physics object
-        //    (void*)block->Model); // Model assigned to it
-
-        //NE_PhysicsEnable(block->Physics, false);
     }
 }
 
-void CreateBlockSideManual(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, double u, double v, NE_Material* Material, int Zone, int id) {
+void RenderPlanesManual(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, double u, double v, NE_Material* Material, int Zone, int id) {
     int u0 = 0;
     int v0 = 0;
     int u1 = 0;
@@ -374,16 +267,16 @@ void loadSave() {
 }
 
 // loads a .vmf file
-int loadLevel(char* levelName) {
+int loadLevel() {
+    char* levelName = level.name;
     FILE* levelFile;
-    PLANE* Plane;
+    PLANE tempPlane;
     char* location = "fat:/_nds/PortalDS/levels/";
     char* extension = ".vmf";
     char fileLocation[strlen(location) + strlen(levelName) + strlen(extension) + 1];
     snprintf(fileLocation, sizeof(fileLocation), "%s%s%s", location, levelName, extension);
     levelFile = fopen(fileLocation, "rb");
     int i = 0;
-    int n = 500; //number of planes
     //Plane = (PLANE*)malloc(n * sizeof(PLANE));
     ////Plane = malloc(n * sizeof(PLANE));
     while (1)
@@ -391,9 +284,9 @@ int loadLevel(char* levelName) {
         //for (i = 0; i < n; i++)
         //{
             char word[256];
-            Plane = (PLANE*)malloc(n * sizeof(PLANE));
+            //tempPlane = (PLANE*)malloc(sizeof(PLANE));
             int res = fscanf(levelFile, "%s", word);
-            Plane->isDrawn = 1;
+            tempPlane.isDrawn = 1;
             if (res == EOF) {
                 break; // EOF = End Of File. Quit the loop.
             }
@@ -426,49 +319,150 @@ int loadLevel(char* levelName) {
                 float x3 = (float)atof(tempx3);
                 float y3 = (float)atof(tempy3);
                 float z3 = (float)atof(tempz3);
-                (Plane + i)->id = planeId;
-                (Plane + i)->vertex1.x = x1;
-                (Plane + i)->vertex1.y = y1;
-                (Plane + i)->vertex1.z = z1;
-                (Plane + i)->vertex2.x = x2;
-                (Plane + i)->vertex2.y = y2;
-                (Plane + i)->vertex2.z = z2;
-                (Plane + i)->vertex3.x = x3;
-                (Plane + i)->vertex3.y = y3;
-                (Plane + i)->vertex3.z = z3;
+                tempPlane.id = planeId;
+                tempPlane.vertex1.x = x1;
+                tempPlane.vertex1.y = y1;
+                tempPlane.vertex1.z = z1;
+                tempPlane.vertex2.x = x2;
+                tempPlane.vertex2.y = y2;
+                tempPlane.vertex2.z = z2;
+                tempPlane.vertex3.x = x3;
+                tempPlane.vertex3.y = y3;
+                tempPlane.vertex3.z = z3;
                 if (strcmp(tempMaterial, "WHITE_CEILING_TILE002A") == 0)
-                    Plane->material = white_ceiling_tile002a;
+                    tempPlane.material = white_ceiling_tile002a;
                 else if (strcmp(tempMaterial, "WHITE_FLOOR_TILE002A") == 0)
-                    Plane->material = white_floor_tile002a;
+                    tempPlane.material = white_floor_tile002a;
                 else if (strcmp(tempMaterial, "WHITE_WALL_TILE003A") == 0)
-                    Plane->material = white_wall_tile003a;
+                    tempPlane.material = white_wall_tile003a;
                 else if (strcmp(tempMaterial, "WHITE_WALL_TILE003C") == 0)
-                    Plane->material = white_wall_tile003c;
+                    tempPlane.material = white_wall_tile003c;
                 else if (strcmp(tempMaterial, "WHITE_WALL_TILE003F") == 0)
-                    Plane->material = white_wall_tile003f;
+                    tempPlane.material = white_wall_tile003f;
                 else if (strcmp(tempMaterial, "BLACK_FLOOR_METAL_001C") == 0)
-                    Plane->material = black_floor_metal_001c;
+                    tempPlane.material = black_floor_metal_001c;
                 else if (strcmp(tempMaterial, "BLACK_WALL_METAL_002A") == 0)
-                    Plane->material = black_wall_metal_002a;
+                    tempPlane.material = black_wall_metal_002a;
                 else if (strcmp(tempMaterial, "BLACK_WALL_METAL_002B") == 0)
-                    Plane->material = black_wall_metal_002b;
+                    tempPlane.material = black_wall_metal_002b;
                 else if (strcmp(tempMaterial, "BLACK_WALL_METAL_002C") == 0)
-                    Plane->material = black_wall_metal_002c;
+                    tempPlane.material = black_wall_metal_002c;
                 else if (strcmp(tempMaterial, "TOOLSNODRAW") == 0)
-                    Plane->isDrawn = 0;
+                    tempPlane.isDrawn = 0;
                 else
-                    Plane->material = debugempty;
-                CreateBlockSide(Plane);
+                    tempPlane.material = debugempty;
+
+                if (tempPlane.isDrawn) {
+                    level.Plane[i].vertex1 = tempPlane.vertex1;
+                    level.Plane[i].vertex2 = tempPlane.vertex2;
+                    level.Plane[i].vertex3 = tempPlane.vertex3;
+                    level.Plane[i].material = tempPlane.material;
+                }
+
+
+                //calculate vertex 4 and textures
+                float u = 0.25;
+                float v = 0.25;
+                level.Plane[i].u0 = 0;
+                level.Plane[i].v0 = 0;
+                level.Plane[i].u1 = 0;
+                level.Plane[i].v1 = 0;
+
+                if (level.Plane[i].vertex1.z == level.Plane[i].vertex3.z) {  //look if side is floor
+                    //create vertex x4/y4/z4
+                    level.Plane[i].vertex4.y = level.Plane[i].vertex3.y;
+                    level.Plane[i].vertex4.x = level.Plane[i].vertex1.x;
+                    level.Plane[i].vertex4.z = level.Plane[i].vertex2.z;
+                    //create texture coordinates
+                    if (textureMode == 0) {
+                        level.Plane[i].u0 = 0;
+                        level.Plane[i].v0 = 0;
+                        level.Plane[i].u1 = 1 * (level.Plane[i].vertex3.y - level.Plane[i].vertex2.y) * u * 4;
+                        level.Plane[i].v1 = 1 * (level.Plane[i].vertex2.x - level.Plane[i].vertex1.x) * v * 4;
+                    }
+                    if (textureMode == 1) {
+                        level.Plane[i].u0 = 0;
+                        level.Plane[i].v0 = 0;
+                        level.Plane[i].u1 = 2 * (level.Plane[i].vertex3.y - level.Plane[i].vertex2.y) * u * 4;
+                        level.Plane[i].v1 = 2 * (level.Plane[i].vertex2.x - level.Plane[i].vertex1.x) * v * 4;
+                    }
+                    if (level.Plane[i].vertex2.y == level.Plane[i].vertex3.y) { //look if side cieling
+                        //create vertex x4/y4/z4
+                        level.Plane[i].vertex4.y = level.Plane[i].vertex1.y;
+                        level.Plane[i].vertex4.x = level.Plane[i].vertex3.x;
+                        level.Plane[i].vertex4.z = level.Plane[i].vertex2.z;
+                        //create texture coordinates
+                        if (textureMode == 0) {
+                            level.Plane[i].u0 = 0;
+                            level.Plane[i].v0 = 0;
+                            level.Plane[i].u1 = 1 * (level.Plane[i].vertex2.x - level.Plane[i].vertex3.x) * u * 4;
+                            level.Plane[i].v1 = 1 * (level.Plane[i].vertex1.y - level.Plane[i].vertex2.y) * v * 4;
+                        }
+                        if (textureMode == 1) {
+                            level.Plane[i].u0 = 0;
+                            level.Plane[i].v0 = 0;
+                            level.Plane[i].u1 = 2 * (level.Plane[i].vertex2.x - level.Plane[i].vertex3.x) * u * 4;
+                            level.Plane[i].v1 = 2 * (level.Plane[i].vertex1.y - level.Plane[i].vertex2.y) * v * 4;
+                        }
+                    }
+                }
+
+                else if (level.Plane[i].vertex1.x == level.Plane[i].vertex2.x) {  //look if side is y aligned wall and create vertex x4/y4/z4
+                    //create vertex x4/y4/z4
+                    level.Plane[i].vertex4.y = level.Plane[i].vertex1.y;
+                    level.Plane[i].vertex4.x = level.Plane[i].vertex3.x;
+                    level.Plane[i].vertex4.z = level.Plane[i].vertex3.z;
+                    //level.Plane[i].nx = level.Plane[i].vertex2.x + 128;
+                    //level.Plane[i].ny = level.Plane[i].vertex2.y;
+                    //level.Plane[i].nz = (level.Plane[i].vertex2.z - level.Plane[i].vertex3.z) / 2;
+                    //create texture coordinates
+                    if (textureMode == 0) {
+                        level.Plane[i].u0 = 0;
+                        level.Plane[i].v0 = 0;
+                        level.Plane[i].u1 = 1 * (level.Plane[i].vertex3.z - level.Plane[i].vertex1.z) * u * 4;
+                        level.Plane[i].v1 = 1 * (level.Plane[i].vertex2.y - level.Plane[i].vertex1.y) * v * 4;
+                    }
+                    else if (textureMode == 1) {
+                        level.Plane[i].u0 = 0;
+                        level.Plane[i].v0 = 0;
+                        level.Plane[i].u1 = 2 * (level.Plane[i].vertex3.z - level.Plane[i].vertex1.z) * u * 4;
+                        level.Plane[i].v1 = 2 * (level.Plane[i].vertex2.y - level.Plane[i].vertex1.y) * v * 4;
+                    }
+                }
+                else if (level.Plane[i].vertex2.y == level.Plane[i].vertex3.y) {  //else side is x aligned wall, create vertex x4
+                    //create vertex x4/y4/z4
+                    level.Plane[i].vertex4.y = level.Plane[i].vertex3.y;
+                    level.Plane[i].vertex4.x = level.Plane[i].vertex1.x;
+                    level.Plane[i].vertex4.z = level.Plane[i].vertex3.z;
+                    //create texture coordinates
+                    if (textureMode == 0) {
+                        level.Plane[i].u0 = 0;
+                        level.Plane[i].v0 = 0;
+                        level.Plane[i].u1 = 1 * (level.Plane[i].vertex3.z - level.Plane[i].vertex1.z) * u * 4;
+                        level.Plane[i].v1 = 1 * (level.Plane[i].vertex2.x - level.Plane[i].vertex1.x) * v * 4;
+                    }
+                    else if (textureMode == 1) {
+                        level.Plane[i].u0 = 0;
+                        level.Plane[i].v0 = 0;
+                        level.Plane[i].u1 = 2 * (level.Plane[i].vertex3.z - level.Plane[i].vertex1.z) * u * 4;
+                        level.Plane[i].v1 = 2 * (level.Plane[i].vertex2.x - level.Plane[i].vertex1.x) * v * 4;
+                    }
+                }
+
                 //if (Plane->isDrawn)
                     //printf("\nplane id:%d\nmaterial:%s\nx1:%.0f x2:%.0f x3:%.0f\ny1:%.0f y2:%.0f y3:%.0f\nz1:%.0f z2:%.0f z3:%.0f\n", Plane->id, tempMaterial, Plane->vertex1.x, Plane->vertex1.y, Plane->vertex1.z, Plane->vertex2.x, Plane->vertex2.y, Plane->vertex2.z, Plane->vertex3.x, Plane->vertex3.y, Plane->vertex3.z);
                 //printf("id:%d\tx1:%.0f\n", (Plane + i)->id, (Plane + i)->vertex1.x);
-                //i++;
+                i++;
                 //break;
             }
             //printf("%s", tempy1);
         //}
     }
+    if (i >= MAX_PLANES)
+        printf("Warning max Planes reached:");
+
     fclose(levelFile);
-    free(Plane);
+    //RenderPlanes(level);
+    //free(tempPlane);
     return 0;
 }

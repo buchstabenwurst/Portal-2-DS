@@ -13,12 +13,13 @@
 #include "load.h"
 #include "save.h"
 
+
 int textureMode = 0;
 
 NE_Camera* Camara;
 NE_Model* Model[7];
 NE_Physics* Physics[7];
-
+Level level;
 
 void Draw3DScene(void)
 {
@@ -30,14 +31,7 @@ void Draw3DScene(void)
     //for (int i = 0; i < 3; i++)
     //    NE_ModelDraw(Model[i]);
 
-
-    //Draw Map (just Blocks for now)
-    //NE_PolyFormat(31, 1, NE_LIGHT_0, NE_CULL_NONE, 0);
-    //NE_ModelDraw(block->Model);
-
-
-    char* Level = "test_map";
-    loadLevel(Level);
+    
     //CreateBlockSideManual(-256, -320, 64, 128, -320, 64, 128, -320, 320, 0.25, 0.25, white_wall_tile003a, 0, 11); //wall
     //CreateBlockSideManual(320, -128, 64, 320, 256, 64, 320, 256, 320, 0.25, 0.25, white_wall_tile003a, 0, 50); //wall
     //CreateBlockSideManual(128, -320, 64, 320, -320, 64, 320, -320, 320, 0.25, 0.25, black_wall_metal_002c, 0, 74); //wall
@@ -50,31 +44,6 @@ void Draw3DScene(void)
     //CreateBlockSideManual(320, -128, 320, 128, -128, 320, 128, -320, 320, 0.25, 0.25, black_wall_metal_002b, 0, 138); //ceiling
     //CreateBlockSideManual(128, 256, 320, -256, 256, 320, -256, -320, 320, 0.25, 0.25, white_ceiling_tile002a, 0, 144); //ceiling
     //CreateBlockSideManual(320, 256, 320, 128, 256, 320, 128, -128, 320, 0.25, 0.25, white_ceiling_tile002a, 0, 150); //ceiling
-
-
-    //NE_MaterialUse(debugempty);
-    ////NE_MaterialUse(white_wall_tile003a);
-    //NE_PolyBegin(GL_QUAD);
-
-    //NE_PolyColor(NE_Red);    // Set next vertices color
-    //NE_PolyTexCoord(0, 0);   // Texture coordinates
-    //NE_PolyVertex(-1, 1, 0); // Send new vertex
-
-    //NE_PolyColor(NE_Blue);
-    //NE_PolyTexCoord(0, 64);
-    //NE_PolyVertex(-1, -1, 0);
-
-    //NE_PolyColor(NE_Green);
-    //NE_PolyTexCoord(64, 64);
-    //NE_PolyVertex(1, -1, 0);
-
-    //NE_PolyColor(NE_Yellow);
-    //NE_PolyTexCoord(64, 0);
-    //NE_PolyVertex(1, 1, 0);
-
-    //// Apparently this command is ignored by the GPU
-    //NE_PolyEnd();
-
 }
 
 int main(void)
@@ -100,6 +69,10 @@ int main(void)
                   0, 1, 0);
 
     LoadTextures(textureMode);
+    level.name = "test_map";
+    //if (Plane->isDrawn)
+    //printf("\nplane id:%d\nx1:%.0f x2:%.0f x3:%.0f\ny1:%.0f y2:%.0f y3:%.0f\nz1:%.0f z2:%.0f z3:%.0f\n", Plane->id, Plane->vertex1.x, Plane->vertex1.y, Plane->vertex1.z, Plane->vertex2.x, Plane->vertex2.y, Plane->vertex2.z, Plane->vertex3.x, Plane->vertex3.y, Plane->vertex3.z);
+
 
     mkdir("/_nds", 0777);
     mkdir("/_nds/PortalDS", 0777);
@@ -155,7 +128,7 @@ int main(void)
     NE_LightSet(1, NE_Blue, -1, -1, 0);
 
     // Background
-    NE_ClearColorSet(NE_Black, 31, 63);
+    NE_ClearColorSet(NE_White, 31, 63);
 
 
     int angle = 0;
@@ -167,6 +140,7 @@ int main(void)
     int seconds = 0;
 
     save();
+    loadLevel();
 
     while (1)
     {
@@ -223,6 +197,7 @@ int main(void)
             break;
 
         NE_Process(Draw3DScene);
+        RenderPlanes(level);
 
         // Increase frame count
         fpscount++;
