@@ -35,6 +35,8 @@ bld/
 [Ll]ogs/
 *.nds
 *.elf
+*.bsp
+*.vmx
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -242,6 +244,8 @@ ClientBin/
 *.pfx
 *.publishsettings
 orleans.codegen.cs
+*_source.png
+*_source_D.png
 
 # Including strong name files can present a security risk
 # (https://github.com/github/gitignore/pull/2483#issue-259490424)
@@ -365,3 +369,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 *.vmx
+*.xcf
