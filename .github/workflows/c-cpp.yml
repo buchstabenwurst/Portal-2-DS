@@ -16,13 +16,21 @@ jobs:
       with:
         submodules: recursive
     - name: make
-      run: cd "C:\actions-runner"
-          "make-Portal.ps1"
-    - uses: actions/upload-artifact@v3
+      run: |
+            cd "C:\actions-runner"
+            Remove-Item -Recurse -force .\Portal-DS\
+            git clone https://github.com/buchstabenwurst/Portal-DS.git
+            "cd C:\actions-runner\Portal-DS\"
+            make
+          
+
+    - uses:
+          actions/upload-artifact@v3
       with:
        name: Portal DS
        path: "*.nds"
 
     - name: clean
-      run: cd "C:\actions-runner"
-          "clean-Portal.ps1"
+      run: |
+        cd C:\actions-runner\
+        Remove-Item -Recurse -force .\Portal-DS\
