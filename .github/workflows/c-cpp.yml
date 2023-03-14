@@ -17,8 +17,9 @@ jobs:
         submodules: recursive
     - name: make
       run: |
-        #docker run --rm devkitpro/devkitarm make
-	cd C:\actions-runner\
+      	#docker run --rm devkitpro/devkitarm make
+	cd "C:\actions-runner\"
+
 	Remove-Item -Recurse -force .\Portal-DS\
 	git clone https://github.com/buchstabenwurst/Portal-DS.git
 	cd .\Portal-DS\
