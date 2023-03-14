@@ -16,13 +16,13 @@ jobs:
       with:
         submodules: recursive
     - name: make
-      run: |
-      "C:\actions-runner\make-Portal.ps1"
+      run: cd "C:\actions-runner"
+          "make-Portal.ps1"
     - uses: actions/upload-artifact@v3
       with:
        name: Portal DS
        path: "*.nds"
 
     - name: clean
-      run: |
-      	"C:\actions-runner\clean-Portal.ps1"
+      run: cd "C:\actions-runner"
+          "clean-Portal.ps1"
