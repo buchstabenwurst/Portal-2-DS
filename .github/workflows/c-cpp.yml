@@ -18,19 +18,20 @@ jobs:
     - name: make
       run: |
             cd "C:\actions-runner"
-            Remove-Item -Recurse -force .\Portal-DS\
             git clone https://github.com/buchstabenwurst/Portal-DS.git
-            "cd C:\actions-runner\Portal-DS\"
+            cd "C:\actions-runner\Portal-DS\"
             make
-          
-
+            mkdir "C:\actions-runner\Portal-DS\_nds\PortalDS\levels\"
+            copy "C:\actions-runner\Portal-DS\assets\Maps\*.vmf" "C:\actions-runner\Portal-DS\_nds\PortalDS\levels\"
     - uses:
           actions/upload-artifact@v3
       with:
        name: Portal DS
-       path: "*.nds"
+       path: |
+            "*.nds"
+            "_nds"
 
     - name: clean
       run: |
-        cd C:\actions-runner\
-        Remove-Item -Recurse -force .\Portal-DS\
+            cd C:\actions-runner\
+            Remove-Item -Recurse -force .\Portal-DS\
