@@ -17,20 +17,17 @@ jobs:
         submodules: recursive
     - name: make
       run: |
-            cd "C:\actions-runner"
-            git clone https://github.com/buchstabenwurst/Portal-DS.git
             cd "C:\actions-runner\y\Portal-DS\Portal-DS"
             make
-            mkdir "C:\actions-runner\y\Portal-DS\Portal-DS\_nds\PortalDS\levels\"
-            copy "C:\actions-runner\y\Portal-DS\Portal-DS\assets\Maps\*.vmf" "C:\actions-runner\y\Portal-DS\Portal-DS\_nds\PortalDS\levels\"
+            mkdir "C:\actions-runner\y\Portal-DS\Portal-DS\upload\_nds\PortalDS\levels\"
+            copy "C:\actions-runner\y\Portal-DS\Portal-DS\assets\Maps\*.vmf" "C:\actions-runner\y\Portal-DS\Portal-DS\upload\_nds\PortalDS\levels\"
+            copy "C:\actions-runner\y\Portal-DS\Portal-DS\Portal-DS.nds" "C:\actions-runner\y\Portal-DS\Portal-DS\upload\"
             cd "C:\actions-runner\y\Portal-DS\Portal-DS"
     - uses:
           actions/upload-artifact@v3
       with:
        name: Portal DS
-       path: |
-            "*.nds"
-            ".\_nds\"
+       path: C:\actions-runner\y\Portal-DS\Portal-DS\upload
 
     #- name: clean
     #  run: |
