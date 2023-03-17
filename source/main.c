@@ -10,41 +10,17 @@
 #include <stdio.h>
 #include <time.h>
 #include "main.h"
+#include "draw3d.h"
 #include "load.h"
 #include "save.h"
 
 
 int textureMode = 0;
 
-NE_Camera* Camara;
 NE_Model* Model[7];
 NE_Physics* Physics[7];
 Level level;
 
-void Draw3DScene(void)
-{
-    NE_CameraUse(Camara);
-
-     //The first 3 boxes will be affected by one light and 3 last boxes by
-     //another one
-    //NE_PolyFormat(31, 0, NE_LIGHT_0,NE_CULL_BACK, 0);
-    //for (int i = 0; i < 3; i++)
-    //    NE_ModelDraw(Model[i]);
-
-    
-    //CreateBlockSideManual(-256, -320, 64, 128, -320, 64, 128, -320, 320, 0.25, 0.25, white_wall_tile003a, 0, 11); //wall
-    //CreateBlockSideManual(320, -128, 64, 320, 256, 64, 320, 256, 320, 0.25, 0.25, white_wall_tile003a, 0, 50); //wall
-    //CreateBlockSideManual(128, -320, 64, 320, -320, 64, 320, -320, 320, 0.25, 0.25, black_wall_metal_002c, 0, 74); //wall
-    //CreateBlockSideManual(320, -320, 64, 320, -128, 64, 320, -128, 320, 0.25, 0.25, black_wall_metal_002a, 0, 86); //wall
-    //CreateBlockSideManual(320, 256, 64, -256, 256, 64, -256, 256, 320, 0.25, 0.25, white_wall_tile003a, 0, 104); //wall
-    //CreateBlockSideManual(-256, 256, 64, -256, -320, 64, -256, -320, 320, 0.25, 0.25, white_wall_tile003a, 0, 110); //wall
-    //CreateBlockSideManual(128, -320, 64, 128, -128, 64, 320, -128, 64, 0.25, 0.25, black_floor_metal_001c, 0, 13); //floor
-    //CreateBlockSideManual(-256, -320, 64, -256, -128, 64, 128, -128, 64, 0.25, 0.25, white_floor_tile002a, 0, 42); //floor
-    //CreateBlockSideManual(-256, -128, 64, -256, 256, 64, 320, 256, 64, 0.25, 0.25, white_floor_tile002a, 0, 66); //floor
-    //CreateBlockSideManual(320, -128, 320, 128, -128, 320, 128, -320, 320, 0.25, 0.25, black_wall_metal_002b, 0, 138); //ceiling
-    //CreateBlockSideManual(128, 256, 320, -256, 256, 320, -256, -320, 320, 0.25, 0.25, white_ceiling_tile002a, 0, 144); //ceiling
-    //CreateBlockSideManual(320, 256, 320, 128, 256, 320, 128, -128, 320, 0.25, 0.25, white_ceiling_tile002a, 0, 150); //ceiling
-}
 
 int main(void)
 {
@@ -53,6 +29,7 @@ int main(void)
     irqSet(IRQ_HBLANK, NE_HBLFunc);
 
     NE_Init3D();
+    NE_InitConsole();
 
     fatInitDefault();
 
@@ -61,12 +38,16 @@ int main(void)
     // Init console in non-3D screen
     consoleDemoInit();
 
+    int fovValue = 80;
     Camara = NE_CameraCreate();
 
     NE_CameraSet(Camara,
-                 -4, 3, 1,
-                  0, 2, 0,
+                 -0.4, 0.3, 0,
+                  0, 0.3, 0,
                   0, 1, 0);
+
+    NE_ClippingPlanesSet(0.01, 10);
+    NE_SetFov(fovValue);
 
     LoadTextures(textureMode);
     level.name = "test_map";
@@ -132,15 +113,14 @@ int main(void)
 
 
     int angle = 0;
-
     int fpscount = 0;
-
     // This is used to see if second has changed
     int oldsec = 0;
     int seconds = 0;
 
     save();
     loadLevel();
+    int freemem = NE_TextureFreeMemPercent();
 
     while (1)
     {
@@ -157,47 +137,87 @@ int main(void)
         {
             // Reset fps count and print current
             oldsec = seconds;
-            printf("\x1b[1;24HFPS: %d", fpscount);
+            printf("\x1b[1;20HFPS: %d", fpscount);
             fpscount = 0;
         }
+
+
+        printf("\x1b[2;20HVram left:%d", freemem);
 
         //Camera
         // Get keys information
         scanKeys();
         uint32 keys = keysHeld();
+        uint32 keys_down = keysDown();
 
 
         if (keys & KEY_DOWN)
-            NE_CameraMoveFree(Camara, -0.05, 0, 0);
+            NE_CameraMoveFree(Camara, -0.005, 0, 0);
         else if (keys & KEY_UP)
-            NE_CameraMoveFree(Camara, 0.05, 0, 0);
+            NE_CameraMoveFree(Camara, 0.005, 0, 0);
 
         if (keys & KEY_LEFT)
-            NE_CameraMoveFree(Camara, 0, -0.05, 0);
+            NE_CameraMoveFree(Camara, 0, -0.005, 0);
         else if (keys & KEY_RIGHT)
-            NE_CameraMoveFree(Camara, 0, 0.05, 0);
+            NE_CameraMoveFree(Camara, 0, 0.005, 0);
 
-        if (keys & KEY_A)
-            NE_CameraRotateFree(Camara, 0, 3, 0);
-        else if (keys & KEY_Y)
-            NE_CameraRotateFree(Camara, 0, -3, 0);
-
-        if (keys & KEY_B && angle < 92)
-        {
-            angle += 3;
-            NE_CameraRotateFree(Camara, 3, 0, 0);
+        if (keys & KEY_A) {
+            NE_CameraRotateFree(Camara, 0, fovValue / 26, 0);
         }
-        else if (keys & KEY_X && angle > -92)
-        {
-            angle -= 3;
-            NE_CameraRotateFree(Camara, -3, 0, 0);
+        else if (keys & KEY_Y) {
+            NE_CameraRotateFree(Camara, 0, fovValue / -26, 0);
         }
 
+        if (keys & KEY_B && angle < 96)
+        {
+            angle += fovValue / 26;
+            NE_CameraRotateFree(Camara, fovValue / 26, 0, 0);
+        }
+        else if (keys & KEY_X && angle > -96)
+        {
+            angle -= fovValue / 26;
+            NE_CameraRotateFree(Camara, fovValue / -26, 0, 0);
+        }
+
+        if (keys & KEY_R) 
+        {
+
+        }
+
+
+        if (keys & KEY_SELECT)
+        {
+            if (keys_down & KEY_R && fovValue > 30)
+            {
+                fovValue -= 10;
+            }
+
+            if (keys_down & KEY_L && fovValue < 80)
+            {
+                fovValue += 10;
+            }
+
+            if (angle <= -96) 
+            {
+                angle += 16;
+                NE_CameraRotateFree(Camara, 16, 0, 0);
+            }
+            if (angle >= 96) 
+            {
+                angle -= 16;
+                NE_CameraRotateFree(Camara, -16, 0, 0);
+            }
+
+            NE_SetFov(fovValue);
+        }
+
+        
+        
         if (keys & KEY_START)
             break;
 
+        //NE_ClearColorSet(NE_White, 31, 63);
         NE_Process(Draw3DScene);
-        RenderPlanes(level);
 
         // Increase frame count
         fpscount++;
