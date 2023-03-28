@@ -51,7 +51,7 @@ LDFLAGS   = -specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project (order is important)
 #---------------------------------------------------------------------------------
-LIBS := -lNE -lfat -lnds9
+LIBS := -lNE -lfat -ldswifi9 -lnds9
 
 # automatigically add libraries for NitroFS
 ifneq ($(strip $(NITRO)),)
@@ -66,7 +66,7 @@ endif
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS := $(LIBNDS) $(PORTLIBS) $(DEVKITPRO)/nitro-engine
+LIBDIRS := ../libs/dswifi $(LIBNDS) $(PORTLIBS) $(DEVKITPRO)/nitro-engine
 
 #---------------------------------------------------------------------------------
 # no real need to edit anything past this point unless you need to add additional
