@@ -1,9 +1,44 @@
 #include <NEMain.h>
+#include <stdio.h>
+#include <math.h>
+#include <nds/arm9/trig_lut.h>
 #include "main.h"
+#include "draw3d.h"
+#include "load.h"
 
 
 NE_Camera* Camara;
 
+//move the Camera on the Global axis
+void CameraMoveGlobal(NE_Camera *cam, PLAYER player) {
+    float tmpTo[3];
+    tmpTo[0] = player.position.x + (fixedToFloat(0.0001 * sinLerp(player.rotation.y * 32790), 2) * (player.rotation.z * player.rotation.z - 1));
+    tmpTo[1] = player.position.z + (fixedToFloat(60 * sinLerp(player.rotation.z * 9000 ) +1, 21));
+    tmpTo[2] = player.position.y + (fixedToFloat(0.0001 * cosLerp(player.rotation.y * 32790), 2) * (player.rotation.z * player.rotation.z - 1));
+
+    NE_AssertPointer(cam, "NULL pointer");
+
+    cam->matrix_is_updated = false;
+
+    cam->from[0] = floattof32(player.position.x);
+    cam->from[1] = floattof32(player.position.z);
+    cam->from[2] = floattof32(player.position.y);
+
+    cam->to[0] = floattof32(tmpTo[0]);
+    cam->to[1] = floattof32(tmpTo[1]); //up and down
+    cam->to[2] = floattof32(tmpTo[2]); //left and right
+
+    //print position and rotation
+    if (debugText) {
+        printf("\x1b[3;1HPos: x:%.2f y:%.2f z:%.2f\x1b[4;1HRot: x:%.2f y:%.2f z:%.2f\n0:%f 1:%f 2:%f", 
+        player.position.x, player.position.y, player.position.z, player.rotation.x, player.rotation.y, player.rotation.z, tmpTo[0], tmpTo[1], tmpTo[2]);
+    }
+    if (debugVision) {
+        NE_ModelRotate(debug_vision_model, 1, 2, 3);
+        NE_ModelSetCoord(debug_vision_model, tmpTo[0], tmpTo[1], tmpTo[2]);
+        NE_ModelDraw(debug_vision_model);
+    }
+}
 
 //Render all Planes in the level
 void RenderPlanes(Level level) {
@@ -38,28 +73,6 @@ void Draw3DScene(void)
 {
     NE_CameraUse(Camara);
 
-    //The first 3 boxes will be affected by one light and 3 last boxes by
-    //another one
-   //NE_PolyFormat(31, 0, NE_LIGHT_0,NE_CULL_BACK, 0);
-   //for (int i = 0; i < 3; i++)
-   //    NE_ModelDraw(Model[i]);
-
-
+    CameraMoveGlobal(Camara, localPlayer);
     RenderPlanes(level);
-
-
-
-   //void RenderPlanesManual(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, double u, double v, NE_Material * Material, int Zone, int id);
-   //CreateBlockSideManual(-256, -320, 64, 128, -320, 64, 128, -320, 320, 0.25, 0.25, white_wall_tile003a, 0, 11); //wall
-   //CreateBlockSideManual(320, -128, 64, 320, 256, 64, 320, 256, 320, 0.25, 0.25, white_wall_tile003a, 0, 50); //wall
-   //CreateBlockSideManual(128, -320, 64, 320, -320, 64, 320, -320, 320, 0.25, 0.25, black_wall_metal_002c, 0, 74); //wall
-   //CreateBlockSideManual(320, -320, 64, 320, -128, 64, 320, -128, 320, 0.25, 0.25, black_wall_metal_002a, 0, 86); //wall
-   //CreateBlockSideManual(320, 256, 64, -256, 256, 64, -256, 256, 320, 0.25, 0.25, white_wall_tile003a, 0, 104); //wall
-   //CreateBlockSideManual(-256, 256, 64, -256, -320, 64, -256, -320, 320, 0.25, 0.25, white_wall_tile003a, 0, 110); //wall
-   //CreateBlockSideManual(128, -320, 64, 128, -128, 64, 320, -128, 64, 0.25, 0.25, black_floor_metal_001c, 0, 13); //floor
-   //CreateBlockSideManual(-256, -320, 64, -256, -128, 64, 128, -128, 64, 0.25, 0.25, white_floor_tile002a, 0, 42); //floor
-   //CreateBlockSideManual(-256, -128, 64, -256, 256, 64, 320, 256, 64, 0.25, 0.25, white_floor_tile002a, 0, 66); //floor
-   //CreateBlockSideManual(320, -128, 320, 128, -128, 320, 128, -320, 320, 0.25, 0.25, black_wall_metal_002b, 0, 138); //ceiling
-   //CreateBlockSideManual(128, 256, 320, -256, 256, 320, -256, -320, 320, 0.25, 0.25, white_ceiling_tile002a, 0, 144); //ceiling
-   //CreateBlockSideManual(320, 256, 320, 128, 256, 320, 128, -128, 320, 0.25, 0.25, white_ceiling_tile002a, 0, 150); //ceiling
 }

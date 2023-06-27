@@ -1,3 +1,5 @@
+#ifndef MAIN_H
+#define MAIN_H
 #include <NEMain.h>
 
 #define MAX_PLANES 100
@@ -35,5 +37,18 @@ typedef struct
 	PLANE Plane[MAX_PLANES];
 } Level;
 
+typedef struct
+{
+	char* name; //Player Name
+	Vector3 position; //Player Position (x,y,z)
+	Vector3 rotation; //Player Rotaion (x,y,z)
+} PLAYER;
+
 extern int textureMode;
+extern int sensitivityHorizontal;
+extern int sensitivityVertical;
+extern bool debugText;
+extern bool debugVision;
 extern Level level;
+extern PLAYER localPlayer;
+#endif

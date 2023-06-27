@@ -30,7 +30,7 @@ ICON     :=
 
 # specify a directory which contains the nitro filesystem
 # this is relative to the Makefile
-NITRO    :=
+NITRO    := nitrofiles
 
 # These set the information text in the nds file
 GAME_TITLE     := Portal DS
@@ -156,9 +156,11 @@ else
 endif
 
 .PHONY: $(BUILD) clean
+#---------------------------------------------------------------------------------
 
 #---------------------------------------------------------------------------------
 $(BUILD):
+	@rsync -ruE --delete $(CURDIR)/assets/Maps/*.vmf $(CURDIR)/nitrofiles/levels
 	@mkdir -p $@
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 

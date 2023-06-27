@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "nemain.h": "c",
+        "nefat.h": "c",
+        "load.h": "c",
+        "draw3d.h": "c",
+        "math.h": "c",
+        "trig_lut.h": "c"
+    },
+    "cmake.configureOnOpen": false
+}

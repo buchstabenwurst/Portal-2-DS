@@ -5,7 +5,10 @@
 // This file is part of Nitro Engine
 
 #include <NEMain.h>
+#include <NECamera.h>
+#include <nds/arm9/trig_lut.h>
 #include <fat.h>
+#include <filesystem.h>
 #include <dirent.h>
 #include <stdio.h>
 #include <time.h>
@@ -15,11 +18,16 @@
 #include "save.h"
 
 
-int textureMode = 0;
+int textureMode = 0;    //unused
+int sensitivityHorizontal = 80;
+int sensitivityVertical = 110;
+bool debugText = true;
+bool debugVision = true;
 
 NE_Model* Model[7];
 NE_Physics* Physics[7];
 Level level;
+PLAYER localPlayer;
 
 
 int main(void)
@@ -32,6 +40,7 @@ int main(void)
     NE_InitConsole();
 
     fatInitDefault();
+    nitroFSInit(NULL);
 
     // libnds uses VRAM_C for the text console, reserve A and B only
     NE_TextureSystemReset(0, 0, NE_VRAM_AB);
@@ -40,14 +49,20 @@ int main(void)
 
     int fovValue = 80;
     Camara = NE_CameraCreate();
+    NE_SetFov(fovValue);
 
-    NE_CameraSet(Camara,
-                 -0.4, 0.3, 0,
-                  0, 0.3, 0,
-                  0, 1, 0);
+    localPlayer.rotation.x = 0.1;
+    localPlayer.rotation.y = 0;
+    localPlayer.rotation.z = 0;
+    localPlayer.position.x = 0;
+    localPlayer.position.y = 0;
+    localPlayer.position.z = 0;
+    //NE_CameraSet(Camara,
+    //             -0.4, 0.1, 0,
+    //              0, 0.3, 0,
+    //              0, 1, 0);
 
     NE_ClippingPlanesSet(0.01, 10);
-    NE_SetFov(fovValue);
 
     LoadTextures(textureMode);
     level.name = "test_map";
@@ -59,50 +74,6 @@ int main(void)
     mkdir("/_nds/PortalDS", 0777);
     mkdir("/_nds/PortalDS/levels", 0777);
 
-    // Create objects
-    for (int i = 0; i < 3; i++)
-    {
-        Model[i] = NE_ModelCreate(NE_Static);
-        Physics[i] = NE_PhysicsCreate(NE_BoundingBox);
-
-
-        NE_ModelLoadStaticMesh(Model[i], (u32 *)cube_bin);
-
-        NE_PhysicsSetModel(Physics[i], // Physics object
-                           (void *)Model[i]); // Model assigned to it
-
-        NE_PhysicsEnable(Physics[i], false);
-        NE_PhysicsSetSize(Physics[i], 1, 1, 1);
-    }
-
-    
-
-    // Enable only the ones we will move
-    NE_PhysicsEnable(Physics[0], true);
-    NE_PhysicsEnable(Physics[1], true);
-    NE_PhysicsEnable(Physics[2], false);
-
-    // Object coordinates
-    NE_ModelSetCoord(Model[0], 0, 4,  1.5);
-    NE_ModelSetCoord(Model[1], 0, 4,  0);
-    NE_ModelSetCoord(Model[2], 0, 1, -1.5);
-
-    // Set gravity
-    NE_PhysicsSetGravity(Physics[0], 0.001);
-    NE_PhysicsSetGravity(Physics[1], 0.001);
-    NE_PhysicsSetGravity(Physics[2], 0.001);
-
-
-    // Tell the engine what to do if there is a collision
-    NE_PhysicsOnCollision(Physics[0], NE_ColBounce);
-    NE_PhysicsOnCollision(Physics[1], NE_ColBounce);
-    NE_PhysicsOnCollision(Physics[2], NE_ColBounce);
-
-    // Set percent of energy kept after a bounce
-    // Default is 50, 100 = no energy lost.
-    NE_PhysicsSetBounceEnergy(Physics[0], 20);
-    NE_PhysicsSetBounceEnergy(Physics[1], 20);
-    NE_PhysicsSetBounceEnergy(Physics[2], 50);
 
     // Lights
     NE_LightSet(0, NE_White, -1, -1, 0);
@@ -112,7 +83,6 @@ int main(void)
     NE_ClearColorSet(NE_White, 31, 63);
 
 
-    int angle = 0;
     int fpscount = 0;
     // This is used to see if second has changed
     int oldsec = 0;
@@ -120,6 +90,8 @@ int main(void)
 
     save();
     loadLevel();
+    LoadMisc();
+
     int freemem = NE_TextureFreeMemPercent();
 
     while (1)
@@ -151,32 +123,40 @@ int main(void)
         uint32 keys_down = keysDown();
 
 
-        if (keys & KEY_DOWN)
-            NE_CameraMoveFree(Camara, -0.005, 0, 0);
-        else if (keys & KEY_UP)
-            NE_CameraMoveFree(Camara, 0.005, 0, 0);
+        if (keys & KEY_DOWN){
+            localPlayer.position.x += fixedToFloat(sinLerp(localPlayer.rotation.y * 32790), 20);
+            localPlayer.position.y += fixedToFloat(cosLerp(localPlayer.rotation.y * 32790), 20);
+        }
+        else if (keys & KEY_UP) {
+            localPlayer.position.x -= fixedToFloat(sinLerp(localPlayer.rotation.y * 32790), 20);
+            localPlayer.position.y -= fixedToFloat(cosLerp(localPlayer.rotation.y * 32790), 20);
+        }
 
-        if (keys & KEY_LEFT)
-            NE_CameraMoveFree(Camara, 0, -0.005, 0);
-        else if (keys & KEY_RIGHT)
-            NE_CameraMoveFree(Camara, 0, 0.005, 0);
-
+        if (keys & KEY_LEFT){
+            localPlayer.position.x -= fixedToFloat(cosLerp(localPlayer.rotation.y * 32790), 20);
+            localPlayer.position.y += fixedToFloat(sinLerp(localPlayer.rotation.y * 32790), 20);
+        }
+        else if (keys & KEY_RIGHT){
+            localPlayer.position.x += fixedToFloat(cosLerp(localPlayer.rotation.y * 32790), 20);
+            localPlayer.position.y -= fixedToFloat(sinLerp(localPlayer.rotation.y * 32790), 20);
+        }
+        
+        
+        
         if (keys & KEY_A) {
-            NE_CameraRotateFree(Camara, 0, fovValue / 26, 0);
+            localPlayer.rotation.y -= 0.0001 * sensitivityHorizontal;
         }
         else if (keys & KEY_Y) {
-            NE_CameraRotateFree(Camara, 0, fovValue / -26, 0);
+            localPlayer.rotation.y += 0.0001 * sensitivityHorizontal;
         }
 
-        if (keys & KEY_B && angle < 96)
+        if (keys & KEY_B && localPlayer.rotation.z > -0.95)
         {
-            angle += fovValue / 26;
-            NE_CameraRotateFree(Camara, fovValue / 26, 0, 0);
+            localPlayer.rotation.z -= 0.0001 * sensitivityVertical;
         }
-        else if (keys & KEY_X && angle > -96)
+        else if (keys & KEY_X && localPlayer.rotation.z < 0.95)
         {
-            angle -= fovValue / 26;
-            NE_CameraRotateFree(Camara, fovValue / -26, 0, 0);
+            localPlayer.rotation.z += 0.0001 * sensitivityVertical;
         }
 
         if (keys & KEY_R) 
@@ -187,31 +167,31 @@ int main(void)
 
         if (keys & KEY_SELECT)
         {
-            if (keys_down & KEY_R && fovValue > 30)
+            if (keys_down & KEY_R && fovValue > 20)
             {
-                fovValue -= 10;
+                fovValue -= 20;
+                NE_SetFov(fovValue);
             }
 
             if (keys_down & KEY_L && fovValue < 80)
             {
-                fovValue += 10;
+                fovValue += 20;
+                NE_SetFov(fovValue);
             }
 
-            if (angle <= -96) 
-            {
-                angle += 16;
-                NE_CameraRotateFree(Camara, 16, 0, 0);
-            }
-            if (angle >= 96) 
-            {
-                angle -= 16;
-                NE_CameraRotateFree(Camara, -16, 0, 0);
-            }
-
-            NE_SetFov(fovValue);
         }
+        //NE_CameraSet(Camara, localPlayer.position.x, localPlayer.position.z, localPlayer.position.y, localPlayer.rotation.x, localPlayer.rotation.y, localPlayer.rotation.z + 1, localPlayer.position.x, localPlayer.position.y, localPlayer.position.z);
+        //NE_AssertPointer(Camara, "NULL pointer");
 
-        
+        //Camara->matrix_is_updated = false;
+        //Camara->from[0] = localPlayer.position.x;
+        //Camara->from[1] = localPlayer.position.z;
+        //Camara->from[2] = localPlayer.position.y;
+
+        //Camara->to[0] += localPlayer.rotation.x;
+        //Camara->to[1] += localPlayer.rotation.y;
+        //Camara->to[2] += localPlayer.rotation.z;
+        //NE_CameraMove(Camara, localPlayer.position.x, localPlayer.position.z, localPlayer.position.y);
         
         if (keys & KEY_START)
             break;

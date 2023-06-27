@@ -3,6 +3,10 @@
 #include "load.h"
 
 
+//Models
+NE_Model* debug_vision_model;
+
+//textures
 NE_Material* white_ceiling_tile002a, * white_floor_tile002a, * white_floor_tile002a_hd, * white_wall_tile003a, * white_wall_tile003a_hd, * white_wall_tile003c, * white_wall_tile003c_hd, * white_wall_tile003f, * white_wall_tile003f_hd, * black_floor_metal_001c, * black_floor_metal_001c_hd, * black_wall_metal_002a, * black_wall_metal_002a_hd, * black_wall_metal_002b, * black_wall_metal_002b_hd, * black_wall_metal_002c, * black_wall_metal_002c_hd, * Debug_Material, * debugempty;
 NE_Palette* white_ceiling_tile002aPal, * white_floor_tile002aPal, * white_floor_tile002a_hdPal, * white_wall_tile003aPal, * white_wall_tile003a_hdPal, * white_wall_tile003cPal, * white_wall_tile003c_hdPal, * white_wall_tile003fPal, * white_wall_tile003f_hdPal, * black_floor_metal_001cPal, * black_floor_metal_001c_hdPal, * black_wall_metal_002aPal, * black_wall_metal_002a_hdPal, * black_wall_metal_002bPal, * black_wall_metal_002b_hdPal, * black_wall_metal_002cPal, * black_wall_metal_002c_hdPal;
 //for when you can create multiple texture usig one pallete
@@ -18,6 +22,12 @@ void LoadPal16(NE_Material* material, void* texturelBin, NE_Palette* palette, vo
 {
     NE_MaterialTexLoad(material, NE_PAL16, resolution, resolution, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T, texturelBin);
     NE_PaletteLoad(palette, paletteBin, 16, NE_PAL16);
+    NE_MaterialSetPalette(material, palette);
+}
+void LoadPal4(NE_Material* material, void* texturelBin, NE_Palette* palette, void* paletteBin, int resolution)
+{
+    NE_MaterialTexLoad(material, NE_PAL4, resolution, resolution, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T, texturelBin);
+    NE_PaletteLoad(palette, paletteBin, 4, NE_PAL4);
     NE_MaterialSetPalette(material, palette);
 }
 
@@ -54,11 +64,11 @@ void LoadTextures(int textureMode)
 
         LoadPal16(white_floor_tile002a, (u8*)white_floor_tile002a_tex_bin, white_floor_tile002aPal, (void*)white_floor_tile002a_pal_bin, 256);
 
-        LoadPal16(white_wall_tile003a, (u8*)white_wall_tile003a_tex_bin, white_wall_tile003aPal, (void*)white_wall_tile003a_pal_bin, 128);
+        LoadPal4(white_wall_tile003a, (u8*)white_wall_tile003a_tex_bin, white_wall_tile003aPal, (void*)white_wall_tile003a_pal_bin, 64);
 
-        LoadPal16(white_wall_tile003c, (u8*)white_wall_tile003c_tex_bin, white_wall_tile003cPal, (void*)white_wall_tile003c_pal_bin, 128);
+        LoadPal4(white_wall_tile003c, (u8*)white_wall_tile003c_tex_bin, white_wall_tile003cPal, (void*)white_wall_tile003c_pal_bin, 64);
 
-        LoadPal16(white_wall_tile003f, (u8*)white_wall_tile003f_tex_bin, white_wall_tile003fPal, (void*)white_wall_tile003f_pal_bin, 128);
+        LoadPal4(white_wall_tile003f, (u8*)white_wall_tile003f_tex_bin, white_wall_tile003fPal, (void*)white_wall_tile003f_pal_bin, 32);
 
         LoadPal16(black_floor_metal_001c, (u8*)black_floor_metal_001c_tex_bin, black_floor_metal_001cPal, (void*)black_floor_metal_001c_pal_bin, 128);
 
@@ -117,14 +127,14 @@ int loadLevel() {
     char* extension = ".vmf";
     char fileLocation[strlen(location) + strlen(levelName) + strlen(extension) + 1];
     snprintf(fileLocation, sizeof(fileLocation), "%s%s%s", location, levelName, extension);
-    levelFile = fopen(fileLocation, "rb");
+    if ((levelFile = fopen(fileLocation, "rb")) == NULL) {
+        levelFile = fopen("nitro:/levels/test_map.vmf", "rb");
+    }
     int i = 0;
     //Plane = (PLANE*)malloc(n * sizeof(PLANE));
     ////Plane = malloc(n * sizeof(PLANE));
     while (1)
     {
-        //for (i = 0; i < n; i++)
-        //{
         char word[256];
         //tempPlane = (PLANE*)malloc(sizeof(PLANE));
         int res = fscanf(levelFile, "%s", word);
@@ -134,6 +144,7 @@ int loadLevel() {
         }
         if (strcmp(word, "side") == 0) // Read block
         {
+            //temporary values (overwritten with evry net object)
             char id[3];
             char tempx1[10], tempy1[10], tempz1[10];
             char tempx2[10], tempy2[10], tempz2[10];
@@ -141,8 +152,8 @@ int loadLevel() {
             char tempMaterial[30];
             char tempuaxis[6], tempuscale[6];
             char tempvaxis[6], tempvscale[6];
-            fscanf(levelFile, "%*s%*11c%3s%*[\"]", id);
-            fscanf(levelFile, "%*s%*c\"(%s %s %s)", tempx1, tempy1, tempz1);
+            fscanf(levelFile, "%*s%*11c%3s%*[\"]", id); //search for the start of the data
+            fscanf(levelFile, "%*s%*c\"(%s %s %s)", tempx1, tempy1, tempz1);    //read file values into temporary values
             fscanf(levelFile, " (%s %s %s)", tempx2, tempy2, tempz2);
             fscanf(levelFile, " (%s %s %s)", tempx3, tempy3, tempz3);
             fscanf(levelFile, "%*s%*[^/]/%[^\"]", tempMaterial);
@@ -163,6 +174,7 @@ int loadLevel() {
             float vaxis = (float)atof(tempvaxis);
             float vscale = (float)atof(tempvscale);
 
+            //convert string material names to materials used in LoadTextures
             if (strcmp(tempMaterial, "WHITE_CEILING_TILE002A") == 0) {
                 tempPlane.material = white_ceiling_tile002a;
             }
@@ -192,6 +204,7 @@ int loadLevel() {
             }
             else if (strcmp(tempMaterial, "TOOLSNODRAW") == 0)
                 tempPlane.isDrawn = 0;
+                //if material not recognized use debug texture
             else {
                 tempPlane.material = debugempty;
                 if (i >= 3000)
@@ -223,6 +236,30 @@ int loadLevel() {
                 tempPlane.y0 = 0;
                 tempPlane.x1 = 0;
                 tempPlane.y1 = 0;
+                //get texture size and adjust it (for diffent resolutions)
+                int tempTextureFactorMultiply = 0;
+                int tempTextureFactoDivide = 0;
+                int textureSizeY = NE_TextureGetSizeY(tempPlane.material);
+                if (textureSizeY == 32) {
+                    tempTextureFactorMultiply = 1;
+                    tempTextureFactoDivide = 8;
+                }
+                if (textureSizeY == 64) {
+                    tempTextureFactorMultiply = 2;
+                    tempTextureFactoDivide = 8;
+                }
+                else if (textureSizeY == 128) {
+                    tempTextureFactorMultiply = 4;
+                    tempTextureFactoDivide = 4;
+                }
+                else if (textureSizeY == 256) {
+                    tempTextureFactorMultiply = 4;
+                    tempTextureFactoDivide = 4;
+                }
+                else if (textureSizeY == 512) {
+                    tempTextureFactorMultiply = 4;
+                    tempTextureFactoDivide = 1;
+                }
 
                 //if floor or cieling
                 if (tempPlane.vertex1.z == tempPlane.vertex3.z) {
@@ -232,10 +269,10 @@ int loadLevel() {
                     tempPlane.vertex4.z = tempPlane.vertex2.z;
                     //create texture coordinates
                     if (textureMode == 0) {
-                        tempPlane.y0 = tempPlane.vertex1.x * -uscale * 4 + uaxis / 4;
-                        tempPlane.x0 = tempPlane.vertex3.y * -vscale * 4 + vaxis / 4;
-                        tempPlane.y1 = tempPlane.vertex2.x * -uscale * 4 + uaxis / 4;
-                        tempPlane.x1 = tempPlane.vertex1.y * -vscale * 4 + vaxis / 4;
+                        tempPlane.y0 = tempPlane.vertex1.x * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
+                        tempPlane.x0 = tempPlane.vertex3.y * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
+                        tempPlane.y1 = tempPlane.vertex2.x * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
+                        tempPlane.x1 = tempPlane.vertex1.y * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
                     }
                     if (textureMode == 1) {
                         tempPlane.y0 = tempPlane.vertex1.x * -uscale * 4 + uaxis / 2;
@@ -251,10 +288,10 @@ int loadLevel() {
                         tempPlane.vertex4.z = tempPlane.vertex2.z;
                         //create texture coordinates
                         if (textureMode == 0) {
-                            tempPlane.y0 = tempPlane.vertex1.y * -uscale * 4 + uaxis / 4;
-                            tempPlane.x0 = tempPlane.vertex3.x * -vscale * 4 + vaxis / 4;
-                            tempPlane.y1 = tempPlane.vertex2.y * -uscale * 4 + uaxis / 4;
-                            tempPlane.x1 = tempPlane.vertex1.x * -vscale * 4 + vaxis / 4;
+                            tempPlane.y0 = tempPlane.vertex1.y * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
+                            tempPlane.x0 = tempPlane.vertex3.x * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
+                            tempPlane.y1 = tempPlane.vertex2.y * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
+                            tempPlane.x1 = tempPlane.vertex1.x * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
                         }
                         if (textureMode == 1) {
                             tempPlane.y0 = tempPlane.vertex1.y * -uscale * 4 + uaxis / 2;
@@ -275,10 +312,10 @@ int loadLevel() {
                     //tempPlane.nz = (tempPlane.vertex2.z - tempPlane.vertex3.z) / 2;
                     //create texture coordinates
                     if (textureMode == 0) {
-                        tempPlane.y0 = tempPlane.vertex1.y * -uscale * 4 + uaxis / 4;
-                        tempPlane.x0 = tempPlane.vertex3.z * -vscale * 4 + vaxis / 4;
-                        tempPlane.y1 = tempPlane.vertex2.y * -uscale * 4 + uaxis / 4;
-                        tempPlane.x1 = tempPlane.vertex1.z * -vscale * 4 + vaxis / 4;
+                        tempPlane.y0 = tempPlane.vertex1.y * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
+                        tempPlane.x0 = tempPlane.vertex3.z * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
+                        tempPlane.y1 = tempPlane.vertex2.y * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
+                        tempPlane.x1 = tempPlane.vertex1.z * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
                     }
                     else if (textureMode == 1) {
                         tempPlane.y0 = tempPlane.vertex1.y * -uscale * 4 + uaxis / 2;
@@ -295,10 +332,10 @@ int loadLevel() {
                     tempPlane.vertex4.z = tempPlane.vertex3.z;
                     //create texture coordinates
                     if (textureMode == 0) {
-                        tempPlane.y0 = tempPlane.vertex1.x / uscale / 4 + uaxis / 4 + 64;
-                        tempPlane.x0 = tempPlane.vertex3.z / -vscale / 4 + vaxis / 4 - 1;
-                        tempPlane.y1 = tempPlane.vertex2.x / uscale / 4 + uaxis / 4 + 64;
-                        tempPlane.x1 = tempPlane.vertex1.z / -vscale / 4 + vaxis / 4 - 1;
+                        tempPlane.y0 = tempPlane.vertex1.x / uscale / tempTextureFactoDivide + uaxis / tempTextureFactoDivide + 64;
+                        tempPlane.x0 = tempPlane.vertex3.z / -vscale / tempTextureFactoDivide + vaxis / tempTextureFactoDivide;
+                        tempPlane.y1 = tempPlane.vertex2.x / uscale / tempTextureFactoDivide + uaxis / tempTextureFactoDivide + 64;
+                        tempPlane.x1 = tempPlane.vertex1.z / -vscale / tempTextureFactoDivide + vaxis / tempTextureFactoDivide;
                     }
                     else if (textureMode == 1) {
                         tempPlane.y0 = tempPlane.vertex1.x * -uscale * 4 + uaxis / 2;
@@ -309,7 +346,7 @@ int loadLevel() {
                 }
 
                 level.Plane[i] = tempPlane;
-                printf("\nplane id:%d\nmaterial:%s\nx1:%s y1:%.0f z1:%.0f\nx2:%.0f y2:%.0f z2:%.0f\nx3:%.0f y3:%.0f z3:%.0f\n", planeId, tempMaterial, tempx1, level.Plane[i].vertex1.y, level.Plane[i].vertex1.z, level.Plane[i].vertex2.x, level.Plane[i].vertex2.y, level.Plane[i].vertex2.z, level.Plane[i].vertex3.x, level.Plane[i].vertex3.y, level.Plane[i].vertex3.z);
+                //printf("\nplane id:%d\nmaterial:%s\nx1:%s y1:%.0f z1:%.0f\nx2:%.0f y2:%.0f z2:%.0f\nx3:%.0f y3:%.0f z3:%.0f\n", planeId, tempMaterial, tempx1, level.Plane[i].vertex1.y, level.Plane[i].vertex1.z, level.Plane[i].vertex2.x, level.Plane[i].vertex2.y, level.Plane[i].vertex2.z, level.Plane[i].vertex3.x, level.Plane[i].vertex3.y, level.Plane[i].vertex3.z);
                 //printf("\nplane id:%d\nuaxis:%.0f uscale:%.2f\nvaxis:%.0f vscale:%.2f\n", planeId, level.Plane[i].uaxis, level.Plane[i].uscale, level.Plane[i].vaxis, level.Plane[i].vscale);
                 
                 i++;
@@ -322,4 +359,14 @@ int loadLevel() {
 
     fclose(levelFile);
     return 0;
+}
+
+void LoadMisc (void)
+{
+    if (debugVision) {
+        debug_vision_model = NE_ModelCreate(NE_Static);
+        NE_ModelLoadStaticMesh(debug_vision_model, (u32 *)Debug_sphere_bin);
+        NE_ModelSetMaterial(debug_vision_model, debugempty);
+        NE_ModelScale(debug_vision_model, 0.01, 0.01, 0.01);
+    }
 }
