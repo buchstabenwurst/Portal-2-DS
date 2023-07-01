@@ -13,7 +13,7 @@ NE_Camera* Camara;
 void CameraMoveGlobal(NE_Camera *cam, PLAYER player) {
     float tmpTo[3];
     tmpTo[0] = player.position.x + (fixedToFloat(0.0001 * sinLerp(player.rotation.y * 32790), 2) * (player.rotation.z * player.rotation.z - 1));
-    tmpTo[1] = player.position.z + (fixedToFloat(60 * sinLerp(player.rotation.z * 9000 ) +1, 21));
+    tmpTo[1] = player.position.z + (fixedToFloat(50 * sinLerp(player.rotation.z * 9000 ) +1, 21));
     tmpTo[2] = player.position.y + (fixedToFloat(0.0001 * cosLerp(player.rotation.y * 32790), 2) * (player.rotation.z * player.rotation.z - 1));
 
     NE_AssertPointer(cam, "NULL pointer");
@@ -53,17 +53,17 @@ void RenderPlanes(Level level) {
         NE_PolyBegin(GL_QUAD);
         //NE_PolyNormal(level.Plane[i].nx / 100, level.Plane[i].nz / 100, level.Plane[i].ny / 100);
 
-        NE_PolyTexCoord(level.Plane[i].y0, level.Plane[i].x0);
-        NE_PolyVertex(level.Plane[i].vertex4.y / 1000, level.Plane[i].vertex4.z / 1000, level.Plane[i].vertex4.x / 1000);
-
-        NE_PolyTexCoord(level.Plane[i].y1, level.Plane[i].x0);
-        NE_PolyVertex(level.Plane[i].vertex3.y / 1000, level.Plane[i].vertex3.z / 1000, level.Plane[i].vertex3.x / 1000);
+        NE_PolyTexCoord(level.Plane[i].y0, level.Plane[i].x1);
+        NE_PolyVertex(level.Plane[i].vertex1.x, level.Plane[i].vertex1.z, level.Plane[i].vertex1.y);
 
         NE_PolyTexCoord(level.Plane[i].y1, level.Plane[i].x1);
-        NE_PolyVertex(level.Plane[i].vertex2.y / 1000, level.Plane[i].vertex2.z / 1000, level.Plane[i].vertex2.x / 1000);
+        NE_PolyVertex(level.Plane[i].vertex2.x, level.Plane[i].vertex2.z, level.Plane[i].vertex2.y);
 
-        NE_PolyTexCoord(level.Plane[i].y0, level.Plane[i].x1);
-        NE_PolyVertex(level.Plane[i].vertex1.y / 1000, level.Plane[i].vertex1.z / 1000, level.Plane[i].vertex1.x / 1000);
+        NE_PolyTexCoord(level.Plane[i].y1, level.Plane[i].x0);
+        NE_PolyVertex(level.Plane[i].vertex3.x, level.Plane[i].vertex3.z, level.Plane[i].vertex3.y);
+
+        NE_PolyTexCoord(level.Plane[i].y0, level.Plane[i].x0);
+        NE_PolyVertex(level.Plane[i].vertex4.x, level.Plane[i].vertex4.z, level.Plane[i].vertex4.y);
 
         NE_PolyEnd();
     }

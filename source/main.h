@@ -2,7 +2,13 @@
 #define MAIN_H
 #include <NEMain.h>
 
+#define LEVEL_SIZE 0.001
+
 #define MAX_PLANES 100
+#define PLAYER_HIGHT 0.064 //space below the camera
+#define PLAYER_HIGHT_TOP 0.02 //space above the camera
+#define PLAYER_WIDTH 0.02
+#define PLAYER_JUMPFORCE 0.0048
 
 // 3D point 
 typedef struct
@@ -11,6 +17,12 @@ typedef struct
 	float y;
 	float z;
 } Vector3;
+
+typedef struct
+{
+    Vector3 velocity;
+	bool isGrounded;
+} PHYSICS;
 
 // Plane values
 typedef struct
@@ -42,6 +54,8 @@ typedef struct
 	char* name; //Player Name
 	Vector3 position; //Player Position (x,y,z)
 	Vector3 rotation; //Player Rotaion (x,y,z)
+	bool isJumping;
+	PHYSICS physics;
 } PLAYER;
 
 extern int textureMode;

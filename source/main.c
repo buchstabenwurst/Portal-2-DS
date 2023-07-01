@@ -16,13 +16,15 @@
 #include "draw3d.h"
 #include "load.h"
 #include "save.h"
+#include "physics.h"
 
 
 int textureMode = 0;    //unused
 int sensitivityHorizontal = 80;
-int sensitivityVertical = 110;
+int sensitivityVertical = 120;
+
 bool debugText = true;
-bool debugVision = true;
+bool debugVision = false;
 
 NE_Model* Model[7];
 NE_Physics* Physics[7];
@@ -56,7 +58,7 @@ int main(void)
     localPlayer.rotation.z = 0;
     localPlayer.position.x = 0;
     localPlayer.position.y = 0;
-    localPlayer.position.z = 0;
+    localPlayer.position.z = 0.5;
     //NE_CameraSet(Camara,
     //             -0.4, 0.1, 0,
     //              0, 0.3, 0,
@@ -124,39 +126,47 @@ int main(void)
 
 
         if (keys & KEY_DOWN){
-            localPlayer.position.x += fixedToFloat(sinLerp(localPlayer.rotation.y * 32790), 20);
-            localPlayer.position.y += fixedToFloat(cosLerp(localPlayer.rotation.y * 32790), 20);
+            localPlayer.physics.velocity.x += fixedToFloat(sinLerp(localPlayer.rotation.y * 32790) / 10, 20);
+            localPlayer.physics.velocity.y += fixedToFloat(cosLerp(localPlayer.rotation.y * 32790) / 10, 20);
         }
         else if (keys & KEY_UP) {
-            localPlayer.position.x -= fixedToFloat(sinLerp(localPlayer.rotation.y * 32790), 20);
-            localPlayer.position.y -= fixedToFloat(cosLerp(localPlayer.rotation.y * 32790), 20);
+            localPlayer.physics.velocity.x -= fixedToFloat(sinLerp(localPlayer.rotation.y * 32790) / 10, 20);
+            localPlayer.physics.velocity.y -= fixedToFloat(cosLerp(localPlayer.rotation.y * 32790) / 10, 20);
         }
 
         if (keys & KEY_LEFT){
-            localPlayer.position.x -= fixedToFloat(cosLerp(localPlayer.rotation.y * 32790), 20);
-            localPlayer.position.y += fixedToFloat(sinLerp(localPlayer.rotation.y * 32790), 20);
+            localPlayer.physics.velocity.x -= fixedToFloat(cosLerp(localPlayer.rotation.y * 32790) / 10, 20);
+            localPlayer.physics.velocity.y += fixedToFloat(sinLerp(localPlayer.rotation.y * 32790) / 10, 20);
         }
         else if (keys & KEY_RIGHT){
-            localPlayer.position.x += fixedToFloat(cosLerp(localPlayer.rotation.y * 32790), 20);
-            localPlayer.position.y -= fixedToFloat(sinLerp(localPlayer.rotation.y * 32790), 20);
+            localPlayer.physics.velocity.x += fixedToFloat(cosLerp(localPlayer.rotation.y * 32790) / 10, 20);
+            localPlayer.physics.velocity.y -= fixedToFloat(sinLerp(localPlayer.rotation.y * 32790) / 10, 20);
         }
         
         
         
         if (keys & KEY_A) {
-            localPlayer.rotation.y -= 0.0001 * sensitivityHorizontal;
+            localPlayer.rotation.y -= 0.000001 * sensitivityHorizontal * fovValue;
         }
         else if (keys & KEY_Y) {
-            localPlayer.rotation.y += 0.0001 * sensitivityHorizontal;
+            localPlayer.rotation.y += 0.000001 * sensitivityHorizontal * fovValue;
         }
 
         if (keys & KEY_B && localPlayer.rotation.z > -0.95)
         {
-            localPlayer.rotation.z -= 0.0001 * sensitivityVertical;
+            localPlayer.rotation.z -= 0.000001 * sensitivityVertical * fovValue;
         }
         else if (keys & KEY_X && localPlayer.rotation.z < 0.95)
         {
-            localPlayer.rotation.z += 0.0001 * sensitivityVertical;
+            localPlayer.rotation.z += 0.000001 * sensitivityVertical * fovValue;
+        }
+
+        if (keys_down & KEY_TOUCH) 
+        {
+            if (localPlayer.physics.isGrounded){
+                localPlayer.isJumping = true;
+                localPlayer.physics.velocity.z = PLAYER_JUMPFORCE;
+            }
         }
 
         if (keys & KEY_R) 
@@ -197,6 +207,7 @@ int main(void)
             break;
 
         //NE_ClearColorSet(NE_White, 31, 63);
+        doPhysics();
         NE_Process(Draw3DScene);
 
         // Increase frame count

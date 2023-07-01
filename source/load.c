@@ -160,15 +160,15 @@ int loadLevel() {
             fscanf(levelFile, "%*s%*s%*s%*s%*s %[^]]] %[^\"]", tempuaxis, tempuscale);
             fscanf(levelFile, "%*s%*s%*s%*s%*s %[^]]] %[^\"]", tempvaxis, tempvscale);
             int planeId = (float)atof(id);
-            tempPlane.vertex1.x = (float)atof(tempx1);
-            tempPlane.vertex1.y = (float)atof(tempy1);
-            tempPlane.vertex1.z = (float)atof(tempz1);
-            tempPlane.vertex2.x = (float)atof(tempx2);
-            tempPlane.vertex2.y = (float)atof(tempy2);
-            tempPlane.vertex2.z = (float)atof(tempz2);
-            tempPlane.vertex3.x = (float)atof(tempx3);
-            tempPlane.vertex3.y = (float)atof(tempy3);
-            tempPlane.vertex3.z = (float)atof(tempz3);
+            tempPlane.vertex1.x = (float)atof(tempx1) * LEVEL_SIZE;
+            tempPlane.vertex1.y = (float)atof(tempy1) * LEVEL_SIZE;
+            tempPlane.vertex1.z = (float)atof(tempz1) * LEVEL_SIZE;
+            tempPlane.vertex2.x = (float)atof(tempx2) * LEVEL_SIZE;
+            tempPlane.vertex2.y = (float)atof(tempy2) * LEVEL_SIZE;
+            tempPlane.vertex2.z = (float)atof(tempz2) * LEVEL_SIZE;
+            tempPlane.vertex3.x = (float)atof(tempx3) * LEVEL_SIZE;
+            tempPlane.vertex3.y = (float)atof(tempy3) * LEVEL_SIZE;
+            tempPlane.vertex3.z = (float)atof(tempz3) * LEVEL_SIZE;
             float uaxis = (float)atof(tempuaxis);
             float uscale = (float)atof(tempuscale);
             float vaxis = (float)atof(tempvaxis);
@@ -269,10 +269,10 @@ int loadLevel() {
                     tempPlane.vertex4.z = tempPlane.vertex2.z;
                     //create texture coordinates
                     if (textureMode == 0) {
-                        tempPlane.y0 = tempPlane.vertex1.x * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
-                        tempPlane.x0 = tempPlane.vertex3.y * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
-                        tempPlane.y1 = tempPlane.vertex2.x * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
-                        tempPlane.x1 = tempPlane.vertex1.y * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
+                        tempPlane.y0 = tempPlane.vertex1.x * 1000 * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
+                        tempPlane.x0 = tempPlane.vertex3.y * 1000 * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
+                        tempPlane.y1 = tempPlane.vertex2.x * 1000 * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
+                        tempPlane.x1 = tempPlane.vertex1.y * 1000 * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
                     }
                     if (textureMode == 1) {
                         tempPlane.y0 = tempPlane.vertex1.x * -uscale * 4 + uaxis / 2;
@@ -288,10 +288,10 @@ int loadLevel() {
                         tempPlane.vertex4.z = tempPlane.vertex2.z;
                         //create texture coordinates
                         if (textureMode == 0) {
-                            tempPlane.y0 = tempPlane.vertex1.y * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
-                            tempPlane.x0 = tempPlane.vertex3.x * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
-                            tempPlane.y1 = tempPlane.vertex2.y * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
-                            tempPlane.x1 = tempPlane.vertex1.x * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
+                            tempPlane.y0 = tempPlane.vertex1.y * 1000 * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
+                            tempPlane.x0 = tempPlane.vertex3.x * 1000 * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
+                            tempPlane.y1 = tempPlane.vertex2.y * 1000 * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
+                            tempPlane.x1 = tempPlane.vertex1.x * 1000 * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
                         }
                         if (textureMode == 1) {
                             tempPlane.y0 = tempPlane.vertex1.y * -uscale * 4 + uaxis / 2;
@@ -312,10 +312,10 @@ int loadLevel() {
                     //tempPlane.nz = (tempPlane.vertex2.z - tempPlane.vertex3.z) / 2;
                     //create texture coordinates
                     if (textureMode == 0) {
-                        tempPlane.y0 = tempPlane.vertex1.y * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
-                        tempPlane.x0 = tempPlane.vertex3.z * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
-                        tempPlane.y1 = tempPlane.vertex2.y * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
-                        tempPlane.x1 = tempPlane.vertex1.z * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
+                        tempPlane.y0 = tempPlane.vertex1.y * 1000 * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
+                        tempPlane.x0 = tempPlane.vertex3.z * 1000 * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
+                        tempPlane.y1 = tempPlane.vertex2.y * 1000 * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
+                        tempPlane.x1 = tempPlane.vertex1.z * 1000 * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
                     }
                     else if (textureMode == 1) {
                         tempPlane.y0 = tempPlane.vertex1.y * -uscale * 4 + uaxis / 2;
@@ -332,10 +332,10 @@ int loadLevel() {
                     tempPlane.vertex4.z = tempPlane.vertex3.z;
                     //create texture coordinates
                     if (textureMode == 0) {
-                        tempPlane.y0 = tempPlane.vertex1.x / uscale / tempTextureFactoDivide + uaxis / tempTextureFactoDivide + 64;
-                        tempPlane.x0 = tempPlane.vertex3.z / -vscale / tempTextureFactoDivide + vaxis / tempTextureFactoDivide;
-                        tempPlane.y1 = tempPlane.vertex2.x / uscale / tempTextureFactoDivide + uaxis / tempTextureFactoDivide + 64;
-                        tempPlane.x1 = tempPlane.vertex1.z / -vscale / tempTextureFactoDivide + vaxis / tempTextureFactoDivide;
+                        tempPlane.y0 = tempPlane.vertex1.x * 1000 / uscale / tempTextureFactoDivide + uaxis / tempTextureFactoDivide + 64;
+                        tempPlane.x0 = tempPlane.vertex3.z * 1000 / -vscale / tempTextureFactoDivide + vaxis / tempTextureFactoDivide;
+                        tempPlane.y1 = tempPlane.vertex2.x * 1000 / uscale / tempTextureFactoDivide + uaxis / tempTextureFactoDivide + 64;
+                        tempPlane.x1 = tempPlane.vertex1.z * 1000 / -vscale / tempTextureFactoDivide + vaxis / tempTextureFactoDivide;
                     }
                     else if (textureMode == 1) {
                         tempPlane.y0 = tempPlane.vertex1.x * -uscale * 4 + uaxis / 2;
