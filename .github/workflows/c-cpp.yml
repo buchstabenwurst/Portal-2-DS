@@ -14,20 +14,21 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
+        persist-credentials: false
         submodules: recursive
     - name: make
       run: |
-            cd "C:\actions-runner\y\Portal-DS\Portal-DS"
+            cd "C:\Users\Joshua\actions-runner\_work\Portal-DS\Portal-DS"
             make
-            mkdir "C:\actions-runner\y\Portal-DS\Portal-DS\upload\_nds\PortalDS\levels\"
-            copy "C:\actions-runner\y\Portal-DS\Portal-DS\assets\Maps\*.vmf" "C:\actions-runner\y\Portal-DS\Portal-DS\upload\_nds\PortalDS\levels\"
-            copy "C:\actions-runner\y\Portal-DS\Portal-DS\Portal-DS.nds" "C:\actions-runner\y\Portal-DS\Portal-DS\upload\"
-            cd "C:\actions-runner\y\Portal-DS\Portal-DS"
+            mkdir "C:\Users\Joshua\actions-runner\_work\Portal-DS\Portal-DS\upload\_nds\PortalDS\levels\"
+            copy "C:\Users\Joshua\actions-runner\_work\Portal-DS\Portal-DS\assets\Maps\*.vmf" "C:\Users\Joshua\actions-runner\_work\Portal-DS\Portal-DS\upload\_nds\PortalDS\levels\"
+            copy "C:\Users\Joshua\actions-runner\_work\Portal-DS\Portal-DS\Portal-DS.nds" "C:\Users\Joshua\actions-runner\_work\Portal-DS\Portal-DS\upload\"
+            cd "C:\Users\Joshua\actions-runner\_work\Portal-DS\Portal-DS"
     - uses:
           actions/upload-artifact@v3
       with:
        name: Portal DS
-       path: C:\actions-runner\y\Portal-DS\Portal-DS\upload
+       path: C:\Users\Joshua\actions-runner\_work\Portal-DS\Portal-DS\upload
 
     #- name: clean
     #  run: |
