@@ -7,12 +7,12 @@ PLAYER playerPhysics(PLAYER player){
     bool alreadyCollidedY = false;
     bool alreadyCollidedZ = false;
 
-    for (int i = 0; i < MAX_PLANES; i++){
+    for (int i = 0; i < level.planeCount; i++){
         if (!alreadyCollidedZ){ //if not already collided this frame
             if (level.Plane[i].vertex1.z == level.Plane[i].vertex3.z){
                 //floor
-                if (player.position.y > (level.Plane[i].vertex1.y) && player.position.y < (level.Plane[i].vertex2.y) && // if player is within the plane
-                player.position.x < (level.Plane[i].vertex3.x) && player.position.x > (level.Plane[i].vertex2.x) &&
+                if (player.position.y + PLAYER_WIDTH > (level.Plane[i].vertex1.y) && player.position.y - PLAYER_WIDTH < (level.Plane[i].vertex2.y) && // if player is within the plane
+                player.position.x - PLAYER_WIDTH < (level.Plane[i].vertex3.x) && player.position.x + PLAYER_WIDTH > (level.Plane[i].vertex2.x) &&
                 player.position.z > (level.Plane[i].vertex1.z - PLAYER_HIGHT_TOP) && player.position.z < (level.Plane[i].vertex1.z + PLAYER_HIGHT)) // if player is enough above the plane
                 {
                     player.physics.isGrounded = true;
@@ -23,7 +23,7 @@ PLAYER playerPhysics(PLAYER player){
                     player.physics.isGrounded = false;
                 }
                 //cieling
-                if (player.position.y > (level.Plane[i].vertex1.y) && player.position.y < (level.Plane[i].vertex2.y) && // if player is within the plane
+                if (player.position.y + PLAYER_WIDTH > (level.Plane[i].vertex1.y) && player.position.y - PLAYER_WIDTH < (level.Plane[i].vertex2.y) && // if player is within the plane
                 player.position.x < (level.Plane[i].vertex1.x) && player.position.x > (level.Plane[i].vertex2.x) &&
                 player.position.z > (level.Plane[i].vertex3.z - PLAYER_HIGHT_TOP) && player.position.z < (level.Plane[i].vertex1.z + PLAYER_HIGHT)) // if player is close enough above the plane
                 {
@@ -35,20 +35,20 @@ PLAYER playerPhysics(PLAYER player){
         if (!alreadyCollidedY){ //if not already collided this frame
             //if y aligned wall
             if (level.Plane[i].vertex1.y == level.Plane[i].vertex2.y && level.Plane[i].vertex1.y == level.Plane[i].vertex3.y){ //if it even is a y aligned wall
-                if (player.position.y > (level.Plane[i].vertex1.y - PLAYER_WIDTH) && player.position.y < (level.Plane[i].vertex1.y + PLAYER_WIDTH)){ // if player is close enough to the plane
-                    if (player.position.x < (level.Plane[i].vertex1.x) && player.position.x > (level.Plane[i].vertex2.x) && // if player is within the plane
+                if (player.position.y + PLAYER_WIDTH > (level.Plane[i].vertex1.y) && player.position.y - PLAYER_WIDTH < (level.Plane[i].vertex1.y)){ // if player is close enough to the plane
+                    if (player.position.x - PLAYER_WIDTH * 0.9 < (level.Plane[i].vertex1.x) && player.position.x + PLAYER_WIDTH * 0.9 > (level.Plane[i].vertex2.x) && // if player is within the plane
                     player.position.z < (level.Plane[i].vertex3.z + PLAYER_HIGHT - 0.01) && player.position.z > (level.Plane[i].vertex2.z - PLAYER_HIGHT_TOP))
                     {
                         player.physics.velocity.y = 0;
-                        player.position.y = level.Plane[i].vertex1.y - PLAYER_WIDTH - 0.001;
+                        player.position.y = level.Plane[i].vertex1.y - PLAYER_WIDTH - 0.000001;
                         alreadyCollidedY = true;
                     }
                     //if y aligned flipped wall
-                    if (player.position.x > (level.Plane[i].vertex1.x) && player.position.x < (level.Plane[i].vertex2.x) && // if player is within the plane
+                    if (player.position.x + PLAYER_WIDTH * 0.9 > (level.Plane[i].vertex1.x) && player.position.x - PLAYER_WIDTH * 0.9 < (level.Plane[i].vertex2.x) && // if player is within the plane
                     player.position.z < (level.Plane[i].vertex3.z + PLAYER_HIGHT - 0.01) && player.position.z > (level.Plane[i].vertex2.z - PLAYER_HIGHT_TOP))
                     {
                         player.physics.velocity.y = 0;
-                        player.position.y = level.Plane[i].vertex1.y + PLAYER_WIDTH;
+                        player.position.y = level.Plane[i].vertex1.y + PLAYER_WIDTH + 0.000001;
                         alreadyCollidedY = true;
                     }
                 }
@@ -57,20 +57,20 @@ PLAYER playerPhysics(PLAYER player){
         if (!alreadyCollidedX){ //if not already collided this frame
             //if x aligned wall
             if (level.Plane[i].vertex1.x == level.Plane[i].vertex2.x && level.Plane[i].vertex1.x == level.Plane[i].vertex3.x){
-                if (player.position.x > (level.Plane[i].vertex1.x - PLAYER_WIDTH) && player.position.x < (level.Plane[i].vertex1.x + PLAYER_WIDTH)){ // if player is close enough to the plane
-                    if (player.position.y < (level.Plane[i].vertex1.y) && player.position.y > (level.Plane[i].vertex2.y) && // if player is within the plane
+                if (player.position.x + PLAYER_WIDTH > (level.Plane[i].vertex1.x) && player.position.x - PLAYER_WIDTH < (level.Plane[i].vertex1.x)){ // if player is close enough to the plane
+                    if (player.position.y - PLAYER_WIDTH * 0.9 < (level.Plane[i].vertex1.y) && player.position.y + PLAYER_WIDTH * 0.9 > (level.Plane[i].vertex2.y) && // if player is within the plane
                     player.position.z < (level.Plane[i].vertex3.z + PLAYER_HIGHT - 0.01) && player.position.z > (level.Plane[i].vertex2.z - PLAYER_HIGHT_TOP))
                     {
                         player.physics.velocity.x = 0;
-                        player.position.x = level.Plane[i].vertex1.x + PLAYER_WIDTH;
+                        player.position.x = level.Plane[i].vertex1.x + PLAYER_WIDTH + 0.000001;
                         alreadyCollidedX = true;
                     }
                     //if x aligned flipped wall
-                    if (player.position.y > (level.Plane[i].vertex1.y) && player.position.y < (level.Plane[i].vertex2.y) && // if player is within the plane
+                    if (player.position.y + PLAYER_WIDTH * 0.9 > (level.Plane[i].vertex1.y) && player.position.y - PLAYER_WIDTH * 0.9 < (level.Plane[i].vertex2.y) && // if player is within the plane
                     player.position.z < (level.Plane[i].vertex3.z + PLAYER_HIGHT - 0.01) && player.position.z > (level.Plane[i].vertex2.z - PLAYER_HIGHT_TOP))
                     {
                         player.physics.velocity.x = 0;
-                        player.position.x = level.Plane[i].vertex1.x - PLAYER_WIDTH;
+                        player.position.x = level.Plane[i].vertex1.x - PLAYER_WIDTH - 0.000001;
                         alreadyCollidedX = true;
                     }
                 }
