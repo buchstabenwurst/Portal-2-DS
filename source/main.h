@@ -7,7 +7,7 @@
 #define MAX_PLANES 100
 #define PLAYER_HIGHT 0.064 //space below the camera
 #define PLAYER_HIGHT_TOP 0.02 //space above the camera
-#define PLAYER_WIDTH 0.02
+#define PLAYER_WIDTH 0.015
 #define PLAYER_JUMPFORCE 0.0048
 
 // 3D point 
@@ -47,6 +47,7 @@ typedef struct
 {
 	char* name;
 	PLANE Plane[MAX_PLANES];
+	int planeCount;
 } Level;
 
 typedef struct
@@ -63,6 +64,7 @@ extern int sensitivityHorizontal;
 extern int sensitivityVertical;
 extern bool debugText;
 extern bool debugVision;
+extern bool drawCollision;
 extern Level level;
 extern PLAYER localPlayer;
 #endif

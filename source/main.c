@@ -23,8 +23,9 @@ int textureMode = 0;    //unused
 int sensitivityHorizontal = 80;
 int sensitivityVertical = 120;
 
-bool debugText = true;
+bool debugText = false;
 bool debugVision = false;
+bool drawCollision = true;
 
 NE_Model* Model[7];
 NE_Physics* Physics[7];
@@ -53,18 +54,14 @@ int main(void)
     Camara = NE_CameraCreate();
     NE_SetFov(fovValue);
 
-    localPlayer.rotation.x = 0.1;
+    localPlayer.rotation.x = 0;
     localPlayer.rotation.y = 0;
     localPlayer.rotation.z = 0;
     localPlayer.position.x = 0;
     localPlayer.position.y = 0;
-    localPlayer.position.z = 0.5;
-    //NE_CameraSet(Camara,
-    //             -0.4, 0.1, 0,
-    //              0, 0.3, 0,
-    //              0, 1, 0);
+    localPlayer.position.z = 0;
 
-    NE_ClippingPlanesSet(0.01, 10);
+    NE_ClippingPlanesSet(0.001, 10);
 
     LoadTextures(textureMode);
     level.name = "test_map";
