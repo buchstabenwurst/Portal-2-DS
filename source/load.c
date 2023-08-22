@@ -1,4 +1,5 @@
 #include <NEMain.h>
+#include "assets.h"
 #include "main.h"
 #include "load.h"
 
@@ -128,7 +129,9 @@ int loadLevel() {
     char fileLocation[strlen(location) + strlen(levelName) + strlen(extension) + 1];
     snprintf(fileLocation, sizeof(fileLocation), "%s%s%s", location, levelName, extension);
     if ((levelFile = fopen(fileLocation, "rb")) == NULL) {
-        levelFile = fopen("nitro:/levels/test_map.vmf", "rb");
+        location = "nitro:/levels/";
+        snprintf(fileLocation, sizeof(fileLocation), "%s%s%s", location, levelName, extension);
+        levelFile = fopen(fileLocation, "rb");
     }
     int i = 0;
     //Plane = (PLANE*)malloc(n * sizeof(PLANE));
@@ -353,9 +356,22 @@ int loadLevel() {
                 //break;
             }
         }
+        else if (strcmp(word, "\"info_player_start\"") == 0) // Read Player spawn
+        {
+            char tmpx[8];
+            char tmpy[8];
+            char tmpz[8];
+            fscanf(levelFile, "%*32c%s %s %s", tmpx, tmpy, tmpz);
+            //set the player positon
+            localPlayer.position.x = (float)atof(tmpx) / 1000;
+            localPlayer.position.y = (float)atof(tmpy) / 1000;
+            localPlayer.position.z = (float)atof(tmpz) / 1000;
+        }
     }
     if (i >= MAX_PLANES)
         printf("Warning max Planes reached:%d", i);
+
+    level.planeCount = i;
 
     fclose(levelFile);
     return 0;
@@ -367,6 +383,6 @@ void LoadMisc (void)
         debug_vision_model = NE_ModelCreate(NE_Static);
         NE_ModelLoadStaticMesh(debug_vision_model, (u32 *)Debug_sphere_bin);
         NE_ModelSetMaterial(debug_vision_model, debugempty);
-        NE_ModelScale(debug_vision_model, 0.01, 0.01, 0.01);
+        NE_ModelScale(debug_vision_model, 10 * LEVEL_SIZE, 10 * LEVEL_SIZE, 10 * LEVEL_SIZE);
     }
 }
