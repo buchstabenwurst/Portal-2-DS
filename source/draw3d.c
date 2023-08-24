@@ -12,9 +12,9 @@ NE_Camera* Camara;
 //move the Camera on the Global axis
 void CameraMoveGlobal(NE_Camera *cam, PLAYER player) {
     float tmpTo[3];
-    tmpTo[0] = player.position.x + (fixedToFloat(0.0001 * sinLerp(player.rotation.y * 32790), 2) * (player.rotation.z * player.rotation.z - 1));
+    tmpTo[0] = player.position.x + (fixedToFloat(0.0001 * sinLerp(player.rotation.y * SINMULTIPLIER), 2) * (player.rotation.z * player.rotation.z - 1));
     tmpTo[1] = player.position.z + (fixedToFloat(50 * sinLerp(player.rotation.z * 9000 ) +1, 21));
-    tmpTo[2] = player.position.y + (fixedToFloat(0.0001 * cosLerp(player.rotation.y * 32790), 2) * (player.rotation.z * player.rotation.z - 1));
+    tmpTo[2] = player.position.y + (fixedToFloat(0.0001 * cosLerp(player.rotation.y * SINMULTIPLIER), 2) * (player.rotation.z * player.rotation.z - 1));
 
     NE_AssertPointer(cam, "NULL pointer");
 
@@ -27,6 +27,11 @@ void CameraMoveGlobal(NE_Camera *cam, PLAYER player) {
     cam->to[0] = floattof32(tmpTo[0]);
     cam->to[1] = floattof32(tmpTo[1]); //up and down
     cam->to[2] = floattof32(tmpTo[2]); //left and right
+
+    //portal gun
+    //NE_ModelSetRot(w_portalgun_model, (localPlayer.rotation.z * 100) * fixedToFloat(0.001 * cosLerp(player.rotation.y * SINMULTIPLIER), 2), localPlayer.rotation.y * 512 + 248, (localPlayer.rotation.z * 100) * fixedToFloat(0.001 * sinLerp(player.rotation.y * SINMULTIPLIER), 2));
+    //NE_ModelSetCoord(w_portalgun_model, localPlayer.position.x + fixedToFloat(0.00001 * cosLerp(player.rotation.y * SINMULTIPLIER), 2), localPlayer.position.z - 20 * LEVEL_SIZE, localPlayer.position.y - fixedToFloat(0.00001 * sinLerp(player.rotation.y * SINMULTIPLIER), 2));
+    NE_ModelDraw(w_portalgun_model);
 
     //print position and rotation
     if (debugText) {

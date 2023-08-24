@@ -1,3 +1,4 @@
+//Map Textures
 #include "cube_bin.h"
 #include "debug_plane_bin.h"
 #include "tile_clean16_pal_bin.h"
@@ -39,4 +40,13 @@
 #include "Debug_tex_bin.h"
 #include "debugempty_tex_bin.h"
 
+//Model Textures
+#include "w_portalgun_tex_bin.h"
+#include "w_portalgun_pal_bin.h"
+
+//Models
 #include "Debug_sphere_bin.h"
+
+//Animated Models and Animations
+#include "w_portalgun_dsm_bin.h"
+#include "w_portalgun_fire1_dsa_bin.h"

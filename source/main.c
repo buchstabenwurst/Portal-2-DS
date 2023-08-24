@@ -21,9 +21,9 @@
 
 int textureMode = 0;    //unused
 int sensitivityHorizontal = 80;
-int sensitivityVertical = 120;
+int sensitivityVertical = 140;
 
-bool debugText = false;
+bool debugText = true;
 bool debugVision = false;
 bool drawCollision = true;
 
@@ -95,7 +95,7 @@ int main(void)
 
     while (1)
     {
-        NE_WaitForVBL(NE_UPDATE_PHYSICS);
+        NE_WaitForVBL(NE_UPDATE_ANIMATIONS);
 
         //FPS counter
         // Get time
@@ -166,9 +166,14 @@ int main(void)
             }
         }
 
-        if (keys & KEY_R) 
+        if (keys_down & KEY_R && !(keys & KEY_SELECT)) 
         {
+            NE_ModelAnimStart(w_portalgun_model, NE_ANIM_ONESHOT, floattof32(1));
+        }
 
+        if (keys_down & KEY_L && !(keys & KEY_SELECT)) 
+        {
+            NE_ModelAnimStart(w_portalgun_model, NE_ANIM_ONESHOT, floattof32(1));
         }
 
 

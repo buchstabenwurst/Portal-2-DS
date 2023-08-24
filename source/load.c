@@ -7,7 +7,17 @@
 //Models
 NE_Model* debug_vision_model;
 
-//textures
+//Animated models
+NE_Model *w_portalgun_model;
+
+//Animations
+NE_Animation *w_portalgun_fire1_animation;
+
+//Model textues
+NE_Material *w_portalgun_tex;
+NE_Palette *w_portalgun_pal;
+
+//Map textures
 NE_Material* white_ceiling_tile002a, * white_floor_tile002a, * white_floor_tile002a_hd, * white_wall_tile003a, * white_wall_tile003a_hd, * white_wall_tile003c, * white_wall_tile003c_hd, * white_wall_tile003f, * white_wall_tile003f_hd, * black_floor_metal_001c, * black_floor_metal_001c_hd, * black_wall_metal_002a, * black_wall_metal_002a_hd, * black_wall_metal_002b, * black_wall_metal_002b_hd, * black_wall_metal_002c, * black_wall_metal_002c_hd, * Debug_Material, * debugempty;
 NE_Palette* white_ceiling_tile002aPal, * white_floor_tile002aPal, * white_floor_tile002a_hdPal, * white_wall_tile003aPal, * white_wall_tile003a_hdPal, * white_wall_tile003cPal, * white_wall_tile003c_hdPal, * white_wall_tile003fPal, * white_wall_tile003f_hdPal, * black_floor_metal_001cPal, * black_floor_metal_001c_hdPal, * black_wall_metal_002aPal, * black_wall_metal_002a_hdPal, * black_wall_metal_002bPal, * black_wall_metal_002b_hdPal, * black_wall_metal_002cPal, * black_wall_metal_002c_hdPal;
 //for when you can create multiple texture usig one pallete
@@ -15,10 +25,6 @@ NE_Palette* white_ceiling_tile002aPal, * white_floor_tile002aPal, * white_floor_
 
 
 
-// load textures
-// @param textureMode   0 = Low Resolution but many diffrent textures
-//                      1 = TODO High Resolution but more tepeating textures
-//                      2 = TODO Portal 1 Textures
 void LoadPal16(NE_Material* material, void* texturelBin, NE_Palette* palette, void* paletteBin, int resolution)
 {
     NE_MaterialTexLoad(material, NE_PAL16, resolution, resolution, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T, texturelBin);
@@ -31,9 +37,20 @@ void LoadPal4(NE_Material* material, void* texturelBin, NE_Palette* palette, voi
     NE_PaletteLoad(palette, paletteBin, 4, NE_PAL4);
     NE_MaterialSetPalette(material, palette);
 }
+//1:2 aspect ratio
+void LoadPal4_1_2(NE_Material* material, void* texturelBin, NE_Palette* palette, void* paletteBin, int resolution)
+{
+    NE_MaterialTexLoad(material, NE_PAL4, resolution / 2, resolution, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T, texturelBin);
+    NE_PaletteLoad(palette, paletteBin, 4, NE_PAL4);
+    NE_MaterialSetPalette(material, palette);
+}
 
 
-void LoadTextures(int textureMode)
+// load textures
+// @param textureMode   0 = Low Resolution but many diffrent textures
+//                      1 = TODO High Resolution but more tepeating textures
+//                      2 = TODO Portal 1 Textures
+void LoadTextures()
 {
     white_ceiling_tile002a = NE_MaterialCreate();
     white_floor_tile002a = NE_MaterialCreate();
@@ -63,9 +80,9 @@ void LoadTextures(int textureMode)
     {
         LoadPal16(white_ceiling_tile002a, (u8*)white_ceiling_tile002a_tex_bin, white_ceiling_tile002aPal, (void*)white_ceiling_tile002a_pal_bin, 256);
 
-        LoadPal16(white_floor_tile002a, (u8*)white_floor_tile002a_tex_bin, white_floor_tile002aPal, (void*)white_floor_tile002a_pal_bin, 256);
+        LoadPal4(white_floor_tile002a, (u8*)white_floor_tile002a_tex_bin, white_floor_tile002aPal, (void*)white_floor_tile002a_pal_bin, 64);
 
-        LoadPal4(white_wall_tile003a, (u8*)white_wall_tile003a_tex_bin, white_wall_tile003aPal, (void*)white_wall_tile003a_pal_bin, 64);
+        LoadPal4_1_2(white_wall_tile003a, (u8*)white_wall_tile003a_tex_bin, white_wall_tile003aPal, (void*)white_wall_tile003a_pal_bin, 64);
 
         LoadPal4(white_wall_tile003c, (u8*)white_wall_tile003c_tex_bin, white_wall_tile003cPal, (void*)white_wall_tile003c_pal_bin, 64);
 
@@ -79,7 +96,7 @@ void LoadTextures(int textureMode)
 
         LoadPal16(black_wall_metal_002c, (u8*)black_wall_metal_002c_tex_bin, black_wall_metal_002cPal, (void*)black_wall_metal_002c_pal_bin, 256);
     }
-    if (textureMode == 1) 
+    else if (textureMode == 1) 
     {
         LoadPal16(white_floor_tile002a, (u8*)white_floor_tile002a_hd_tex_bin, white_floor_tile002aPal, (void*)white_floor_tile002a_hd_pal_bin, 512);
 
@@ -92,12 +109,16 @@ void LoadTextures(int textureMode)
     }
     Debug_Material = NE_MaterialCreate();
     debugempty = NE_MaterialCreate();
+    w_portalgun_tex = NE_MaterialCreate();
+    w_portalgun_pal = NE_PaletteCreate();
 
-    NE_MaterialTexLoad(Debug_Material, NE_A1RGB5, 128, 128, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T,
-        (u8*)Debug_tex_bin);
+    NE_MaterialTexLoad(w_portalgun_tex, NE_PAL16, 128, 128, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T, (u8*)w_portalgun_tex_bin);
+    NE_PaletteLoad(w_portalgun_pal, (void*)w_portalgun_pal_bin, 16, NE_PAL16);
+    NE_MaterialSetPalette(w_portalgun_tex, w_portalgun_pal);
 
-    NE_MaterialTexLoad(debugempty, NE_A1RGB5, 64, 64, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T,
-        (u8*)debugempty_tex_bin);
+    NE_MaterialTexLoad(Debug_Material, NE_A1RGB5, 128, 128, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T, (u8*)Debug_tex_bin);
+
+    NE_MaterialTexLoad(debugempty, NE_A1RGB5, 64, 64, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T, (u8*)debugempty_tex_bin);
 }
 
 void loadSave() {
@@ -363,9 +384,9 @@ int loadLevel() {
             char tmpz[8];
             fscanf(levelFile, "%*32c%s %s %s", tmpx, tmpy, tmpz);
             //set the player positon
-            localPlayer.position.x = (float)atof(tmpx) / 1000;
-            localPlayer.position.y = (float)atof(tmpy) / 1000;
-            localPlayer.position.z = (float)atof(tmpz) / 1000;
+            localPlayer.position.x = (float)atof(tmpx) * LEVEL_SIZE;
+            localPlayer.position.y = (float)atof(tmpy) * LEVEL_SIZE;
+            localPlayer.position.z = (float)atof(tmpz) * LEVEL_SIZE;
         }
     }
     if (i >= MAX_PLANES)
@@ -379,6 +400,15 @@ int loadLevel() {
 
 void LoadMisc (void)
 {
+    w_portalgun_model = NE_ModelCreate(NE_Animated);
+    w_portalgun_fire1_animation = NE_AnimationCreate();
+    NE_AnimationLoad(w_portalgun_fire1_animation, w_portalgun_fire1_dsa_bin);
+    NE_ModelLoadDSM(w_portalgun_model, w_portalgun_dsm_bin);
+    NE_ModelSetAnimation(w_portalgun_model, w_portalgun_fire1_animation);
+    NE_ModelSetMaterial(w_portalgun_model, w_portalgun_tex);
+    NE_ModelScale(w_portalgun_model, 3 * LEVEL_SIZE, 3 * LEVEL_SIZE, 3 * LEVEL_SIZE);
+    NE_ModelSetCoord(w_portalgun_model, 0, 0.1, 0);
+
     if (debugVision) {
         debug_vision_model = NE_ModelCreate(NE_Static);
         NE_ModelLoadStaticMesh(debug_vision_model, (u32 *)Debug_sphere_bin);

@@ -5,9 +5,9 @@
 #define LEVEL_SIZE 0.001
 
 #define MAX_PLANES 100
-#define PLAYER_HIGHT 0.064 //space below the camera
-#define PLAYER_HIGHT_TOP 0.02 //space above the camera
-#define PLAYER_WIDTH 0.015
+#define PLAYER_HIGHT 64 * LEVEL_SIZE //space below the camera
+#define PLAYER_HIGHT_TOP 2 * LEVEL_SIZE //space above the camera
+#define PLAYER_WIDTH 15 * LEVEL_SIZE
 #define PLAYER_JUMPFORCE 0.0048
 
 // 3D point 

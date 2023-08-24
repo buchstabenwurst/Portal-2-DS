@@ -370,3 +370,9 @@ MigrationBackup/
 FodyWeavers.xsd
 *.vmx
 *.xcf
+
+#custom
+*.vvd
+*.mdl
+*.vtx
+*.blend1
