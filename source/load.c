@@ -5,7 +5,7 @@
 
 
 //Models
-NE_Model* debug_vision_model;
+NE_Model* debug_vision_model, *portal_orange_model, *portal_blue_model;
 
 //Animated models
 NE_Model *w_portalgun_model;
@@ -14,8 +14,8 @@ NE_Model *w_portalgun_model;
 NE_Animation *w_portalgun_fire1_animation;
 
 //Model textues
-NE_Material *w_portalgun_tex;
-NE_Palette *w_portalgun_pal;
+NE_Material *w_portalgun_tex, *portal_orange_tex, *portal_blue_tex;
+NE_Palette *w_portalgun_pal, *portal_orange_pal, *portal_blue_pal;
 
 //Map textures
 NE_Material* white_ceiling_tile002a, * white_floor_tile002a, * white_floor_tile002a_hd, * white_wall_tile003a, * white_wall_tile003a_hd, * white_wall_tile003c, * white_wall_tile003c_hd, * white_wall_tile003f, * white_wall_tile003f_hd, * black_floor_metal_001c, * black_floor_metal_001c_hd, * black_wall_metal_002a, * black_wall_metal_002a_hd, * black_wall_metal_002b, * black_wall_metal_002b_hd, * black_wall_metal_002c, * black_wall_metal_002c_hd, * Debug_Material, * debugempty;
@@ -35,6 +35,13 @@ void LoadPal4(NE_Material* material, void* texturelBin, NE_Palette* palette, voi
 {
     NE_MaterialTexLoad(material, NE_PAL4, resolution, resolution, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T, texturelBin);
     NE_PaletteLoad(palette, paletteBin, 4, NE_PAL4);
+    NE_MaterialSetPalette(material, palette);
+}
+//Pal4 but only 2 colors used
+void LoadPal2(NE_Material* material, void* texturelBin, NE_Palette* palette, void* paletteBin, int resolution)
+{
+    NE_MaterialTexLoad(material, NE_PAL4, resolution, resolution, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T, texturelBin);
+    NE_PaletteLoad(palette, paletteBin, 2, NE_PAL4);
     NE_MaterialSetPalette(material, palette);
 }
 //1:2 aspect ratio
@@ -78,7 +85,7 @@ void LoadTextures()
 
     if (textureMode == 0)
     {
-        LoadPal16(white_ceiling_tile002a, (u8*)white_ceiling_tile002a_tex_bin, white_ceiling_tile002aPal, (void*)white_ceiling_tile002a_pal_bin, 256);
+        LoadPal2(white_ceiling_tile002a, (u8*)white_ceiling_tile002a_tex_bin, white_ceiling_tile002aPal, (void*)white_ceiling_tile002a_pal_bin, 64);
 
         LoadPal4(white_floor_tile002a, (u8*)white_floor_tile002a_tex_bin, white_floor_tile002aPal, (void*)white_floor_tile002a_pal_bin, 64);
 
@@ -88,7 +95,7 @@ void LoadTextures()
 
         LoadPal4(white_wall_tile003f, (u8*)white_wall_tile003f_tex_bin, white_wall_tile003fPal, (void*)white_wall_tile003f_pal_bin, 32);
 
-        LoadPal16(black_floor_metal_001c, (u8*)black_floor_metal_001c_tex_bin, black_floor_metal_001cPal, (void*)black_floor_metal_001c_pal_bin, 128);
+        LoadPal4(black_floor_metal_001c, (u8*)black_floor_metal_001c_tex_bin, black_floor_metal_001cPal, (void*)black_floor_metal_001c_pal_bin, 64);
 
         LoadPal16(black_wall_metal_002a, (u8*)black_wall_metal_002a_tex_bin, black_wall_metal_002aPal, (void*)black_wall_metal_002a_pal_bin, 256);
 
@@ -111,10 +118,25 @@ void LoadTextures()
     debugempty = NE_MaterialCreate();
     w_portalgun_tex = NE_MaterialCreate();
     w_portalgun_pal = NE_PaletteCreate();
+    portal_orange_tex = NE_MaterialCreate();
+    portal_orange_pal = NE_PaletteCreate();
+    portal_blue_tex = NE_MaterialCreate();
+    portal_blue_pal = NE_PaletteCreate();
 
     NE_MaterialTexLoad(w_portalgun_tex, NE_PAL16, 128, 128, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T, (u8*)w_portalgun_tex_bin);
     NE_PaletteLoad(w_portalgun_pal, (void*)w_portalgun_pal_bin, 16, NE_PAL16);
     NE_MaterialSetPalette(w_portalgun_tex, w_portalgun_pal);
+
+    LoadPal4_1_2(portal_orange_tex, (u8*)portal_orange_tex_bin, portal_orange_pal, (void*)portal_orange_pal_bin, 64);
+    LoadPal4_1_2(portal_blue_tex, (u8*)portal_blue_tex_bin, portal_blue_pal, (void*)portal_blue_pal_bin, 64);
+
+    //transparent
+    //NE_MaterialTexLoad(portal_orange_tex, NE_PAL4, 32, 64, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T | NE_TEXTURE_COLOR0_TRANSPARENT, (u8*)portal_orange_tex_bin);
+    //NE_PaletteLoad(portal_orange_pal, (void*)portal_orange_pal_bin, 2, NE_PAL4);
+    //NE_MaterialSetPalette(portal_orange_tex, portal_orange_pal);
+    //NE_MaterialTexLoad(portal_blue_tex, NE_PAL4, 32, 64, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T | NE_TEXTURE_COLOR0_TRANSPARENT, (u8*)portal_blue_tex_bin);
+    //NE_PaletteLoad(portal_blue_pal, (void*)portal_blue_pal_bin, 2, NE_PAL4);
+    //NE_MaterialSetPalette(portal_blue_tex, portal_blue_pal);
 
     NE_MaterialTexLoad(Debug_Material, NE_A1RGB5, 128, 128, NE_TEXTURE_WRAP_S | NE_TEXTURE_WRAP_T, (u8*)Debug_tex_bin);
 
@@ -183,7 +205,7 @@ int loadLevel() {
             fscanf(levelFile, "%*s%*[^/]/%[^\"]", tempMaterial);
             fscanf(levelFile, "%*s%*s%*s%*s%*s %[^]]] %[^\"]", tempuaxis, tempuscale);
             fscanf(levelFile, "%*s%*s%*s%*s%*s %[^]]] %[^\"]", tempvaxis, tempvscale);
-            int planeId = (float)atof(id);
+            //int planeId = (float)atof(id); //unused
             tempPlane.vertex1.x = (float)atof(tempx1) * LEVEL_SIZE;
             tempPlane.vertex1.y = (float)atof(tempy1) * LEVEL_SIZE;
             tempPlane.vertex1.z = (float)atof(tempz1) * LEVEL_SIZE;
@@ -408,6 +430,18 @@ void LoadMisc (void)
     NE_ModelSetMaterial(w_portalgun_model, w_portalgun_tex);
     NE_ModelScale(w_portalgun_model, 3 * LEVEL_SIZE, 3 * LEVEL_SIZE, 3 * LEVEL_SIZE);
     NE_ModelSetCoord(w_portalgun_model, 0, 0.1, 0);
+
+    portal_orange_model = NE_ModelCreate(NE_Static);
+    NE_ModelLoadStaticMesh(portal_orange_model, (u32 *)portal_bin);
+    NE_ModelSetMaterial(portal_orange_model, portal_orange_tex);
+    NE_ModelScale(portal_orange_model, 55 * LEVEL_SIZE, 55 * LEVEL_SIZE, 55 * LEVEL_SIZE);
+    NE_ModelSetCoord(portal_orange_model, 0, -1, 0);
+
+    portal_blue_model = NE_ModelCreate(NE_Static);
+    NE_ModelLoadStaticMesh(portal_blue_model, (u32 *)portal_bin);
+    NE_ModelSetMaterial(portal_blue_model, portal_blue_tex);
+    NE_ModelScale(portal_blue_model, 55 * LEVEL_SIZE, 55 * LEVEL_SIZE, 55 * LEVEL_SIZE);
+    NE_ModelSetCoord(portal_blue_model, 0, -1, 0);
 
     if (debugVision) {
         debug_vision_model = NE_ModelCreate(NE_Static);

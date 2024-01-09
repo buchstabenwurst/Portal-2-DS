@@ -4,7 +4,7 @@
 #include <NEMain.h>
 
 
-extern NE_Model* debug_vision_model;
+extern NE_Model* debug_vision_model, *portal_orange_model, *portal_blue_model;
 
 extern NE_Model *w_portalgun_model;
 

@@ -25,12 +25,10 @@ int sensitivityVertical = 140;
 
 bool debugText = true;
 bool debugVision = false;
-bool drawCollision = true;
 
-NE_Model* Model[7];
-NE_Physics* Physics[7];
 Level level;
 PLAYER localPlayer;
+hitbox testBox, testBox2;
 
 
 int main(void)
@@ -60,6 +58,7 @@ int main(void)
     localPlayer.position.x = 0;
     localPlayer.position.y = 0;
     localPlayer.position.z = 0;
+
 
     NE_ClippingPlanesSet(0.001, 10);
 
@@ -96,6 +95,7 @@ int main(void)
     while (1)
     {
         NE_WaitForVBL(NE_UPDATE_ANIMATIONS);
+        consoleClear();
 
         //FPS counter
         // Get time
@@ -114,6 +114,83 @@ int main(void)
 
 
         printf("\x1b[2;20HVram left:%d", freemem);
+
+
+    int rotation = 10;
+
+    float tmpsinZ = fixedToFloat(sinLerp(floatToFixed((rotation) /45, 12)), 12);
+    float tmpcosZ = fixedToFloat(cosLerp(floatToFixed((rotation) /45, 12)), 12);
+    //printf("\x1b[9;2H%f", tmpsinZ);
+    //printf("\x1b[10;2H%f", rotation.z);
+
+    Vector3 position;
+    position.x = 0.1;
+    position.y = 0.1;
+    position.z = 0.1;
+
+    
+    testBox.vertex[0].x = position.x + 0.01 * tmpsinZ;
+    testBox.vertex[0].y = position.y + 0.01 * tmpcosZ;
+    testBox.vertex[0].z = position.z + 0.01;
+    testBox.vertex[1].x = position.x + 0.01 * tmpcosZ;
+    testBox.vertex[1].y = position.y + -0.01 * tmpsinZ;
+    testBox.vertex[1].z = position.z + 0.01;
+    testBox.vertex[2].x = position.x + -0.01 * tmpsinZ;
+    testBox.vertex[2].y = position.y + -0.01 * tmpcosZ;
+    testBox.vertex[2].z = position.z + 0.01;
+    testBox.vertex[3].x = position.x + -0.01 * tmpcosZ;
+    testBox.vertex[3].y = position.y + 0.01 * tmpsinZ;
+    testBox.vertex[3].z = position.z + 0.01;
+
+    testBox.vertex[4].x = position.x + -0.01 * tmpcosZ;
+    testBox.vertex[4].y = position.y + 0.01 * tmpsinZ;
+    testBox.vertex[4].z = position.z + -0.01;
+    testBox.vertex[5].x = position.x + -0.01 * tmpsinZ;
+    testBox.vertex[5].y = position.y + -0.01 * tmpcosZ;
+    testBox.vertex[5].z = position.z + -0.01;
+    testBox.vertex[6].x = position.x + 0.01 * tmpcosZ;
+    testBox.vertex[6].y = position.y + -0.01 * tmpsinZ;
+    testBox.vertex[6].z = position.z + -0.01;
+    testBox.vertex[7].x = position.x + 0.01 * tmpsinZ;
+    testBox.vertex[7].y = position.y + 0.01 * tmpcosZ;
+    testBox.vertex[7].z = position.z + -0.01;
+
+    int rotation2 = 0;
+
+    float tmpsin2Z = fixedToFloat(sinLerp(floatToFixed((rotation2) / 45, 12)), 12);
+    float tmpcos2Z = fixedToFloat(cosLerp(floatToFixed((rotation2) / 45, 12)), 12);
+
+    Vector3 position2;
+    position2.x = localPlayer.position.x;
+    position2.y = localPlayer.position.y;
+    position2.z = localPlayer.position.z - 0.027;
+
+    testBox2.vertex[0].x = position2.x + 0.01 * tmpsin2Z;
+    testBox2.vertex[0].y = position2.y + 0.01 * tmpcos2Z;
+    testBox2.vertex[0].z = position2.z + 0.01;
+    testBox2.vertex[1].x = position2.x + 0.01 * tmpcos2Z;
+    testBox2.vertex[1].y = position2.y + -0.01 * tmpsin2Z;
+    testBox2.vertex[1].z = position2.z + 0.01;
+    testBox2.vertex[2].x = position2.x + -0.01 * tmpsin2Z;
+    testBox2.vertex[2].y = position2.y + -0.01 * tmpcos2Z;
+    testBox2.vertex[2].z = position2.z + 0.01;
+    testBox2.vertex[3].x = position2.x + -0.01 * tmpcos2Z;
+    testBox2.vertex[3].y = position2.y + 0.01 * tmpsin2Z;
+    testBox2.vertex[3].z = position2.z + 0.01;
+
+    testBox2.vertex[4].x = position2.x + -0.01 * tmpcos2Z;
+    testBox2.vertex[4].y = position2.y + 0.01 * tmpsin2Z;
+    testBox2.vertex[4].z = position2.z + -0.01;
+    testBox2.vertex[5].x = position2.x + -0.01 * tmpsin2Z;
+    testBox2.vertex[5].y = position2.y + -0.01 * tmpcos2Z;
+    testBox2.vertex[5].z = position2.z + -0.01;
+    testBox2.vertex[6].x = position2.x + 0.01 * tmpcos2Z;
+    testBox2.vertex[6].y = position2.y + -0.01 * tmpsin2Z;
+    testBox2.vertex[6].z = position2.z + -0.01;
+    testBox2.vertex[7].x = position2.x + 0.01 * tmpsin2Z;
+    testBox2.vertex[7].y = position2.y + 0.01 * tmpcos2Z;
+    testBox2.vertex[7].z = position2.z + -0.01;
+
 
         //Camera
         // Get keys information
@@ -169,11 +246,13 @@ int main(void)
         if (keys_down & KEY_R && !(keys & KEY_SELECT)) 
         {
             NE_ModelAnimStart(w_portalgun_model, NE_ANIM_ONESHOT, floattof32(1));
+            shootPortal(0);
         }
 
         if (keys_down & KEY_L && !(keys & KEY_SELECT)) 
         {
             NE_ModelAnimStart(w_portalgun_model, NE_ANIM_ONESHOT, floattof32(1));
+            shootPortal(1);
         }
 
 
@@ -192,18 +271,6 @@ int main(void)
             }
 
         }
-        //NE_CameraSet(Camara, localPlayer.position.x, localPlayer.position.z, localPlayer.position.y, localPlayer.rotation.x, localPlayer.rotation.y, localPlayer.rotation.z + 1, localPlayer.position.x, localPlayer.position.y, localPlayer.position.z);
-        //NE_AssertPointer(Camara, "NULL pointer");
-
-        //Camara->matrix_is_updated = false;
-        //Camara->from[0] = localPlayer.position.x;
-        //Camara->from[1] = localPlayer.position.z;
-        //Camara->from[2] = localPlayer.position.y;
-
-        //Camara->to[0] += localPlayer.rotation.x;
-        //Camara->to[1] += localPlayer.rotation.y;
-        //Camara->to[2] += localPlayer.rotation.z;
-        //NE_CameraMove(Camara, localPlayer.position.x, localPlayer.position.z, localPlayer.position.y);
         
         if (keys & KEY_START)
             break;
@@ -211,7 +278,6 @@ int main(void)
         //NE_ClearColorSet(NE_White, 31, 63);
         doPhysics();
         NE_Process(Draw3DScene);
-
         // Increase frame count
         fpscount++;
     }

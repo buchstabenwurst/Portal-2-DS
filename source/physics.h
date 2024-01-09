@@ -7,6 +7,7 @@
 //gravity in coordinate-units/frame²
 #define GRAVITY 0.00019
 
+void shootPortal(bool Portal);
 void doPhysics(void);
 
 #endif

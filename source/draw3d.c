@@ -29,8 +29,8 @@ void CameraMoveGlobal(NE_Camera *cam, PLAYER player) {
     cam->to[2] = floattof32(tmpTo[2]); //left and right
 
     //portal gun
-    //NE_ModelSetRot(w_portalgun_model, (localPlayer.rotation.z * 100) * fixedToFloat(0.001 * cosLerp(player.rotation.y * SINMULTIPLIER), 2), localPlayer.rotation.y * 512 + 248, (localPlayer.rotation.z * 100) * fixedToFloat(0.001 * sinLerp(player.rotation.y * SINMULTIPLIER), 2));
-    //NE_ModelSetCoord(w_portalgun_model, localPlayer.position.x + fixedToFloat(0.00001 * cosLerp(player.rotation.y * SINMULTIPLIER), 2), localPlayer.position.z - 20 * LEVEL_SIZE, localPlayer.position.y - fixedToFloat(0.00001 * sinLerp(player.rotation.y * SINMULTIPLIER), 2));
+    NE_ModelSetRot(w_portalgun_model, (localPlayer.rotation.z * 100) * fixedToFloat(0.001 * cosLerp(player.rotation.y * SINMULTIPLIER), 2), localPlayer.rotation.y * 512 + 248, (localPlayer.rotation.z * 100) * fixedToFloat(0.001 * sinLerp(player.rotation.y * SINMULTIPLIER), 2));
+    NE_ModelSetCoord(w_portalgun_model, localPlayer.position.x + fixedToFloat(0.00001 * cosLerp(player.rotation.y * SINMULTIPLIER), 2), localPlayer.position.z - 20 * LEVEL_SIZE, localPlayer.position.y - fixedToFloat(0.00001 * sinLerp(player.rotation.y * SINMULTIPLIER), 2));
     NE_ModelDraw(w_portalgun_model);
 
     //print position and rotation
@@ -42,6 +42,16 @@ void CameraMoveGlobal(NE_Camera *cam, PLAYER player) {
         NE_ModelRotate(debug_vision_model, 1, 2, 3);
         NE_ModelSetCoord(debug_vision_model, tmpTo[0], tmpTo[1], tmpTo[2]);
         NE_ModelDraw(debug_vision_model);
+    }
+}
+
+void renderPortals(void){
+    for(int i = 0; i < 2; i++){
+
+        NE_ModelSetCoord(i ? portal_blue_model : portal_orange_model, level.portal[i].position.x, level.portal[i].position.z, level.portal[i].position.y);
+        NE_ModelSetRot(i ? portal_blue_model : portal_orange_model, 0, level.portal[i].rotation.y, level.portal[i].rotation.z);
+        NE_ModelDraw(i ? portal_blue_model : portal_orange_model);
+        
     }
 }
 
@@ -79,5 +89,31 @@ void Draw3DScene(void)
     NE_CameraUse(Camara);
 
     CameraMoveGlobal(Camara, localPlayer);
+    renderPortals();
     RenderPlanes(level);
+
+    NE_PolyFormat(31, 1, NE_LIGHT_0, NE_CULL_NONE, 0);
+    NE_PolyBegin(GL_QUAD);
+    NE_PolyVertex(testBox.vertex[0].x, testBox.vertex[0].z, testBox.vertex[0].y);
+    NE_PolyVertex(testBox.vertex[1].x, testBox.vertex[1].z, testBox.vertex[1].y);
+    NE_PolyVertex(testBox.vertex[2].x, testBox.vertex[2].z, testBox.vertex[2].y);
+    NE_PolyVertex(testBox.vertex[3].x, testBox.vertex[3].z, testBox.vertex[3].y);
+    NE_PolyBegin(GL_QUAD);                                                    
+    NE_PolyVertex(testBox.vertex[4].x, testBox.vertex[4].z, testBox.vertex[4].y);
+    NE_PolyVertex(testBox.vertex[5].x, testBox.vertex[5].z, testBox.vertex[5].y);
+    NE_PolyVertex(testBox.vertex[6].x, testBox.vertex[6].z, testBox.vertex[6].y);
+    NE_PolyVertex(testBox.vertex[7].x, testBox.vertex[7].z, testBox.vertex[7].y);
+
+    NE_PolyFormat(31, 1, NE_LIGHT_0, NE_CULL_NONE, 0);
+    NE_PolyBegin(GL_QUAD);
+    NE_PolyVertex(testBox2.vertex[0].x, testBox2.vertex[0].z, testBox2.vertex[0].y);
+    NE_PolyVertex(testBox2.vertex[1].x, testBox2.vertex[1].z, testBox2.vertex[1].y);
+    NE_PolyVertex(testBox2.vertex[2].x, testBox2.vertex[2].z, testBox2.vertex[2].y);
+    NE_PolyVertex(testBox2.vertex[3].x, testBox2.vertex[3].z, testBox2.vertex[3].y);
+    NE_PolyBegin(GL_QUAD);
+    NE_PolyVertex(testBox2.vertex[4].x, testBox2.vertex[4].z, testBox2.vertex[4].y);
+    NE_PolyVertex(testBox2.vertex[5].x, testBox2.vertex[5].z, testBox2.vertex[5].y);
+    NE_PolyVertex(testBox2.vertex[6].x, testBox2.vertex[6].z, testBox2.vertex[6].y);
+    NE_PolyVertex(testBox2.vertex[7].x, testBox2.vertex[7].z, testBox2.vertex[7].y);
+
 }

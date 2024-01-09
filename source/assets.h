@@ -43,9 +43,14 @@
 //Model Textures
 #include "w_portalgun_tex_bin.h"
 #include "w_portalgun_pal_bin.h"
+#include "portal_orange_tex_bin.h"
+#include "portal_orange_pal_bin.h"
+#include "portal_blue_tex_bin.h"
+#include "portal_blue_pal_bin.h"
 
 //Models
 #include "Debug_sphere_bin.h"
+#include "portal_bin.h"
 
 //Animated Models and Animations
 #include "w_portalgun_dsm_bin.h"

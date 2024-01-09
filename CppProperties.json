@@ -4,15 +4,14 @@
       "inheritEnvironments": [
         "msvc_x64"
       ],
-      "name": "x64-Release",
+      "name": "x64-Debug",
       "includePath": [
         "${env.INCLUDE}",
         "${workspaceRoot}\\**",
-        "D:\\devkitPro\\libnds\\include\\**",
-        "D:\\devkitPro\\libctru\\include\\**",
-        "D:\\devkitPro\\devkitARM\\include\\**",
-        "D:\\devkitPro\\devkitARM\\arm-none-eabi\\include\\**",
-        "D:\\devkitPro\\nitro-engine\\include\\**"
+        "C:\\devkitPro\\libnds\\include\\**",
+        "C:\\devkitPro\\libctru\\include\\**",
+        "C:\\devkitPro\\devkitARM\\include\\**",
+        "C:\\devkitPro\\devkitARM\\arm-none-eabi\\include\\**"
       ],
       "defines": [
         "ARM9"
