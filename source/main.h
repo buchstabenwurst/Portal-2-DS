@@ -105,4 +105,8 @@ extern bool drawCollision;
 extern Level level;
 extern PLAYER localPlayer;
 extern hitbox testBox, testBox2;
+
+extern void SendDownloadPlay();
+extern void SendDownloadPlayDataArm7();
+extern void SendDownloadPlayDataArm9();
 #endif

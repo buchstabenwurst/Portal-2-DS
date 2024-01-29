@@ -28,7 +28,7 @@ int textureMode = 0;    //unused
 int sensitivityHorizontal = 80;
 int sensitivityVertical = 140;
 
-bool debugText = true;
+bool debugText = false;
 bool debugVision = false;
 
 Level level;
@@ -37,6 +37,7 @@ hitbox testBox, testBox2;
 
 
 void SendDownloadPlay() {
+
     tempSendBuffer[0] = 0xD3;
     tempSendBuffer[1] = 0x21;
     tempSendBuffer[2] = 0x0201;
@@ -55,7 +56,7 @@ void SendDownloadPlay() {
     tempSendBuffer[15] = 0;
     tempSendBuffer[16] = 0x25;
     tempSendBuffer[17] = 0;
-    tempSendBuffer[18] = 0;
+    tempSendBuffer[18] = StreamCode;
     tempSendBuffer[19] = 0x0B70;
     tempSendBuffer[20] = 0x01FE;
     tempSendBuffer[21] = 0x08;
@@ -161,13 +162,77 @@ void SendDownloadPlay() {
 
     printf("\x1b[1;20H%d", beaconNum);
 
+    u16 targetMac[3] = { 0xFFFF,0xFFFF,0xFFFF };
+    //Wifi_AssociationResponse(targetMac);
+    //Wifi_SendOpenSystemAuthPacket();
+
+    //Wifi_AssociationResponse(targetMac);
     Wifi_RawTxFrameMultiboot(156, 0x0014, tempSendBuffer);
     //Wifi_RawTxFrameMultiboot(19, 0x0014, (unsigned short*)title);
-    swiIntrWait(0, IRQ_FIFO_EMPTY);
+    //swiIntrWait(0, IRQ_FIFO_EMPTY);
     beaconNum++;
     if (beaconNum > 9)
         beaconNum = 0;
 }
+
+void SendDownloadPlayDataArm7() {
+    sendBufferData[0] = (beaconNum + 1) * 0x0100;// Packet Number (0=Header, 1..N=ARM9, N+1..Last=ARM7)
+    sendBufferData[1] = bufferData7[beaconNum * 505] * 0x0100 + (beaconNum >> 8);
+
+    consoleClear();
+    printf("\x1b[10;%2HArm7:\n%d", 6 + arm7Size - (beaconNum - beaconNumArm7Started) * 505);
+
+    if (((beaconNum - beaconNumArm7Started) + 1) * 505 < arm7Size) {
+        for (int j = 1 + (beaconNum - beaconNumArm7Started) * 505, k = 0; k < 254; j += 2, k++) {
+            sendBufferData[2 + k] = (bufferData7[j] + bufferData7[j + 1] * 0x0100) & 0xFFFF;
+        }
+        sendBufferData[254] = 0x02; // Footer
+        Wifi_SendMultibootData(510, sendBufferData, 3);
+        beaconNum++;
+    }
+    else {
+        // 50/50 chance of extra halfword lol
+        for (int j = 1 + (beaconNum - beaconNumArm7Started) * 505, k = 0; k < 254; j += 2, k++) {
+            sendBufferData[2 + k] = (bufferData7[j] + bufferData7[j + 1] * 0x0100) & 0xFFFF;
+        }
+        sendBufferData[(5 + arm7Size - (beaconNum - beaconNumArm7Started) * 505) / 2] = 0x02; // Footer
+        Wifi_SendMultibootData(6 + arm7Size - (beaconNum - beaconNumArm7Started) * 505, sendBufferData, 3);
+
+        timerStop(0);
+    }
+}
+
+void SendDownloadPlayDataArm9() {
+    sendBufferData[0] = (beaconNum + 1) * 0x0100;// Packet Number (0=Header, 1..N=ARM9, N+1..Last=ARM7)
+    sendBufferData[1] = bufferData9[beaconNum * 505] * 0x0100 + (beaconNum >> 8);
+
+    consoleClear();
+    printf("\x1b[10;%2HArm9:\n%d", 6 + arm7Size -beaconNum * 505);
+
+    if ((beaconNum + 1) * 505 < arm9Size) {
+        for (int j = 1 + beaconNum * 505, k = 0; k < 254; j += 2, k++) {
+            sendBufferData[2 + k] = (bufferData9[j] + bufferData9[j + 1] * 0x0100) & 0xFFFF;
+        }
+        sendBufferData[254] = 0x02; // Footer
+        Wifi_SendMultibootData(510, sendBufferData, 3);
+        beaconNum++;
+    }
+    else {
+        // 50/50 chance of extra halfword lol
+        for (int j = 1 + beaconNum * 505, k = 0; k < 254; j += 2, k++) {
+            sendBufferData[2 + k] = (bufferData9[j] + bufferData9[j + 1] * 0x0100) & 0xFFFF;
+        }
+        sendBufferData[(5 + arm9Size - beaconNum * 505)/2] = 0x02; // Footer
+        Wifi_SendMultibootData(6 + arm9Size - beaconNum * 505, sendBufferData, 3);
+
+        beaconNum++;
+        beaconNumArm7Started = beaconNum;
+
+        timerStop(0);
+        timerStart(0, ClockDivider_1024, TIMER_FREQ_1024(5), SendDownloadPlayDataArm7);
+    }
+}
+
 int main(void)
 {
     irqEnable(IRQ_HBLANK);
@@ -200,19 +265,15 @@ int main(void)
     // Enable Wifi
     Wifi_EnableWifi();
 
+    // Configure custom packet handler for when
+    Wifi_RawSetPacketHandler(WirelessHandler);
+
     // Force specific channel for communication
     Wifi_SetChannel(wifiChannel);
 
     loadIcon();
     initDownloadPlay();
 
-
-    //calls the timerCallBack function 4 times per second.
-    timerStart(0, ClockDivider_1024, TIMER_FREQ_1024(5), SendDownloadPlay);
-
-    while (1) {
-    
-    };
 
     int fovValue = 80;
     Camara = NE_CameraCreate();
@@ -262,6 +323,93 @@ int main(void)
     {
         NE_WaitForVBL(NE_UPDATE_ANIMATIONS);
         consoleClear();
+        
+
+        if (timerElapsed(0) == -1) {
+            FILE* donorFile;
+            u16 sendBuffer[234];
+            u8 bufferHeader[1024];
+            u8 buffer[160];
+
+            //send RSA Frame
+            donorFile = fopen("fat:/DP.nds", "rb");
+            fread(bufferHeader, 1, 0x161, donorFile);
+
+            fseek(donorFile, 0x1860B9D, SEEK_SET);
+            fread(buffer, 1, 160, donorFile);
+
+
+
+            sendBuffer[0] = 0x0008;
+            sendBuffer[1] = 0x0002;
+            sendBuffer[2] = 0x3800;
+            sendBuffer[3] = 0x0002;
+
+            sendBuffer[6] = 0x7FFE;
+            sendBuffer[7] = 0x0002;
+            sendBuffer[8] = 0x7FFE;
+            sendBuffer[9] = 0x6002;
+            sendBuffer[10] = 0x0001;
+
+            sendBuffer[15] = 0x0002;
+            sendBuffer[17] = 0x3402;
+            sendBuffer[18] = 0x0E75;
+
+            sendBuffer[22] = 0x2C00;
+            sendBuffer[23] = 0x0002;
+            sendBuffer[24] = 0x3800;
+            sendBuffer[25] = 0xA402;
+            sendBuffer[26] = 0x0289;
+            sendBuffer[27] = 0x0100;
+
+            memset(buffer + 137, 0x00, 23);
+            for (int j = 0, k = 0; k < 80; j += 2, k++) {
+                sendBuffer[29 + k] = (buffer[j] + buffer[j + 1] * 0x0100) & 0xFFFF;
+            }
+
+            sendBuffer[116] = 0x02;
+
+            Wifi_SendMultibootData(234, sendBuffer, 2);
+
+            // Send Data
+
+
+            sendBufferData[0] = 0x0000;// Packet Number (0=Header, 1..N=ARM9, N+1..Last=ARM7)
+            sendBufferData[1] = bufferHeader[0] * 0x0100;
+            for (int j = 1, k = 0; k < 0x160; j += 2, k++) {
+                sendBufferData[2 + k] = (bufferHeader[j] + bufferHeader[j + 1] * 0x0100) & 0xFFFF;
+            }
+
+            FILE* DPFile;
+            DPFile = fopen("fat:/DP.nds", "rb");
+
+            fread(bufferHeader, 1, 0x161, DPFile);
+            fclose(DPFile);
+
+            arm9Offset = bufferHeader[0x20] + (bufferHeader[0x21] << 8);
+            arm9Size = bufferHeader[0x2C] + (bufferHeader[0x2D] << 8);
+            arm7Offset = bufferHeader[0x30] + (bufferHeader[0x31] << 8);
+            arm7Size = bufferHeader[0x3C] + (bufferHeader[0x3D] << 8);
+
+
+            fseek(donorFile, arm9Offset, SEEK_SET);
+            fread(bufferData9, 1, arm7Size, donorFile);
+            fseek(donorFile, arm7Offset, SEEK_SET);
+            fread(bufferData7, 1, arm7Size, donorFile);
+
+            fclose(donorFile);
+
+
+            sendBufferData[178] = 0x02; // Footer
+            Wifi_SendMultibootData(358, sendBufferData, 3);
+
+
+            beaconNum = 0;
+            //timerStart(0, ClockDivider_1024, TIMER_FREQ_1024(5), SendDownloadPlayDataArm9);
+
+        }
+
+
 
         //FPS counter
         // Get time
