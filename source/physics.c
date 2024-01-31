@@ -85,7 +85,7 @@ bool intersects(hitbox box1, hitbox box2)
         shape2 = SATtest(box1.vector[i], box2);
         if (!overlaps(shape1.x, shape1.y, shape2.x, shape2.y))
         {
-            //printf("\x1b[15;2Hlol");
+            printf("\x1b[15;2Hlol");
             return 0; // NO INTERSECTION
         }
     }
@@ -99,7 +99,7 @@ bool intersects(hitbox box1, hitbox box2)
         shape2 = SATtest(box2.vector[i], box2);
         if (!overlaps(shape1.x, shape1.y, shape2.x, shape2.y))
         {
-            //printf("\x1b[15;7Hlmao");
+            printf("\x1b[15;7Hlmao");
             return 0; // NO INTERSECTION
         }
     }
@@ -331,9 +331,9 @@ void shootPortal(bool portal){
     while(!hit){
             hit = portalPlaneHitDetection(pos, PORTAL_PROJECTILE_WIDTH * 20, portal);
 
-            pos.x += 0.5 * (fixedToFloat(0.0001 * sinLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
-            pos.z += 0.5 * (fixedToFloat(50 * sinLerp(localPlayer.rotation.z * 9000 ) +1, 21));
-            pos.y += 0.5 * (fixedToFloat(0.0001 * cosLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
+            pos.x += 100 * (fixedToFloat(0.0001 * sinLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
+            pos.z += 100 * (fixedToFloat(50 * sinLerp(localPlayer.rotation.z * 9000 ) +1, 21));
+            pos.y += 100 * (fixedToFloat(0.0001 * cosLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
         interations++;
         if(interations > 100)
             break;
@@ -343,9 +343,9 @@ void shootPortal(bool portal){
         while(!hit){
                 hit = portalPlaneHitDetection(pos, PORTAL_PROJECTILE_WIDTH * 10, portal);
 
-                pos.x += 0.1 * (fixedToFloat(0.0001 * sinLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
-                pos.z += 0.1 * (fixedToFloat(50 * sinLerp(localPlayer.rotation.z * 9000 ) +1, 21));
-                pos.y += 0.1 * (fixedToFloat(0.0001 * cosLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
+                pos.x += 50 * (fixedToFloat(0.0001 * sinLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
+                pos.z += 50 * (fixedToFloat(50 * sinLerp(localPlayer.rotation.z * 9000 ) +1, 21));
+                pos.y += 50 * (fixedToFloat(0.0001 * cosLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
             interations++;
             if(interations > 200)
                 break;
@@ -356,9 +356,9 @@ void shootPortal(bool portal){
         while(!hit){
                 hit = portalPlaneHitDetection(pos, PORTAL_PROJECTILE_WIDTH * 5, portal);
     
-                pos.x += 0.05 * (fixedToFloat(0.0001 * sinLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
-                pos.z += 0.05 * (fixedToFloat(50 * sinLerp(localPlayer.rotation.z * 9000 ) +1, 21));
-                pos.y += 0.05 * (fixedToFloat(0.0001 * cosLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
+                pos.x += 25 * (fixedToFloat(0.0001 * sinLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
+                pos.z += 25 * (fixedToFloat(50 * sinLerp(localPlayer.rotation.z * 9000 ) +1, 21));
+                pos.y += 25 * (fixedToFloat(0.0001 * cosLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
             interations++;
             if(interations > 400)
                 break;
@@ -383,7 +383,7 @@ void shootPortal(bool portal){
                 break;
         }
     }
-    if(hit)
+    //if(hit)
         level.portal[portal].position = pos;
 }
 

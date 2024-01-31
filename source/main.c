@@ -92,6 +92,7 @@ int main(void)
 
     int freemem = NE_TextureFreeMemPercent();
 
+    float rotation = 0;
     while (1)
     {
         NE_WaitForVBL(NE_UPDATE_ANIMATIONS);
@@ -116,7 +117,7 @@ int main(void)
         printf("\x1b[2;20HVram left:%d", freemem);
 
 
-    int rotation = 10;
+    rotation += 1;
 
     float tmpsinZ = fixedToFloat(sinLerp(floatToFixed((rotation) /45, 12)), 12);
     float tmpcosZ = fixedToFloat(cosLerp(floatToFixed((rotation) /45, 12)), 12);
@@ -126,36 +127,36 @@ int main(void)
     Vector3 position;
     position.x = 0.1;
     position.y = 0.1;
-    position.z = 0.1;
+    position.z = 120;
 
     
-    testBox.vertex[0].x = position.x + 0.01 * tmpsinZ;
-    testBox.vertex[0].y = position.y + 0.01 * tmpcosZ;
-    testBox.vertex[0].z = position.z + 0.01;
-    testBox.vertex[1].x = position.x + 0.01 * tmpcosZ;
-    testBox.vertex[1].y = position.y + -0.01 * tmpsinZ;
-    testBox.vertex[1].z = position.z + 0.01;
-    testBox.vertex[2].x = position.x + -0.01 * tmpsinZ;
-    testBox.vertex[2].y = position.y + -0.01 * tmpcosZ;
-    testBox.vertex[2].z = position.z + 0.01;
-    testBox.vertex[3].x = position.x + -0.01 * tmpcosZ;
-    testBox.vertex[3].y = position.y + 0.01 * tmpsinZ;
-    testBox.vertex[3].z = position.z + 0.01;
+    testBox.vertex[0].x = position.x + 10 * tmpsinZ;
+    testBox.vertex[0].y = position.y + 10 * tmpcosZ;
+    testBox.vertex[0].z = position.z + 10;
+    testBox.vertex[1].x = position.x + 10 * tmpcosZ;
+    testBox.vertex[1].y = position.y + -10 * tmpsinZ;
+    testBox.vertex[1].z = position.z + 10;
+    testBox.vertex[2].x = position.x + -10 * tmpsinZ;
+    testBox.vertex[2].y = position.y + -10 * tmpcosZ;
+    testBox.vertex[2].z = position.z + 10;
+    testBox.vertex[3].x = position.x + -10 * tmpcosZ;
+    testBox.vertex[3].y = position.y + 10 * tmpsinZ;
+    testBox.vertex[3].z = position.z + 10;
 
-    testBox.vertex[4].x = position.x + -0.01 * tmpcosZ;
-    testBox.vertex[4].y = position.y + 0.01 * tmpsinZ;
-    testBox.vertex[4].z = position.z + -0.01;
-    testBox.vertex[5].x = position.x + -0.01 * tmpsinZ;
-    testBox.vertex[5].y = position.y + -0.01 * tmpcosZ;
-    testBox.vertex[5].z = position.z + -0.01;
-    testBox.vertex[6].x = position.x + 0.01 * tmpcosZ;
-    testBox.vertex[6].y = position.y + -0.01 * tmpsinZ;
-    testBox.vertex[6].z = position.z + -0.01;
-    testBox.vertex[7].x = position.x + 0.01 * tmpsinZ;
-    testBox.vertex[7].y = position.y + 0.01 * tmpcosZ;
-    testBox.vertex[7].z = position.z + -0.01;
+    testBox.vertex[4].x = position.x + -10 * tmpcosZ;
+    testBox.vertex[4].y = position.y + 10 * tmpsinZ;
+    testBox.vertex[4].z = position.z + -10;
+    testBox.vertex[5].x = position.x + -10 * tmpsinZ;
+    testBox.vertex[5].y = position.y + -10 * tmpcosZ;
+    testBox.vertex[5].z = position.z + -10;
+    testBox.vertex[6].x = position.x + 10 * tmpcosZ;
+    testBox.vertex[6].y = position.y + -10 * tmpsinZ;
+    testBox.vertex[6].z = position.z + -10;
+    testBox.vertex[7].x = position.x + 10 * tmpsinZ;
+    testBox.vertex[7].y = position.y + 10 * tmpcosZ;
+    testBox.vertex[7].z = position.z + -10;
 
-    int rotation2 = 0;
+    float rotation2 = localPlayer.rotation.y *360;
 
     float tmpsin2Z = fixedToFloat(sinLerp(floatToFixed((rotation2) / 45, 12)), 12);
     float tmpcos2Z = fixedToFloat(cosLerp(floatToFixed((rotation2) / 45, 12)), 12);
@@ -165,32 +166,37 @@ int main(void)
     position2.y = localPlayer.position.y;
     position2.z = localPlayer.position.z - 0.027;
 
-    testBox2.vertex[0].x = position2.x + 0.01 * tmpsin2Z;
-    testBox2.vertex[0].y = position2.y + 0.01 * tmpcos2Z;
-    testBox2.vertex[0].z = position2.z + 0.01;
-    testBox2.vertex[1].x = position2.x + 0.01 * tmpcos2Z;
-    testBox2.vertex[1].y = position2.y + -0.01 * tmpsin2Z;
-    testBox2.vertex[1].z = position2.z + 0.01;
-    testBox2.vertex[2].x = position2.x + -0.01 * tmpsin2Z;
-    testBox2.vertex[2].y = position2.y + -0.01 * tmpcos2Z;
-    testBox2.vertex[2].z = position2.z + 0.01;
-    testBox2.vertex[3].x = position2.x + -0.01 * tmpcos2Z;
-    testBox2.vertex[3].y = position2.y + 0.01 * tmpsin2Z;
-    testBox2.vertex[3].z = position2.z + 0.01;
+    testBox2.vertex[0].x = position2.x + 10 * tmpsin2Z;
+    testBox2.vertex[0].y = position2.y + 10 * tmpcos2Z;
+    testBox2.vertex[0].z = position2.z + 10;
+    testBox2.vertex[1].x = position2.x + 10 * tmpcos2Z;
+    testBox2.vertex[1].y = position2.y + -10 * tmpsin2Z;
+    testBox2.vertex[1].z = position2.z + 10;
+    testBox2.vertex[2].x = position2.x + -10 * tmpsin2Z;
+    testBox2.vertex[2].y = position2.y + -10 * tmpcos2Z;
+    testBox2.vertex[2].z = position2.z + 10;
+    testBox2.vertex[3].x = position2.x + -10 * tmpcos2Z;
+    testBox2.vertex[3].y = position2.y + 10 * tmpsin2Z;
+    testBox2.vertex[3].z = position2.z + 10;
 
-    testBox2.vertex[4].x = position2.x + -0.01 * tmpcos2Z;
-    testBox2.vertex[4].y = position2.y + 0.01 * tmpsin2Z;
-    testBox2.vertex[4].z = position2.z + -0.01;
-    testBox2.vertex[5].x = position2.x + -0.01 * tmpsin2Z;
-    testBox2.vertex[5].y = position2.y + -0.01 * tmpcos2Z;
-    testBox2.vertex[5].z = position2.z + -0.01;
-    testBox2.vertex[6].x = position2.x + 0.01 * tmpcos2Z;
-    testBox2.vertex[6].y = position2.y + -0.01 * tmpsin2Z;
-    testBox2.vertex[6].z = position2.z + -0.01;
-    testBox2.vertex[7].x = position2.x + 0.01 * tmpsin2Z;
-    testBox2.vertex[7].y = position2.y + 0.01 * tmpcos2Z;
-    testBox2.vertex[7].z = position2.z + -0.01;
+    testBox2.vertex[4].x = position2.x + -10 * tmpcos2Z;
+    testBox2.vertex[4].y = position2.y + 10 * tmpsin2Z;
+    testBox2.vertex[4].z = position2.z + -10;
+    testBox2.vertex[5].x = position2.x + -10 * tmpsin2Z;
+    testBox2.vertex[5].y = position2.y + -10 * tmpcos2Z;
+    testBox2.vertex[5].z = position2.z + -10;
+    testBox2.vertex[6].x = position2.x + 10 * tmpcos2Z;
+    testBox2.vertex[6].y = position2.y + -10 * tmpsin2Z;
+    testBox2.vertex[6].z = position2.z + -10;
+    testBox2.vertex[7].x = position2.x + 10 * tmpsin2Z;
+    testBox2.vertex[7].y = position2.y + 10 * tmpcos2Z;
+    testBox2.vertex[7].z = position2.z + -10;
 
+    level.currentHitbox = 2;
+    level.allHitboxes[0] = testBox;
+    level.allHitboxes[0].isDynamic = true;
+    level.allHitboxes[1] = testBox2;
+    level.allHitboxes[1].isDynamic = true;
 
         //Camera
         // Get keys information
@@ -200,21 +206,21 @@ int main(void)
 
 
         if (keys & KEY_DOWN){
-            localPlayer.physics.velocity.x += fixedToFloat(sinLerp(localPlayer.rotation.y * 32790) / 10, 20);
-            localPlayer.physics.velocity.y += fixedToFloat(cosLerp(localPlayer.rotation.y * 32790) / 10, 20);
+            localPlayer.physics.velocity.x += fixedToFloat(sinLerp(localPlayer.rotation.y * 32790) * (LEVEL_SIZE * 100), 20);
+            localPlayer.physics.velocity.y += fixedToFloat(cosLerp(localPlayer.rotation.y * 32790) * (LEVEL_SIZE * 100), 20);
         }
         else if (keys & KEY_UP) {
-            localPlayer.physics.velocity.x -= fixedToFloat(sinLerp(localPlayer.rotation.y * 32790) / 10, 20);
-            localPlayer.physics.velocity.y -= fixedToFloat(cosLerp(localPlayer.rotation.y * 32790) / 10, 20);
+            localPlayer.physics.velocity.x -= fixedToFloat(sinLerp(localPlayer.rotation.y * 32790) * (LEVEL_SIZE * 100), 20);
+            localPlayer.physics.velocity.y -= fixedToFloat(cosLerp(localPlayer.rotation.y * 32790) * (LEVEL_SIZE * 100), 20);
         }
 
         if (keys & KEY_LEFT){
-            localPlayer.physics.velocity.x -= fixedToFloat(cosLerp(localPlayer.rotation.y * 32790) / 10, 20);
-            localPlayer.physics.velocity.y += fixedToFloat(sinLerp(localPlayer.rotation.y * 32790) / 10, 20);
+            localPlayer.physics.velocity.x -= fixedToFloat(cosLerp(localPlayer.rotation.y * 32790) * (LEVEL_SIZE * 100), 20);
+            localPlayer.physics.velocity.y += fixedToFloat(sinLerp(localPlayer.rotation.y * 32790) * (LEVEL_SIZE * 100), 20);
         }
         else if (keys & KEY_RIGHT){
-            localPlayer.physics.velocity.x += fixedToFloat(cosLerp(localPlayer.rotation.y * 32790) / 10, 20);
-            localPlayer.physics.velocity.y -= fixedToFloat(sinLerp(localPlayer.rotation.y * 32790) / 10, 20);
+            localPlayer.physics.velocity.x += fixedToFloat(cosLerp(localPlayer.rotation.y * 32790) * (LEVEL_SIZE * 100), 20);
+            localPlayer.physics.velocity.y -= fixedToFloat(sinLerp(localPlayer.rotation.y * 32790) * (LEVEL_SIZE * 100), 20);
         }
         
         

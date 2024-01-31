@@ -205,7 +205,7 @@ int loadLevel() {
             fscanf(levelFile, "%*s%*[^/]/%[^\"]", tempMaterial);
             fscanf(levelFile, "%*s%*s%*s%*s%*s %[^]]] %[^\"]", tempuaxis, tempuscale);
             fscanf(levelFile, "%*s%*s%*s%*s%*s %[^]]] %[^\"]", tempvaxis, tempvscale);
-            //int planeId = (float)atof(id); //unused
+            int planeId = (float)atof(id); //unused
             tempPlane.vertex1.x = (float)atof(tempx1) * LEVEL_SIZE;
             tempPlane.vertex1.y = (float)atof(tempy1) * LEVEL_SIZE;
             tempPlane.vertex1.z = (float)atof(tempz1) * LEVEL_SIZE;
@@ -284,27 +284,27 @@ int loadLevel() {
                 tempPlane.y1 = 0;
                 //get texture size and adjust it (for diffent resolutions)
                 int tempTextureFactorMultiply = 0;
-                int tempTextureFactoDivide = 0;
+                int tempTextureFactorDivide = 0;
                 int textureSizeY = NE_TextureGetSizeY(tempPlane.material);
                 if (textureSizeY == 32) {
                     tempTextureFactorMultiply = 1;
-                    tempTextureFactoDivide = 8;
+                    tempTextureFactorDivide = 8;
                 }
                 if (textureSizeY == 64) {
                     tempTextureFactorMultiply = 2;
-                    tempTextureFactoDivide = 8;
+                    tempTextureFactorDivide = 8;
                 }
                 else if (textureSizeY == 128) {
                     tempTextureFactorMultiply = 4;
-                    tempTextureFactoDivide = 4;
+                    tempTextureFactorDivide = 4;
                 }
                 else if (textureSizeY == 256) {
                     tempTextureFactorMultiply = 4;
-                    tempTextureFactoDivide = 4;
+                    tempTextureFactorDivide = 4;
                 }
                 else if (textureSizeY == 512) {
                     tempTextureFactorMultiply = 4;
-                    tempTextureFactoDivide = 1;
+                    tempTextureFactorDivide = 1;
                 }
 
                 //if floor or cieling
@@ -315,10 +315,10 @@ int loadLevel() {
                     tempPlane.vertex4.z = tempPlane.vertex2.z;
                     //create texture coordinates
                     if (textureMode == 0) {
-                        tempPlane.y0 = tempPlane.vertex1.x * 1000 * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
-                        tempPlane.x0 = tempPlane.vertex3.y * 1000 * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
-                        tempPlane.y1 = tempPlane.vertex2.x * 1000 * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
-                        tempPlane.x1 = tempPlane.vertex1.y * 1000 * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
+                        tempPlane.y0 = tempPlane.vertex1.x * -uscale * 2 + uaxis / 2;
+                        tempPlane.x0 = tempPlane.vertex3.y * -vscale * 2 + vaxis / 2;
+                        tempPlane.y1 = tempPlane.vertex2.x * -uscale * 2 + uaxis / 2;
+                        tempPlane.x1 = tempPlane.vertex1.y * -vscale * 2 + vaxis / 2;
                     }
                     if (textureMode == 1) {
                         tempPlane.y0 = tempPlane.vertex1.x * -uscale * 4 + uaxis / 2;
@@ -334,10 +334,10 @@ int loadLevel() {
                         tempPlane.vertex4.z = tempPlane.vertex2.z;
                         //create texture coordinates
                         if (textureMode == 0) {
-                            tempPlane.y0 = tempPlane.vertex1.y * 1000 * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
-                            tempPlane.x0 = tempPlane.vertex3.x * 1000 * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
-                            tempPlane.y1 = tempPlane.vertex2.y * 1000 * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
-                            tempPlane.x1 = tempPlane.vertex1.x * 1000 * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
+                            tempPlane.y0 = tempPlane.vertex1.y * -uscale * 2 + uaxis / 2;
+                            tempPlane.x0 = tempPlane.vertex3.x * -vscale * 2 + vaxis / 2;
+                            tempPlane.y1 = tempPlane.vertex2.y * -uscale * 2 + uaxis / 2;
+                            tempPlane.x1 = tempPlane.vertex1.x * -vscale * 2 + vaxis / 2;
                         }
                         if (textureMode == 1) {
                             tempPlane.y0 = tempPlane.vertex1.y * -uscale * 4 + uaxis / 2;
@@ -358,10 +358,10 @@ int loadLevel() {
                     //tempPlane.nz = (tempPlane.vertex2.z - tempPlane.vertex3.z) / 2;
                     //create texture coordinates
                     if (textureMode == 0) {
-                        tempPlane.y0 = tempPlane.vertex1.y * 1000 * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
-                        tempPlane.x0 = tempPlane.vertex3.z * 1000 * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
-                        tempPlane.y1 = tempPlane.vertex2.y * 1000 * -uscale * tempTextureFactorMultiply + uaxis / tempTextureFactoDivide;
-                        tempPlane.x1 = tempPlane.vertex1.z * 1000 * -vscale * tempTextureFactorMultiply + vaxis / tempTextureFactoDivide;
+                        tempPlane.y0 = tempPlane.vertex1.y * -uscale * 2 + uaxis / 2;
+                        tempPlane.x0 = tempPlane.vertex3.z * -vscale * 2 + vaxis / 2 + 32;
+                        tempPlane.y1 = tempPlane.vertex2.y * -uscale * 2 + uaxis / 2;
+                        tempPlane.x1 = tempPlane.vertex1.z * -vscale * 2 + vaxis / 2 + 32;
                     }
                     else if (textureMode == 1) {
                         tempPlane.y0 = tempPlane.vertex1.y * -uscale * 4 + uaxis / 2;
@@ -378,10 +378,10 @@ int loadLevel() {
                     tempPlane.vertex4.z = tempPlane.vertex3.z;
                     //create texture coordinates
                     if (textureMode == 0) {
-                        tempPlane.y0 = tempPlane.vertex1.x * 1000 / uscale / tempTextureFactoDivide + uaxis / tempTextureFactoDivide + 64;
-                        tempPlane.x0 = tempPlane.vertex3.z * 1000 / -vscale / tempTextureFactoDivide + vaxis / tempTextureFactoDivide;
-                        tempPlane.y1 = tempPlane.vertex2.x * 1000 / uscale / tempTextureFactoDivide + uaxis / tempTextureFactoDivide + 64;
-                        tempPlane.x1 = tempPlane.vertex1.z * 1000 / -vscale / tempTextureFactoDivide + vaxis / tempTextureFactoDivide;
+                        tempPlane.y0 = tempPlane.vertex1.x * -uscale * 2 + uaxis / 2 + 32;
+                        tempPlane.x0 = tempPlane.vertex3.z * -vscale * 2 + vaxis / 2 + 32;
+                        tempPlane.y1 = tempPlane.vertex2.x * -uscale * 2 + uaxis / 2 + 32;
+                        tempPlane.x1 = tempPlane.vertex1.z * -vscale * 2 + vaxis / 2 + 32;
                     }
                     else if (textureMode == 1) {
                         tempPlane.y0 = tempPlane.vertex1.x * -uscale * 4 + uaxis / 2;
@@ -428,19 +428,19 @@ void LoadMisc (void)
     NE_ModelLoadDSM(w_portalgun_model, w_portalgun_dsm_bin);
     NE_ModelSetAnimation(w_portalgun_model, w_portalgun_fire1_animation);
     NE_ModelSetMaterial(w_portalgun_model, w_portalgun_tex);
-    NE_ModelScale(w_portalgun_model, 3 * LEVEL_SIZE, 3 * LEVEL_SIZE, 3 * LEVEL_SIZE);
+    NE_ModelScaleI(w_portalgun_model, floatToFixed(3, LEVEL_RENDER_SIZE), floatToFixed(3, LEVEL_RENDER_SIZE), floatToFixed(3, LEVEL_RENDER_SIZE));
     NE_ModelSetCoord(w_portalgun_model, 0, 0.1, 0);
 
     portal_orange_model = NE_ModelCreate(NE_Static);
     NE_ModelLoadStaticMesh(portal_orange_model, (u32 *)portal_bin);
     NE_ModelSetMaterial(portal_orange_model, portal_orange_tex);
-    NE_ModelScale(portal_orange_model, 55 * LEVEL_SIZE, 55 * LEVEL_SIZE, 55 * LEVEL_SIZE);
+    NE_ModelScaleI(portal_orange_model, floatToFixed(55,LEVEL_RENDER_SIZE), floatToFixed(55, LEVEL_RENDER_SIZE), floatToFixed(55, LEVEL_RENDER_SIZE));
     NE_ModelSetCoord(portal_orange_model, 0, -1, 0);
 
     portal_blue_model = NE_ModelCreate(NE_Static);
     NE_ModelLoadStaticMesh(portal_blue_model, (u32 *)portal_bin);
     NE_ModelSetMaterial(portal_blue_model, portal_blue_tex);
-    NE_ModelScale(portal_blue_model, 55 * LEVEL_SIZE, 55 * LEVEL_SIZE, 55 * LEVEL_SIZE);
+    NE_ModelScaleI(portal_blue_model, floatToFixed(55, LEVEL_RENDER_SIZE), floatToFixed(55, LEVEL_RENDER_SIZE), floatToFixed(55, LEVEL_RENDER_SIZE));
     NE_ModelSetCoord(portal_blue_model, 0, -1, 0);
 
     if (debugVision) {

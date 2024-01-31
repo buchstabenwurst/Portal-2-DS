@@ -3,9 +3,9 @@
 
 //friction value 0.1 to 1 is least to most
 #define FRICTION 0.85
-#define AIR_FRICTION 0.99
+#define AIR_FRICTION 0.996
 //gravity in coordinate-units/frame²
-#define GRAVITY 0.00019
+#define GRAVITY 0.04
 
 void shootPortal(bool Portal);
 void doPhysics(void);

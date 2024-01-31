@@ -2,14 +2,15 @@
 #define MAIN_H
 #include <NEMain.h>
 
-#define LEVEL_SIZE 0.001
+#define LEVEL_SIZE 1
+#define LEVEL_RENDER_SIZE 4
 
 #define MAX_PLANES 100
 #define MAX_HITBOXES 100
 #define PLAYER_HIGHT 64 * LEVEL_SIZE //space below the camera
 #define PLAYER_HIGHT_TOP 2 * LEVEL_SIZE //space above the camera
 #define PLAYER_WIDTH 15 * LEVEL_SIZE
-#define PLAYER_JUMPFORCE 0.0048
+#define PLAYER_JUMPFORCE 2
 
 #define SINMULTIPLIER 32790
 
