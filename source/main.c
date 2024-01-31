@@ -119,8 +119,8 @@ int main(void)
 
     rotation += 1;
 
-    float tmpsinZ = fixedToFloat(sinLerp(floatToFixed((rotation) /45, 12)), 12);
-    float tmpcosZ = fixedToFloat(cosLerp(floatToFixed((rotation) /45, 12)), 12);
+    float tmpsinZ = fixedToFloat(sinLerp(floatToFixed((rotation + 45) /45, 12)), 12);
+    float tmpcosZ = fixedToFloat(cosLerp(floatToFixed((rotation + 45) /45, 12)), 12);
     //printf("\x1b[9;2H%f", tmpsinZ);
     //printf("\x1b[10;2H%f", rotation.z);
 
@@ -156,10 +156,10 @@ int main(void)
     testBox.vertex[7].y = position.y + 10 * tmpcosZ;
     testBox.vertex[7].z = position.z + -10;
 
-    float rotation2 = localPlayer.rotation.y *360;
+    float rotation2 = localPlayer.rotation.y * 360;
 
-    float tmpsin2Z = fixedToFloat(sinLerp(floatToFixed((rotation2) / 45, 12)), 12);
-    float tmpcos2Z = fixedToFloat(cosLerp(floatToFixed((rotation2) / 45, 12)), 12);
+    float tmpsin2Z = fixedToFloat(sinLerp(floatToFixed((rotation2 + 45) / 45, 12)), 12);
+    float tmpcos2Z = fixedToFloat(cosLerp(floatToFixed((rotation2 + 45) / 45, 12)), 12);
 
     Vector3 position2;
     position2.x = localPlayer.position.x;

@@ -77,7 +77,7 @@ bool intersects(hitbox box1, hitbox box2)
 
     
     // Get the normals for one of the shapes,
-    for (int i = 0; i < 3 ; i++)
+    for (int i = 0; i <= 3 ; i++)
     {
         //float shape1Min, shape1Max, shape2Min, shape2Max;
         Vector2 shape1, shape2;
@@ -91,7 +91,8 @@ bool intersects(hitbox box1, hitbox box2)
     }
 
     // TEST SHAPE2.normals as well
-    for (int i = 0; i < 2; i++)
+    //Bruh didn't ask for all vectors ??
+    for (int i = 0; i <= 3; i++)
     {
         // otherwise, go on with the next test
         Vector2 shape1, shape2;
