@@ -6,7 +6,7 @@
 #define LEVEL_RENDER_SIZE 4
 
 #define MAX_PLANES 100
-#define MAX_HITBOXES 100
+#define MAX_HITBOXES 120
 #define PLAYER_HIGHT 64 * LEVEL_SIZE //space below the camera
 #define PLAYER_HIGHT_TOP 2 * LEVEL_SIZE //space above the camera
 #define PLAYER_WIDTH 15 * LEVEL_SIZE
@@ -14,9 +14,9 @@
 
 #define SINMULTIPLIER 32790
 
-#define PORTAL_PROJECTILE_WIDTH 10 * LEVEL_SIZE
+#define PORTAL_PROJECTILE_WIDTH 64 * LEVEL_SIZE
 
-// 3D point 
+// 2D point 
 typedef struct
 {
 	float x;
@@ -41,13 +41,22 @@ typedef struct
 {
 	Vector3 vertex[8];
 	Vector3 vector[3];
+	float sizeX;
+	float sizeY;
+	float sizeZ;
+	Vector3 position;
+	Vector3 rotation;
+	Vector3* attachedPosition; // Position for dynamic hitboxes
+	Vector3* attachedRotation; // Rotation for dynamic hitboxes
 	bool isDynamic; //if the hitbox can't move
+	bool isPlane; // id is only a Plane
 } hitbox;
 
 typedef struct
 {
-	Vector3 vertex[8];
-} hitboxCollision;
+	Vector3 position;
+	Vector3 rotation;
+} Cube;
 
 
 // Plane values
@@ -86,6 +95,8 @@ typedef struct
 	int planeCount;
 	hitbox allHitboxes[MAX_HITBOXES];
 	int currentHitbox;
+	int dynamicHitbxes[10]; // Witch hitboxes are Dynamic
+	int currentDynamicHitbox;
 } Level;
 
 typedef struct
@@ -93,8 +104,10 @@ typedef struct
 	char* name; //Player Name
 	Vector3 position; //Player Position (x,y,z)
 	Vector3 rotation; //Player Rotaion (x,y,z)
+	Vector3 lookVector; // vector in witch direction the player is looking
 	bool isJumping;
 	PHYSICS physics;
+	hitbox hitbox;
 } PLAYER;
 
 extern int textureMode;

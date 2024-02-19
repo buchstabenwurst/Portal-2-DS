@@ -8,11 +8,27 @@ float dot(Vector3 a, Vector3 b) {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
+Vector3 cross(Vector3 a, Vector3 b) {
+    Vector3 result;
+    result.x = a.y * b.z - b.y * a.z;
+    result.y = a.z * b.x - b.z * a.x;
+    result.z = a.x * b.y - b.x * a.y;
+    return result;
+}
+Vector3 Normalize(Vector3 vector) {
+    float len_v = f32tofloat(sqrtf32(floattof32(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z)));
+    vector.x /= len_v;
+    vector.y /= len_v;
+    vector.z /= len_v;
+    //printf("\x1b[6;2H%f", len_v);
+    return vector;
+}
+
 //https://gamedev.stackexchange.com/questions/25397/obb-vs-obb-collision-detection
 Vector2 SATtest(Vector3 vector, hitbox box)
 {
     Vector2 along;
-    along.x = 100000, along.y = -100000;
+    along.x = INFINITY, along.y = -INFINITY;
     for (int i = 0; i < 8; i++)
     {
         // just dot it to get the min/max along this axis.
@@ -36,71 +52,70 @@ bool overlaps(float min1, float max1, float min2, float max2)
 
 Vector3 getVectorNormalized(hitbox box) {
     //get direction vector
-    box.vector[0].x = box.vertex[0].x - box.vertex[2].x;
-    box.vector[0].y = box.vertex[0].y - box.vertex[2].y;
-    box.vector[0].z = box.vertex[0].z - box.vertex[2].z; //not tested yet
+    box.vector[0].x = box.vertex[0].x - box.vertex[1].x;
+    box.vector[0].y = box.vertex[0].y - box.vertex[1].y;
+    box.vector[0].z = box.vertex[0].z - box.vertex[1].z; //not tested yet
 
     //Normalize
-    float len_v = fixedToFloat(sqrtf32(floatToFixed(box.vector[0].x * box.vector[0].x + box.vector[0].y * box.vector[0].y + box.vector[0].z * box.vector[0].z, 12)), 12);
+    float len_v = f32tofloat(sqrtf32(floattof32(box.vector[0].x * box.vector[0].x + box.vector[0].y * box.vector[0].y + box.vector[0].z * box.vector[0].z)));
     box.vector[0].x /= len_v;
     box.vector[0].y /= len_v;
     box.vector[0].z /= len_v;
 
-    printf("\x1b[6;2H%f", len_v);
+    //printf("\x1b[6;2H%f", len_v);
     return box.vector[0];
 }
-                                                 
+
 // Shape1 and Shape2 must be CONVEX HULLS and not too small
-bool intersects(hitbox box1, hitbox box2)
+bool intersects(hitbox* box1, hitbox* box2)
 {
-    box1.vector[0] = getVectorNormalized(box1);
-    box2.vector[0] = getVectorNormalized(box2);
+    box1->vector[0] = getVectorNormalized(*box1);
+    box2->vector[0] = getVectorNormalized(*box2);
 
-    box1.vector[1].x = box1.vector[0].y;
-    box1.vector[1].y = -box1.vector[0].x;
-    box1.vector[1].z = -box1.vector[0].z; 
+    box1->vector[1].x = box1->vector[0].y;
+    box1->vector[1].y = -box1->vector[0].x;
+    box1->vector[1].z = -box1->vector[0].z; 
 
-    box1.vector[2].x = -box1.vector[0].z;
-    box1.vector[2].y = -box1.vector[0].y;
-    box1.vector[2].z = box1.vector[0].x;
+    box1->vector[2].x = -box1->vector[0].z;
+    box1->vector[2].y = -box1->vector[0].y;
+    box1->vector[2].z = box1->vector[0].x;
 
 
-    box2.vector[1].x = box2.vector[0].y;
-    box2.vector[1].y = -box2.vector[0].x;
-    box2.vector[1].z = box2.vector[0].z;
+    box2->vector[1].x = box2->vector[0].y;
+    box2->vector[1].y = -box2->vector[0].x;
+    box2->vector[1].z = box2->vector[0].z;
 
-    box2.vector[2].x = -box2.vector[0].z;
-    box2.vector[2].y = -box2.vector[0].y;
-    box2.vector[2].z = box2.vector[0].x;
-    //printf("\x1b[7;2H%f,%f,%f", box1.vector[0].x, box1.vector[0].y, box1.vector[0].z);
-    //printf("\x1b[8;2H%f,%f,%f", box1.vector[1].x, box1.vector[1].y, box1.vector[1].z);
+    box2->vector[2].x = -box2->vector[0].z;
+    box2->vector[2].y = -box2->vector[0].y;
+    box2->vector[2].z = box2->vector[0].x;
+    //printf("\x1b[7;2H%f,%f,%f", box1->vector[0].x, box1->vector[0].y, box1->vector[0].z);
+    //printf("\x1b[8;2H%f,%f,%f", box1->vector[1].x, box1->vector[1].y, box1->vector[1].z);
 
     
     // Get the normals for one of the shapes,
-    for (int i = 0; i <= 3 ; i++)
+    for (int i = 0; i < 3 ; i++)
     {
         //float shape1Min, shape1Max, shape2Min, shape2Max;
         Vector2 shape1, shape2;
-        shape1 = SATtest(box1.vector[i], box1);
-        shape2 = SATtest(box1.vector[i], box2);
+        shape1 = SATtest(box1->vector[i], *box1);
+        shape2 = SATtest(box1->vector[i], *box2);
         if (!overlaps(shape1.x, shape1.y, shape2.x, shape2.y))
         {
-            printf("\x1b[15;2Hlol");
+            //printf("\x1b[15;2Hlol");
             return 0; // NO INTERSECTION
         }
     }
 
     // TEST SHAPE2.normals as well
-    //Bruh didn't ask for all vectors ??
-    for (int i = 0; i <= 3; i++)
+    for (int i = 0; i < 3; i++)
     {
         // otherwise, go on with the next test
         Vector2 shape1, shape2;
-        shape1 = SATtest(box2.vector[i], box1);
-        shape2 = SATtest(box2.vector[i], box2);
+        shape1 = SATtest(box2->vector[i], *box1);
+        shape2 = SATtest(box2->vector[i], *box2);
         if (!overlaps(shape1.x, shape1.y, shape2.x, shape2.y))
         {
-            printf("\x1b[15;7Hlmao");
+            //printf("\x1b[15;7Hlmao");
             return 0; // NO INTERSECTION
         }
     }
@@ -109,26 +124,256 @@ bool intersects(hitbox box1, hitbox box2)
     return 1;
 }
 
-void addHitbox(hitboxCollision Collision, Vector3 initialPosition, bool isDynamic) {
-    for(int i = 0; i < 8; i++){
-        level.allHitboxes[level.currentHitbox].vertex[i] = Collision.vertex[i];
+void addHitbox(Vector3 size, Vector3* position, Vector3* rotation, bool isDynamic) {
+    if (!isDynamic) {
+        level.allHitboxes[level.currentHitbox].position = *position;
+        level.allHitboxes[level.currentHitbox].rotation = *rotation;
     }
+    else {
+        level.allHitboxes[level.currentHitbox].attachedPosition = position;
+        level.allHitboxes[level.currentHitbox].attachedRotation = rotation;
+        level.dynamicHitbxes[level.currentDynamicHitbox] = level.currentHitbox;
+        level.currentDynamicHitbox++;
+    }
+    level.allHitboxes[level.currentHitbox].sizeX = size.x / 2;
+    level.allHitboxes[level.currentHitbox].sizeY = size.y / 2;
+    level.allHitboxes[level.currentHitbox].sizeZ = size.z / 2;
     level.allHitboxes[level.currentHitbox].isDynamic = isDynamic;
-}//todo
+    level.currentHitbox++;
+}
+// unused
+bool linePlaneIntersection(Vector3* contact, Vector3 ray, Vector3 rayOrigin,
+    Vector3 normal, Vector3 coord) {
+    // get d value
+    float d = dot(normal, coord);
+
+    if (dot(normal, ray) == 0) {
+        return false; // No intersection, the line is parallel to the plane
+    }
+    
+    // Compute the X value for the directed line ray intersecting the plane
+    float x = (d - dot(normal, rayOrigin)) / dot(normal, ray);
+    printf("\x1b[7;2H%f", rayOrigin.x + Normalize(ray).x * x);
+
+    // output contact point
+    contact->x = rayOrigin.x + Normalize(ray).x * x; //Make sure your ray vector is normalized
+    contact->y = rayOrigin.y + Normalize(ray).y * x;
+    contact->z = rayOrigin.z + Normalize(ray).z * x;
+    return true;
+}
+
+// from Wikipedia lol
+bool ray_intersects_triangle(Vector3 ray_origin,
+    Vector3 ray_vector,
+    Vector3 vertex1,
+    Vector3 vertex2,
+    Vector3 vertex3,
+    Vector3* out_intersection_point)
+{
+    float epsilon = EPSILON;
+
+    Vector3 edge1;
+    edge1.x = vertex2.x - vertex1.x;
+    edge1.y = vertex2.y - vertex1.y;
+    edge1.z = vertex2.z - vertex1.z;
+
+    Vector3 edge2;
+    edge2.x = vertex3.x - vertex1.x;
+    edge2.y = vertex3.y - vertex1.y;
+    edge2.z = vertex3.z - vertex1.z;
+    Vector3 ray_cross_e2 = cross(ray_vector, edge2);
+    float det = dot(edge1, ray_cross_e2);
+
+    if (det > -epsilon && det < epsilon)
+        return false;    // This ray is parallel to this triangle.
+
+    float inv_det = 1.0 / det;
+    Vector3 s;
+    s.x = ray_origin.x - vertex1.x;
+    s.y = ray_origin.y - vertex1.y;
+    s.z = ray_origin.z - vertex1.z;
+    float u = inv_det * dot(s, ray_cross_e2);
+
+    if (u < 0 || u > 1)
+        return false;
+
+    Vector3 s_cross_e1 = cross(s, edge1);
+    float v = inv_det * dot(ray_vector, s_cross_e1);
+
+    if (v < 0 || u + v > 1)
+        return false;
+
+    // At this stage we can compute t to find out where the intersection point is on the line.
+    float t = inv_det * dot(edge2, s_cross_e1);
+
+    if (t > epsilon) // ray intersection
+    {
+        out_intersection_point->x = ray_origin.x + ray_vector.x * t;
+        out_intersection_point->y = ray_origin.y + ray_vector.y * t;
+        out_intersection_point->z = ray_origin.z + ray_vector.z * t;
+        return true;
+    }
+    else // This means that there is a line intersection but not a ray intersection.
+        return false;
+}
+
+float getDistance(Vector3 pos1, Vector3 pos2) {
+    Vector3 distance;
+    distance.x = pos1.x - pos2.x;
+    distance.y = pos1.y - pos2.y;
+    distance.z = pos1.z - pos2.z;
+    float distance1 = f32tofloat(sqrtf32(floattof32(distance.x * distance.x + distance.y * distance.y + distance.z * distance.z)));
+    return distance1;
+}
+
+// check if pos2 or pos3 is closer to pos1
+// @returns true if pos3 is closer
+// @returns posNearest = the coser position
+Vector3 getNearest(Vector3 pos1, Vector3 pos2, Vector3 pos3, bool* pos3Nearest) {
+    float distance1 = getDistance(pos1, pos2);
+    float distance2 = getDistance(pos1, pos3);
+    //printf("\x1b[7;2H%f %f", distance1hyp, distance2hyp);
+    if (distance1 >= distance2) {
+        pos3Nearest = true;
+        return pos3;
+    }
+    else {
+        pos3Nearest = false;
+        return pos2;
+    }
+}
+
+bool setPlayerPortalPosition(PLAYER player, hitbox* hitbox, bool portal) {
+    Vector3 pos;
+    Vector3 tmpPos;
+    float reachLengh = 100;
+    Vector3 ray;
+    ray.x = player.lookVector.x * reachLengh; // multiply by portalable distance
+    ray.y = player.lookVector.y * reachLengh;
+    ray.z = player.lookVector.z * reachLengh;
+    
+    for (int i = 1; i < level.currentHitbox; i++) {
+        bool hasHit = false;
+        bool isNearest = true;
+        Vector3 orientation;
+        hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[0], level.allHitboxes[i].vertex[1], level.allHitboxes[i].vertex[6], &tmpPos);
+        pos = getNearest(player.position, pos, tmpPos, &isNearest);
+        hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[0], level.allHitboxes[i].vertex[7], level.allHitboxes[i].vertex[6], &tmpPos);
+        pos = getNearest(player.position, pos, tmpPos, &isNearest);
+        if (hasHit && isNearest) { orientation.y = 0; isNearest = false;}
+        hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[1], level.allHitboxes[i].vertex[6], level.allHitboxes[i].vertex[5], &tmpPos);
+        pos = getNearest(player.position, pos, tmpPos, &isNearest);
+        hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[1], level.allHitboxes[i].vertex[2], level.allHitboxes[i].vertex[5], &tmpPos);
+        pos = getNearest(player.position, pos, tmpPos, &isNearest);
+        if (hasHit && isNearest) { orientation.y = 90; isNearest = false; }
+        hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[2], level.allHitboxes[i].vertex[5], level.allHitboxes[i].vertex[4], &tmpPos);
+        pos = getNearest(player.position, pos, tmpPos, &isNearest);
+        hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[2], level.allHitboxes[i].vertex[3], level.allHitboxes[i].vertex[4], &tmpPos);
+        pos = getNearest(player.position, pos, tmpPos, &isNearest);
+        if (hasHit && isNearest) { orientation.y = 0; isNearest = false; }
+        hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[3], level.allHitboxes[i].vertex[4], level.allHitboxes[i].vertex[7], &tmpPos);
+        pos = getNearest(player.position, pos, tmpPos, &isNearest);
+        hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[3], level.allHitboxes[i].vertex[0], level.allHitboxes[i].vertex[7], &tmpPos);
+        pos = getNearest(player.position, pos, tmpPos, &isNearest);
+        if (hasHit && isNearest) { orientation.y = -90; isNearest = false; }
+        hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[0], level.allHitboxes[i].vertex[1], level.allHitboxes[i].vertex[2], &tmpPos);
+        pos = getNearest(player.position, pos, tmpPos, &isNearest);
+        hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[0], level.allHitboxes[i].vertex[3], level.allHitboxes[i].vertex[2], &tmpPos);
+        pos = getNearest(player.position, pos, tmpPos, &isNearest);
+        if (hasHit && isNearest) { orientation.y = player.rotation.y; orientation.z = 90; isNearest = false; }
+        hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[7], level.allHitboxes[i].vertex[6], level.allHitboxes[i].vertex[5], &tmpPos);
+        pos = getNearest(player.position, pos, tmpPos, &isNearest);
+        hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[7], level.allHitboxes[i].vertex[4], level.allHitboxes[i].vertex[5], &tmpPos);
+        pos = getNearest(player.position, pos, tmpPos, &isNearest);
+        if (hasHit && isNearest) { orientation.y = player.rotation.y; orientation.z = -90; isNearest = false; }
+        //printf("\x1b[7;2H%f %f %f", along.x, along.y, pos.z);
+        //for (int j = 0; j < 3; j++) {
+        //    Vector2 boundsShape = SATtest(player.lookVector, level.allHitboxes[1].vector);
+        //    if (!overlaps(boundsVector.x, boundsVector.y, 0, INFINITY)) {
+        //        return 0;
+        //    }
+        //}
+        if (hasHit) {
+            Vector3 rotation = level.allHitboxes[i].rotation;
+            rotation.y += level.allHitboxes[i].vector[1].y * 90 + orientation.y;
+            rotation.z += orientation.z;
+            level.portal[portal].rotation = rotation;
+            level.portal[portal].position = pos;
+            hitbox = &level.allHitboxes[i];
+        }
+    }
+    return 1;
+}
+
+void shootPortal(bool portal) {
+
+    hitbox hitbox; 
+    setPlayerPortalPosition(localPlayer, &hitbox, portal);
+}
 
 void doCollisions(void) {
-    for (int i = 0; i < level.currentHitbox; i++) {
+    for (int i = 0; i < level.currentDynamicHitbox; i++) {
         //if is dynamic
-        if (level.allHitboxes[i].isDynamic) {
-            for (int j = 0; j < level.currentHitbox; j++) {
-                if (i != j)
-                    if (intersects(level.allHitboxes[i], level.allHitboxes[j])) {
-                        printf("amogus");
-                    }
-
+        for (int j = 0; j < level.currentHitbox; j++) {
+            if (level.dynamicHitbxes[i] == j)
+                continue;
+            //if too far away, skip
+            if (getDistance(level.allHitboxes[i].vertex[0], level.allHitboxes[j].vertex[0]) > 500)
+                continue;
+            if (intersects(&level.allHitboxes[level.dynamicHitbxes[i]], &level.allHitboxes[j])) {
+                printf("\x1b[15;2Hamogus");
             }
 
+
         }
+    }
+}
+
+void updateCollisions(void) {
+    for (int i = 0; i < level.currentDynamicHitbox; i++) {
+        hitbox* tmpHitbox = &level.allHitboxes[level.dynamicHitbxes[i]];
+        tmpHitbox->position = *tmpHitbox->attachedPosition; // update position
+        tmpHitbox->rotation = *tmpHitbox->attachedRotation; // update rotation
+
+        float tmpSinY = fixedToFloat(sinLerp(floatToFixed((tmpHitbox->rotation.y + 45) / 45, 12)), 12);
+        float tmpCosY = fixedToFloat(cosLerp(floatToFixed((tmpHitbox->rotation.y + 45) / 45, 12)), 12);
+
+        for (int j = 0; j < 8; j++)
+            tmpHitbox->vertex[j] = tmpHitbox->position;
+
+        tmpHitbox->vertex[0].x += tmpHitbox->sizeX * tmpSinY;
+        tmpHitbox->vertex[0].y += tmpHitbox->sizeY * tmpCosY;
+        tmpHitbox->vertex[0].z += tmpHitbox->sizeZ;
+
+        tmpHitbox->vertex[1].x += tmpHitbox->sizeX * tmpCosY;
+        tmpHitbox->vertex[1].y -= tmpHitbox->sizeY * tmpSinY;
+        tmpHitbox->vertex[1].z += tmpHitbox->sizeZ;
+
+        tmpHitbox->vertex[2].x -= tmpHitbox->sizeX * tmpSinY;
+        tmpHitbox->vertex[2].y -= tmpHitbox->sizeY * tmpCosY;
+        tmpHitbox->vertex[2].z += tmpHitbox->sizeZ;
+        
+        tmpHitbox->vertex[3].x -= tmpHitbox->sizeX * tmpCosY;
+        tmpHitbox->vertex[3].y += tmpHitbox->sizeY * tmpSinY;
+        tmpHitbox->vertex[3].z += tmpHitbox->sizeZ;
+
+
+        tmpHitbox->vertex[4].x -= tmpHitbox->sizeX * tmpCosY;
+        tmpHitbox->vertex[4].y += tmpHitbox->sizeY * tmpSinY;
+        tmpHitbox->vertex[4].z -= tmpHitbox->sizeZ;
+
+        tmpHitbox->vertex[5].x -= tmpHitbox->sizeX * tmpSinY;
+        tmpHitbox->vertex[5].y -= tmpHitbox->sizeY * tmpCosY;
+        tmpHitbox->vertex[5].z -= tmpHitbox->sizeZ;
+
+        tmpHitbox->vertex[6].x += tmpHitbox->sizeX * tmpCosY;
+        tmpHitbox->vertex[6].y -= tmpHitbox->sizeY * tmpSinY;
+        tmpHitbox->vertex[6].z -= tmpHitbox->sizeZ;
+
+        tmpHitbox->vertex[7].x += tmpHitbox->sizeX * tmpSinY;
+        tmpHitbox->vertex[7].y += tmpHitbox->sizeY * tmpCosY;
+        tmpHitbox->vertex[7].z -= tmpHitbox->sizeZ;
+        
     }
 }
 
@@ -256,139 +501,8 @@ PLAYER playerPhysics(PLAYER player){
         return player;
 }
 
-bool portalPlaneHitDetection(Vector3 subject, float width, bool portal){
-    for (int i = 0; i < level.planeCount; i++){
-        if (level.Plane[i].vertex1.z == level.Plane[i].vertex3.z){
-            //floor
-            if (subject.y + width > (level.Plane[i].vertex1.y) && subject.y - width < (level.Plane[i].vertex2.y) && // if localPlayer is within the plane
-            subject.x - width < (level.Plane[i].vertex3.x) && subject.x + width > (level.Plane[i].vertex2.x) &&
-            subject.z + width > (level.Plane[i].vertex1.z) && subject.z - width < (level.Plane[i].vertex1.z)) // if localPlayer is enough above the plane
-            {
-                level.portal[portal].onFloor = true;
-                level.portal[portal].rotation.y = 512 * localPlayer.rotation.y + 128;
-                level.portal[portal].rotation.z = -128;
-
-                return true;
-            }
-            //cieling
-            if (subject.y + width > (level.Plane[i].vertex1.y) && subject.y - width < (level.Plane[i].vertex2.y) && // if localPlayer is within the plane
-            subject.x + width > (level.Plane[i].vertex3.x) && subject.x - width < (level.Plane[i].vertex2.x) &&
-            subject.z + width > (level.Plane[i].vertex1.z) && subject.z - width < (level.Plane[i].vertex1.z)) // if localPlayer is enough above the plane
-            {
-                level.portal[portal].onFloor = true;
-                level.portal[portal].rotation.y = 512 * localPlayer.rotation.y + 128;
-                level.portal[portal].rotation.z = 128;
-                return true;
-            }
-        }
-        //if y aligned wall
-        if (level.Plane[i].vertex1.y == level.Plane[i].vertex2.y && level.Plane[i].vertex1.y == level.Plane[i].vertex3.y){ //if it even is a y aligned wall
-            if (subject.y + width > (level.Plane[i].vertex1.y) && subject.y - width < (level.Plane[i].vertex1.y)){ // if localPlayer is close enough to the plane
-                if (subject.x - width * 0.9 < (level.Plane[i].vertex1.x) && subject.x + width * 0.9 > (level.Plane[i].vertex2.x) && // if localPlayer is within the plane
-                subject.z < (level.Plane[i].vertex3.z + width - 0.01) && subject.z > (level.Plane[i].vertex2.z - width))
-                {
-                    level.portal[portal].rotation.y = -128;
-                    return true;
-                }
-                //if y aligned flipped wall
-                if (subject.x + width * 0.9 > (level.Plane[i].vertex1.x) && subject.x - width * 0.9 < (level.Plane[i].vertex2.x) && // if localPlayer is within the plane
-                subject.z < (level.Plane[i].vertex3.z + width - 0.01) && subject.z > (level.Plane[i].vertex2.z - width))
-                {
-                    level.portal[portal].rotation.y = 128;
-                    return true;
-                }
-            }
-        }
-        //if x aligned wall
-        if (level.Plane[i].vertex1.x == level.Plane[i].vertex2.x && level.Plane[i].vertex1.x == level.Plane[i].vertex3.x){
-            if (subject.x + width > (level.Plane[i].vertex1.x) && subject.x - width < (level.Plane[i].vertex1.x)){ // if localPlayer is close enough to the plane
-                if (subject.y - width * 0.9 < (level.Plane[i].vertex1.y) && subject.y + width * 0.9 > (level.Plane[i].vertex2.y) && // if localPlayer is within the plane
-                subject.z < (level.Plane[i].vertex3.z + width - 0.01) && subject.z > (level.Plane[i].vertex2.z - width))
-                {
-                    level.portal[portal].rotation.y = 0;
-                    return true;
-                }
-                //if x aligned flipped wall
-                if (subject.y + width * 0.9 > (level.Plane[i].vertex1.y) && subject.y - width * 0.9 < (level.Plane[i].vertex2.y) && // if localPlayer is within the plane
-                subject.z < (level.Plane[i].vertex3.z + width - 0.01) && subject.z > (level.Plane[i].vertex2.z - width))
-                {
-                    level.portal[portal].rotation.y = 0;
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
-}
-
-void shootPortal(bool portal){
-    bool hit = false;
-    int interations = 0;
-    Vector3 pos;
-                //start behind the camera
-    pos.x = localPlayer.position.x - 0.5 * (fixedToFloat(0.0001 * sinLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
-    pos.y = localPlayer.position.y - 0.5 * (fixedToFloat(0.0001 * cosLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
-    pos.z = localPlayer.position.z - 0.5 * (fixedToFloat(50 * sinLerp(localPlayer.rotation.z * 9000 ) +1, 21));
-    while(!hit){
-            hit = portalPlaneHitDetection(pos, PORTAL_PROJECTILE_WIDTH * 20, portal);
-
-            pos.x += 100 * (fixedToFloat(0.0001 * sinLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
-            pos.z += 100 * (fixedToFloat(50 * sinLerp(localPlayer.rotation.z * 9000 ) +1, 21));
-            pos.y += 100 * (fixedToFloat(0.0001 * cosLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
-        interations++;
-        if(interations > 100)
-            break;
-    }
-    if(hit){
-        hit = false;
-        while(!hit){
-                hit = portalPlaneHitDetection(pos, PORTAL_PROJECTILE_WIDTH * 10, portal);
-
-                pos.x += 50 * (fixedToFloat(0.0001 * sinLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
-                pos.z += 50 * (fixedToFloat(50 * sinLerp(localPlayer.rotation.z * 9000 ) +1, 21));
-                pos.y += 50 * (fixedToFloat(0.0001 * cosLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
-            interations++;
-            if(interations > 200)
-                break;
-        }
-    }
-    if(hit){
-        hit = false;
-        while(!hit){
-                hit = portalPlaneHitDetection(pos, PORTAL_PROJECTILE_WIDTH * 5, portal);
-    
-                pos.x += 25 * (fixedToFloat(0.0001 * sinLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
-                pos.z += 25 * (fixedToFloat(50 * sinLerp(localPlayer.rotation.z * 9000 ) +1, 21));
-                pos.y += 25 * (fixedToFloat(0.0001 * cosLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
-            interations++;
-            if(interations > 400)
-                break;
-        }
-    }
-
-    level.portal[portal].onFloor = false;
-    level.portal[portal].rotation.x = 0;
-    level.portal[portal].rotation.y = 0;
-    level.portal[portal].rotation.z = 0;
-
-    if(hit){
-        hit = false;
-        while(!hit){
-                hit = portalPlaneHitDetection(pos, PORTAL_PROJECTILE_WIDTH, portal);
-
-                pos.x += PORTAL_PROJECTILE_WIDTH * (fixedToFloat(0.0001 * sinLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
-                pos.z += PORTAL_PROJECTILE_WIDTH * (fixedToFloat(50 * sinLerp(localPlayer.rotation.z * 9000 ) +1, 21));
-                pos.y += PORTAL_PROJECTILE_WIDTH * (fixedToFloat(0.0001 * cosLerp(localPlayer.rotation.y * SINMULTIPLIER), 2) * (localPlayer.rotation.z * localPlayer.rotation.z - 1));
-            interations++;
-            if(interations > 500)
-                break;
-        }
-    }
-    //if(hit)
-        level.portal[portal].position = pos;
-}
-
 void doPhysics (void){
     localPlayer = playerPhysics(localPlayer);
+    updateCollisions();
     doCollisions();
 }

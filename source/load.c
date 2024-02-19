@@ -2,6 +2,7 @@
 #include "assets.h"
 #include "main.h"
 #include "load.h"
+#include "physics.h"
 
 
 //Models
@@ -282,6 +283,7 @@ int loadLevel() {
                 tempPlane.y0 = 0;
                 tempPlane.x1 = 0;
                 tempPlane.y1 = 0;
+                bool collisionsAlreadySet = false;
                 //get texture size and adjust it (for diffent resolutions)
                 int tempTextureFactorMultiply = 0;
                 int tempTextureFactorDivide = 0;
@@ -313,6 +315,16 @@ int loadLevel() {
                     tempPlane.vertex4.y = tempPlane.vertex3.y;
                     tempPlane.vertex4.x = tempPlane.vertex1.x;
                     tempPlane.vertex4.z = tempPlane.vertex2.z;
+
+                    level.allHitboxes[level.currentHitbox].vertex[0] = tempPlane.vertex1;
+                    level.allHitboxes[level.currentHitbox].vertex[1] = tempPlane.vertex2;
+                    level.allHitboxes[level.currentHitbox].vertex[2] = tempPlane.vertex3;
+                    level.allHitboxes[level.currentHitbox].vertex[3] = tempPlane.vertex4;
+                    level.allHitboxes[level.currentHitbox].vertex[7] = tempPlane.vertex1;
+                    level.allHitboxes[level.currentHitbox].vertex[6] = tempPlane.vertex2;
+                    level.allHitboxes[level.currentHitbox].vertex[5] = tempPlane.vertex3;
+                    level.allHitboxes[level.currentHitbox].vertex[4] = tempPlane.vertex4;
+                    collisionsAlreadySet = true;
                     //create texture coordinates
                     if (textureMode == 0) {
                         tempPlane.y0 = tempPlane.vertex1.x * -uscale * 2 + uaxis / 2;
@@ -376,6 +388,7 @@ int loadLevel() {
                     tempPlane.vertex4.y = tempPlane.vertex3.y;
                     tempPlane.vertex4.x = tempPlane.vertex1.x;
                     tempPlane.vertex4.z = tempPlane.vertex3.z;
+
                     //create texture coordinates
                     if (textureMode == 0) {
                         tempPlane.y0 = tempPlane.vertex1.x * -uscale * 2 + uaxis / 2 + 32;
@@ -392,6 +405,19 @@ int loadLevel() {
                 }
 
                 level.Plane[i] = tempPlane;
+                level.allHitboxes[level.currentHitbox].isPlane = true;
+                level.allHitboxes[level.currentHitbox].isDynamic = false;
+                if (!collisionsAlreadySet) {
+                    level.allHitboxes[level.currentHitbox].vertex[0] = tempPlane.vertex1;
+                    level.allHitboxes[level.currentHitbox].vertex[1] = tempPlane.vertex2;
+                    level.allHitboxes[level.currentHitbox].vertex[6] = tempPlane.vertex3;
+                    level.allHitboxes[level.currentHitbox].vertex[7] = tempPlane.vertex4;
+                    level.allHitboxes[level.currentHitbox].vertex[3] = tempPlane.vertex1;
+                    level.allHitboxes[level.currentHitbox].vertex[2] = tempPlane.vertex2;
+                    level.allHitboxes[level.currentHitbox].vertex[5] = tempPlane.vertex3;
+                    level.allHitboxes[level.currentHitbox].vertex[4] = tempPlane.vertex4;
+                }
+                level.currentHitbox++;
                 //printf("\nplane id:%d\nmaterial:%s\nx1:%s y1:%.0f z1:%.0f\nx2:%.0f y2:%.0f z2:%.0f\nx3:%.0f y3:%.0f z3:%.0f\n", planeId, tempMaterial, tempx1, level.Plane[i].vertex1.y, level.Plane[i].vertex1.z, level.Plane[i].vertex2.x, level.Plane[i].vertex2.y, level.Plane[i].vertex2.z, level.Plane[i].vertex3.x, level.Plane[i].vertex3.y, level.Plane[i].vertex3.z);
                 //printf("\nplane id:%d\nuaxis:%.0f uscale:%.2f\nvaxis:%.0f vscale:%.2f\n", planeId, level.Plane[i].uaxis, level.Plane[i].uscale, level.Plane[i].vaxis, level.Plane[i].vscale);
                 
@@ -447,6 +473,6 @@ void LoadMisc (void)
         debug_vision_model = NE_ModelCreate(NE_Static);
         NE_ModelLoadStaticMesh(debug_vision_model, (u32 *)Debug_sphere_bin);
         NE_ModelSetMaterial(debug_vision_model, debugempty);
-        NE_ModelScale(debug_vision_model, 10 * LEVEL_SIZE, 10 * LEVEL_SIZE, 10 * LEVEL_SIZE);
+        NE_ModelScaleI(debug_vision_model, floatToFixed(10, LEVEL_RENDER_SIZE), floatToFixed(10, LEVEL_RENDER_SIZE), floatToFixed(10, LEVEL_RENDER_SIZE));
     }
 }

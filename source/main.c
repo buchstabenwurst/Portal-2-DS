@@ -24,12 +24,24 @@ int sensitivityHorizontal = 80;
 int sensitivityVertical = 140;
 
 bool debugText = true;
-bool debugVision = false;
+bool debugVision = true;
 
 Level level;
 PLAYER localPlayer;
-hitbox testBox, testBox2;
+Cube cubes[10];
+int lastCube = 0;
 
+void addCube(Vector3 position) {
+    cubes[lastCube].position = position;
+
+    Vector3 size;
+    size.x = 20;
+    size.y = 20;
+    size.z = 30;
+
+    addHitbox(size, &cubes[lastCube].position, &cubes[lastCube].rotation, 1);
+    lastCube++;
+}
 
 int main(void)
 {
@@ -86,13 +98,21 @@ int main(void)
     int oldsec = 0;
     int seconds = 0;
 
+    Vector3 size;
+    size.x = 10;
+    size.y = 10;
+    size.z = 10;
+    //addHitbox(size, &localPlayer.position, &localPlayer.rotation, 1);
+
     save();
     loadLevel();
     LoadMisc();
 
     int freemem = NE_TextureFreeMemPercent();
-
-    float rotation = 0;
+    Vector3 position;
+    position.z = 120;
+    position.x = 80;
+    //addCube(position);
     while (1)
     {
         NE_WaitForVBL(NE_UPDATE_ANIMATIONS);
@@ -116,87 +136,7 @@ int main(void)
 
         printf("\x1b[2;20HVram left:%d", freemem);
 
-
-    rotation += 1;
-
-    float tmpsinZ = fixedToFloat(sinLerp(floatToFixed((rotation + 45) /45, 12)), 12);
-    float tmpcosZ = fixedToFloat(cosLerp(floatToFixed((rotation + 45) /45, 12)), 12);
-    //printf("\x1b[9;2H%f", tmpsinZ);
-    //printf("\x1b[10;2H%f", rotation.z);
-
-    Vector3 position;
-    position.x = 0.1;
-    position.y = 0.1;
-    position.z = 120;
-
-    
-    testBox.vertex[0].x = position.x + 10 * tmpsinZ;
-    testBox.vertex[0].y = position.y + 10 * tmpcosZ;
-    testBox.vertex[0].z = position.z + 10;
-    testBox.vertex[1].x = position.x + 10 * tmpcosZ;
-    testBox.vertex[1].y = position.y + -10 * tmpsinZ;
-    testBox.vertex[1].z = position.z + 10;
-    testBox.vertex[2].x = position.x + -10 * tmpsinZ;
-    testBox.vertex[2].y = position.y + -10 * tmpcosZ;
-    testBox.vertex[2].z = position.z + 10;
-    testBox.vertex[3].x = position.x + -10 * tmpcosZ;
-    testBox.vertex[3].y = position.y + 10 * tmpsinZ;
-    testBox.vertex[3].z = position.z + 10;
-
-    testBox.vertex[4].x = position.x + -10 * tmpcosZ;
-    testBox.vertex[4].y = position.y + 10 * tmpsinZ;
-    testBox.vertex[4].z = position.z + -10;
-    testBox.vertex[5].x = position.x + -10 * tmpsinZ;
-    testBox.vertex[5].y = position.y + -10 * tmpcosZ;
-    testBox.vertex[5].z = position.z + -10;
-    testBox.vertex[6].x = position.x + 10 * tmpcosZ;
-    testBox.vertex[6].y = position.y + -10 * tmpsinZ;
-    testBox.vertex[6].z = position.z + -10;
-    testBox.vertex[7].x = position.x + 10 * tmpsinZ;
-    testBox.vertex[7].y = position.y + 10 * tmpcosZ;
-    testBox.vertex[7].z = position.z + -10;
-
-    float rotation2 = localPlayer.rotation.y * 360;
-
-    float tmpsin2Z = fixedToFloat(sinLerp(floatToFixed((rotation2 + 45) / 45, 12)), 12);
-    float tmpcos2Z = fixedToFloat(cosLerp(floatToFixed((rotation2 + 45) / 45, 12)), 12);
-
-    Vector3 position2;
-    position2.x = localPlayer.position.x;
-    position2.y = localPlayer.position.y;
-    position2.z = localPlayer.position.z - 0.027;
-
-    testBox2.vertex[0].x = position2.x + 10 * tmpsin2Z;
-    testBox2.vertex[0].y = position2.y + 10 * tmpcos2Z;
-    testBox2.vertex[0].z = position2.z + 10;
-    testBox2.vertex[1].x = position2.x + 10 * tmpcos2Z;
-    testBox2.vertex[1].y = position2.y + -10 * tmpsin2Z;
-    testBox2.vertex[1].z = position2.z + 10;
-    testBox2.vertex[2].x = position2.x + -10 * tmpsin2Z;
-    testBox2.vertex[2].y = position2.y + -10 * tmpcos2Z;
-    testBox2.vertex[2].z = position2.z + 10;
-    testBox2.vertex[3].x = position2.x + -10 * tmpcos2Z;
-    testBox2.vertex[3].y = position2.y + 10 * tmpsin2Z;
-    testBox2.vertex[3].z = position2.z + 10;
-
-    testBox2.vertex[4].x = position2.x + -10 * tmpcos2Z;
-    testBox2.vertex[4].y = position2.y + 10 * tmpsin2Z;
-    testBox2.vertex[4].z = position2.z + -10;
-    testBox2.vertex[5].x = position2.x + -10 * tmpsin2Z;
-    testBox2.vertex[5].y = position2.y + -10 * tmpcos2Z;
-    testBox2.vertex[5].z = position2.z + -10;
-    testBox2.vertex[6].x = position2.x + 10 * tmpcos2Z;
-    testBox2.vertex[6].y = position2.y + -10 * tmpsin2Z;
-    testBox2.vertex[6].z = position2.z + -10;
-    testBox2.vertex[7].x = position2.x + 10 * tmpsin2Z;
-    testBox2.vertex[7].y = position2.y + 10 * tmpcos2Z;
-    testBox2.vertex[7].z = position2.z + -10;
-
-    level.currentHitbox = 2;
-    level.allHitboxes[0] = testBox;
-    level.allHitboxes[0].isDynamic = true;
-    level.allHitboxes[1] = testBox2;
-    level.allHitboxes[1].isDynamic = true;
+        cubes[0].rotation.y = 20;
 
         //Camera
         // Get keys information
@@ -206,39 +146,39 @@ int main(void)
 
 
         if (keys & KEY_DOWN){
-            localPlayer.physics.velocity.x += fixedToFloat(sinLerp(localPlayer.rotation.y * 32790) * (LEVEL_SIZE * 100), 20);
-            localPlayer.physics.velocity.y += fixedToFloat(cosLerp(localPlayer.rotation.y * 32790) * (LEVEL_SIZE * 100), 20);
+            localPlayer.physics.velocity.x -= fixedToFloat(sinLerp(floatToFixed(localPlayer.rotation.y / 45, 12)), 13);
+            localPlayer.physics.velocity.y -= fixedToFloat(cosLerp(floatToFixed(localPlayer.rotation.y / 45, 12)), 13);
         }
         else if (keys & KEY_UP) {
-            localPlayer.physics.velocity.x -= fixedToFloat(sinLerp(localPlayer.rotation.y * 32790) * (LEVEL_SIZE * 100), 20);
-            localPlayer.physics.velocity.y -= fixedToFloat(cosLerp(localPlayer.rotation.y * 32790) * (LEVEL_SIZE * 100), 20);
+            localPlayer.physics.velocity.x += fixedToFloat(sinLerp(floatToFixed(localPlayer.rotation.y / 45, 12)), 13);
+            localPlayer.physics.velocity.y += fixedToFloat(cosLerp(floatToFixed(localPlayer.rotation.y / 45, 12)), 13);
         }
 
         if (keys & KEY_LEFT){
-            localPlayer.physics.velocity.x -= fixedToFloat(cosLerp(localPlayer.rotation.y * 32790) * (LEVEL_SIZE * 100), 20);
-            localPlayer.physics.velocity.y += fixedToFloat(sinLerp(localPlayer.rotation.y * 32790) * (LEVEL_SIZE * 100), 20);
+            localPlayer.physics.velocity.x += fixedToFloat(cosLerp(floatToFixed(localPlayer.rotation.y / 45, 12)), 13);
+            localPlayer.physics.velocity.y -= fixedToFloat(sinLerp(floatToFixed(localPlayer.rotation.y / 45, 12)), 13);
         }
         else if (keys & KEY_RIGHT){
-            localPlayer.physics.velocity.x += fixedToFloat(cosLerp(localPlayer.rotation.y * 32790) * (LEVEL_SIZE * 100), 20);
-            localPlayer.physics.velocity.y -= fixedToFloat(sinLerp(localPlayer.rotation.y * 32790) * (LEVEL_SIZE * 100), 20);
+            localPlayer.physics.velocity.x -= fixedToFloat(cosLerp(floatToFixed(localPlayer.rotation.y / 45, 12)), 13);
+            localPlayer.physics.velocity.y += fixedToFloat(sinLerp(floatToFixed(localPlayer.rotation.y / 45, 12)), 13);
         }
         
         
         
         if (keys & KEY_A) {
-            localPlayer.rotation.y -= 0.000001 * sensitivityHorizontal * fovValue;
+            localPlayer.rotation.y -= 0.0002 * sensitivityHorizontal * fovValue;
         }
         else if (keys & KEY_Y) {
-            localPlayer.rotation.y += 0.000001 * sensitivityHorizontal * fovValue;
+            localPlayer.rotation.y += 0.0002 * sensitivityHorizontal * fovValue;
         }
 
-        if (keys & KEY_B && localPlayer.rotation.z > -0.95)
+        if (keys & KEY_B && localPlayer.rotation.z > -88)
         {
-            localPlayer.rotation.z -= 0.000001 * sensitivityVertical * fovValue;
+            localPlayer.rotation.z -= 0.0002 * sensitivityVertical * fovValue;
         }
-        else if (keys & KEY_X && localPlayer.rotation.z < 0.95)
+        else if (keys & KEY_X && localPlayer.rotation.z < 88)
         {
-            localPlayer.rotation.z += 0.000001 * sensitivityVertical * fovValue;
+            localPlayer.rotation.z += 0.0002 * sensitivityVertical * fovValue;
         }
 
         if (keys_down & KEY_TOUCH) 
@@ -264,7 +204,7 @@ int main(void)
 
         if (keys & KEY_SELECT)
         {
-            if (keys_down & KEY_R && fovValue > 20)
+            if (keys_down & KEY_R && fovValue > 40)
             {
                 fovValue -= 20;
                 NE_SetFov(fovValue);
