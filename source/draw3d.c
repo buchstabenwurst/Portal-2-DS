@@ -43,17 +43,6 @@ void CameraMoveGlobal(NE_Camera *cam, PLAYER player) {
                                         localPlayer.position.z / (1 << 12 - LEVEL_RENDER_SIZE) - 0.1 * LEVEL_SIZE,
                                         localPlayer.position.y / (1 << 12 - LEVEL_RENDER_SIZE) + fixedToFloat(cosLerp(floatToFixed(player.rotation.y / 45 - 50, 12)), 12) / 20);
     NE_ModelDraw(w_portalgun_model);
-
-    //print position and rotation
-    if (debugText) {
-        printf("\x1b[3;1HPos: x:%.2f y:%.2f z:%.2f\x1b[4;1HRot: x:%.2f y:%.2f z:%.2f\n0:%f 1:%f 2:%f", 
-        player.position.x, player.position.y, player.position.z, player.rotation.x, player.rotation.y, player.rotation.z, player.lookVector.x, player.lookVector.y, player.lookVector.z);
-    }
-    if (debugVision) {
-        NE_ModelRotate(debug_vision_model, 1, 2, 3);
-        NE_ModelSetCoord(debug_vision_model, tmpTo[0], tmpTo[1], tmpTo[2]);
-        NE_ModelDraw(debug_vision_model);
-    }
 }
 
 void renderPortals(void){
@@ -96,6 +85,38 @@ void RenderPlanes(Level level) {
     }
 }
 
+void RenderDebug(void)
+{
+    //print position and rotation
+    if (debugText) {
+        printf("\x1b[3;1HPos: x:%.2f y:%.2f z:%.2f\x1b[4;1HRot: x:%.2f y:%.2f z:%.2f\n0:%f 1:%f 2:%f", 
+        player.position.x, player.position.y, player.position.z, player.rotation.x, player.rotation.y, player.rotation.z, player.lookVector.x, player.lookVector.y, player.lookVector.z);
+    }
+    if (debugVision) {
+        NE_ModelRotate(debug_vision_model, 1, 2, 3);
+        NE_ModelSetCoord(debug_vision_model, tmpTo[0], tmpTo[1], tmpTo[2]);
+        NE_ModelDraw(debug_vision_model);
+
+        NE_PolyFormat(0, 1, NE_LIGHT_0, NE_CULL_NONE, 0);
+        for (int i = 0; i < level.currentHitbox; i++) {
+            NE_PolyBegin(GL_QUAD);
+            // top and bottom
+            for (int j = 0; j < 8; j++) {
+                NE_PolyVertexI(floatToFixed(level.allHitboxes[i].vertex[j].x, LEVEL_RENDER_SIZE), floatToFixed(level.allHitboxes[i].vertex[j].z, LEVEL_RENDER_SIZE), floatToFixed(level.allHitboxes[i].vertex[j].y, LEVEL_RENDER_SIZE));
+            }
+            // sides
+            for (int j = 0; j < 8; j += 6) {
+                NE_PolyVertexI(floatToFixed(level.allHitboxes[i].vertex[j].x, LEVEL_RENDER_SIZE), floatToFixed(level.allHitboxes[i].vertex[j].z, LEVEL_RENDER_SIZE), floatToFixed(level.allHitboxes[i].vertex[j].y, LEVEL_RENDER_SIZE));
+                NE_PolyVertexI(floatToFixed(level.allHitboxes[i].vertex[j + 1].x, LEVEL_RENDER_SIZE), floatToFixed(level.allHitboxes[i].vertex[j + 1].z, LEVEL_RENDER_SIZE), floatToFixed(level.allHitboxes[i].vertex[j + 1].y, LEVEL_RENDER_SIZE));
+            }
+            for (int j = 2; j < 6; j += 2) {
+                NE_PolyVertexI(floatToFixed(level.allHitboxes[i].vertex[j].x, LEVEL_RENDER_SIZE), floatToFixed(level.allHitboxes[i].vertex[j].z, LEVEL_RENDER_SIZE), floatToFixed(level.allHitboxes[i].vertex[j].y, LEVEL_RENDER_SIZE));
+                NE_PolyVertexI(floatToFixed(level.allHitboxes[i].vertex[j + 1].x, LEVEL_RENDER_SIZE), floatToFixed(level.allHitboxes[i].vertex[j + 1].z, LEVEL_RENDER_SIZE), floatToFixed(level.allHitboxes[i].vertex[j + 1].y, LEVEL_RENDER_SIZE));
+            }
+        }
+    }
+}
+
 void Draw3DScene(void)
 {
     NE_CameraUse(Camara);
@@ -103,22 +124,5 @@ void Draw3DScene(void)
     CameraMoveGlobal(Camara, localPlayer);
     renderPortals();
     RenderPlanes(level);
-
-    NE_PolyFormat(0, 1, NE_LIGHT_0, NE_CULL_NONE, 0);
-    for (int i = 0; i < level.currentHitbox; i++) {
-        NE_PolyBegin(GL_QUAD);
-        // top and bottom
-        for (int j = 0; j < 8; j++) {
-            NE_PolyVertexI(floatToFixed(level.allHitboxes[i].vertex[j].x, LEVEL_RENDER_SIZE), floatToFixed(level.allHitboxes[i].vertex[j].z, LEVEL_RENDER_SIZE), floatToFixed(level.allHitboxes[i].vertex[j].y, LEVEL_RENDER_SIZE));
-        }
-        // sides
-        for (int j = 0; j < 8; j += 6) {
-            NE_PolyVertexI(floatToFixed(level.allHitboxes[i].vertex[j].x, LEVEL_RENDER_SIZE), floatToFixed(level.allHitboxes[i].vertex[j].z, LEVEL_RENDER_SIZE), floatToFixed(level.allHitboxes[i].vertex[j].y, LEVEL_RENDER_SIZE));
-            NE_PolyVertexI(floatToFixed(level.allHitboxes[i].vertex[j + 1].x, LEVEL_RENDER_SIZE), floatToFixed(level.allHitboxes[i].vertex[j + 1].z, LEVEL_RENDER_SIZE), floatToFixed(level.allHitboxes[i].vertex[j + 1].y, LEVEL_RENDER_SIZE));
-        }
-        for (int j = 2; j < 6; j += 2) {
-            NE_PolyVertexI(floatToFixed(level.allHitboxes[i].vertex[j].x, LEVEL_RENDER_SIZE), floatToFixed(level.allHitboxes[i].vertex[j].z, LEVEL_RENDER_SIZE), floatToFixed(level.allHitboxes[i].vertex[j].y, LEVEL_RENDER_SIZE));
-            NE_PolyVertexI(floatToFixed(level.allHitboxes[i].vertex[j + 1].x, LEVEL_RENDER_SIZE), floatToFixed(level.allHitboxes[i].vertex[j + 1].z, LEVEL_RENDER_SIZE), floatToFixed(level.allHitboxes[i].vertex[j + 1].y, LEVEL_RENDER_SIZE));
-        }
-    }
+    RenderDebug();
 }
