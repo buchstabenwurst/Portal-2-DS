@@ -43,6 +43,12 @@ void CameraMoveGlobal(NE_Camera *cam, PLAYER player) {
                                         localPlayer.position.z / (1 << 12 - LEVEL_RENDER_SIZE) - 0.1 * LEVEL_SIZE,
                                         localPlayer.position.y / (1 << 12 - LEVEL_RENDER_SIZE) + fixedToFloat(cosLerp(floatToFixed(player.rotation.y / 45 - 50, 12)), 12) / 20);
     NE_ModelDraw(w_portalgun_model);
+
+    if (debugVision) {
+        NE_ModelRotate(debug_vision_model, 1, 2, 3);
+        NE_ModelSetCoord(debug_vision_model, tmpTo[0], tmpTo[1], tmpTo[2]);
+        NE_ModelDraw(debug_vision_model);
+    }
 }
 
 void renderPortals(void){
@@ -90,13 +96,9 @@ void RenderDebug(void)
     //print position and rotation
     if (debugText) {
         printf("\x1b[3;1HPos: x:%.2f y:%.2f z:%.2f\x1b[4;1HRot: x:%.2f y:%.2f z:%.2f\n0:%f 1:%f 2:%f", 
-        player.position.x, player.position.y, player.position.z, player.rotation.x, player.rotation.y, player.rotation.z, player.lookVector.x, player.lookVector.y, player.lookVector.z);
+        localPlayer.position.x, localPlayer.position.y, localPlayer.position.z, localPlayer.rotation.x, localPlayer.rotation.y, localPlayer.rotation.z, localPlayer.lookVector.x, localPlayer.lookVector.y, localPlayer.lookVector.z);
     }
     if (debugVision) {
-        NE_ModelRotate(debug_vision_model, 1, 2, 3);
-        NE_ModelSetCoord(debug_vision_model, tmpTo[0], tmpTo[1], tmpTo[2]);
-        NE_ModelDraw(debug_vision_model);
-
         NE_PolyFormat(0, 1, NE_LIGHT_0, NE_CULL_NONE, 0);
         for (int i = 0; i < level.currentHitbox; i++) {
             NE_PolyBegin(GL_QUAD);
