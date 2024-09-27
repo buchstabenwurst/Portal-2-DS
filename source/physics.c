@@ -234,11 +234,11 @@ Vector3 getNearest(Vector3 pos1, Vector3 pos2, Vector3 pos3, bool* pos3Nearest) 
     float distance2 = getDistance(pos1, pos3);
     //printf("\x1b[7;2H%f %f", distance1hyp, distance2hyp);
     if (distance1 >= distance2) {
-        pos3Nearest = true;
+        *pos3Nearest = true;
         return pos3;
     }
     else {
-        pos3Nearest = false;
+        *pos3Nearest = false;
         return pos2;
     }
 }

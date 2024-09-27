@@ -16,6 +16,8 @@
 
 #define PORTAL_PROJECTILE_WIDTH 64 * LEVEL_SIZE
 
+#define CONSOLE_BACKGROUND_LAYER 2
+
 // 2D point 
 typedef struct
 {
@@ -95,7 +97,7 @@ typedef struct
 	int planeCount;
 	hitbox allHitboxes[MAX_HITBOXES];
 	int currentHitbox;
-	int dynamicHitbxes[10]; // Witch hitboxes are Dynamic
+	int dynamicHitbxes[10]; // Wich hitboxes are Dynamic
 	int currentDynamicHitbox;
 } Level;
 
@@ -119,4 +121,6 @@ extern bool drawCollision;
 extern Level level;
 extern PLAYER localPlayer;
 extern hitbox testBox, testBox2;
+extern bool isConsoleOpen;
+extern Keyboard *keyboard;
 #endif
