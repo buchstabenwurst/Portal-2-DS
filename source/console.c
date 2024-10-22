@@ -4,7 +4,11 @@
 #include "main.h"
 #include "console.h"
 
+#define HISTORY_LENGTH 10
+
 char inputBuffer[64];
+char inputHistory[HISTORY_LENGTH][64];
+int current_history = -1;
 
 typedef void (*commandCallback)(char arguments[4][10]);
 
@@ -49,6 +53,10 @@ command commands[3] =
     },
 };
 
+void consoleClearLine(){
+    printf("\33[2K\r");
+}
+
 void OnKeyPressed(int key) {
     if(key > 0){
         iprintf("%c", key);
@@ -58,6 +66,7 @@ void OnKeyPressed(int key) {
     switch (key) {
     case DVK_MENU: // Menu key
         ToggleConsole(); // close the console
+        break;
     case DVK_ENTER: // Enter key
         bool foundCommand = false;
         char inputCommand[10] = "";
@@ -75,7 +84,37 @@ void OnKeyPressed(int key) {
         if(!foundCommand){
             printf("command \"%s\" not found.\n", inputCommand);
         }
+        for(int i = HISTORY_LENGTH - 2; i >= 0; i--){
+            for(int j = 0; j < 64; j++){
+                inputHistory[i+1][j] = inputHistory[i][j];
+            }
+        }
+        for(int j = 0; j < 64; j++){
+            inputHistory[0][j] = inputBuffer[j];
+        }
         *inputBuffer = 0;
+        current_history = -1;
+        break;
+    case DVK_UP:
+        if(current_history < 10){
+            current_history++;
+            consoleClearLine();
+            for(int j = 0; j < 64; j++){
+                inputBuffer[j] = inputHistory[current_history][j];
+            }
+            printf(inputBuffer);
+        }
+        break;
+    case DVK_DOWN:
+        if(current_history >= 0){
+            current_history--;
+            consoleClearLine();
+            for(int j = 0; j < 64; j++){
+                inputBuffer[j] = inputHistory[current_history][j];
+            }
+            printf(inputBuffer);
+        }
+        break;
     }
     
 
