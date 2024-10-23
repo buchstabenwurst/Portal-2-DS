@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 jobs:
   build:
-    runs-on: [self-hosted, Windows]
+    runs-on: [self-hosted, Linux]
     steps:
     - uses: actions/checkout@v3
       with:
@@ -18,17 +18,17 @@ jobs:
         submodules: recursive
     - name: make
       run: |
-            cd "C:\Users\Joshua\actions-runner\_work\Portal-DS\Portal-DS"
+            cd "/home/joshua/Dokumente/Programming/actions-runner/_work/Portal-DS/Portal-DS"
             make
-            mkdir "C:\Users\Joshua\actions-runner\_work\Portal-DS\Portal-DS\upload\_nds\PortalDS\levels\"
-            copy "C:\Users\Joshua\actions-runner\_work\Portal-DS\Portal-DS\assets\Maps\*.vmf" "C:\Users\Joshua\actions-runner\_work\Portal-DS\Portal-DS\upload\_nds\PortalDS\levels\"
-            copy "C:\Users\Joshua\actions-runner\_work\Portal-DS\Portal-DS\Portal-DS.nds" "C:\Users\Joshua\actions-runner\_work\Portal-DS\Portal-DS\upload\"
-            cd "C:\Users\Joshua\actions-runner\_work\Portal-DS\Portal-DS"
+            mkdir "/home/joshua/Dokumente/Programming/actions-runner/_work/Portal-DS/upload/_nds/PortalDS/levels\"
+            copy "/home/joshua/Dokumente/Programming/actions-runner/_work/Portal-DS/Portal-DS/assets/Maps/*.vmf" "/home/joshua/Dokumente/Programming/actions-runner/_work/Portal-DS/Portal-DS/upload/_nds/PortalDS/levels\"
+            copy "/home/joshua/Dokumente/Programming/actions-runner/_work/Portal-DS/Portal-DS/Portal-DS.nds" "/home/joshua/Dokumente/Programming/actions-runner/_work/Portal-DS/Portal-DS/upload/"
+            cd "/home/joshua/Dokumente/Programming/actions-runner/_work/Portal-DS/Portal-DS"
     - uses:
           actions/upload-artifact@v3
       with:
        name: Portal DS
-       path: C:\Users\Joshua\actions-runner\_work\Portal-DS\Portal-DS\upload
+       path: /home/joshua/Dokumente/Programming/actions-runner/_work/Portal-DS/Portal-DS/upload
 
     #- name: clean
     #  run: |
