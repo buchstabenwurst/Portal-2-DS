@@ -31,7 +31,7 @@ void Comand_Clear(char arguments[4][10]){
 
 void Comand_Echo(char arguments[4][10]){
     if (arguments != NULL) {
-        printf("%s", arguments[0]);
+        printf("%s %s %s %s", arguments[0], arguments[1], arguments[2], arguments[3]);
     }else{
         printf("error, no arguments given");
     }
