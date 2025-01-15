@@ -430,7 +430,7 @@ int loadLevel() {
             char tmpx[8];
             char tmpy[8];
             char tmpz[8];
-            fscanf(levelFile, "%*32c%s %s %s", tmpx, tmpy, tmpz);
+            fscanf(levelFile, "%*31c%s %s %s", tmpx, tmpy, tmpz);
             //set the player positon
             localPlayer.position.x = (float)atof(tmpx) * LEVEL_SIZE;
             localPlayer.position.y = (float)atof(tmpy) * LEVEL_SIZE;
