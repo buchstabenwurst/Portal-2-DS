@@ -256,36 +256,39 @@ bool setPlayerPortalPosition(PLAYER player, hitbox* hitbox, bool portal) {
         bool hasHit = false;
         bool isNearest = true;
         Vector3 orientation;
+        orientation.z = 0;
+        orientation.y = 0;
+        // find the Direction of the Wall hit
         hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[0], level.allHitboxes[i].vertex[1], level.allHitboxes[i].vertex[6], &tmpPos);
         pos = getNearest(player.position, pos, tmpPos, &isNearest);
         hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[0], level.allHitboxes[i].vertex[7], level.allHitboxes[i].vertex[6], &tmpPos);
         pos = getNearest(player.position, pos, tmpPos, &isNearest);
-        if (hasHit && isNearest) { orientation.y = 0; isNearest = false;}
+        if (hasHit && isNearest) { orientation.y = 0; isNearest = false; goto hasHit;}
         hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[1], level.allHitboxes[i].vertex[6], level.allHitboxes[i].vertex[5], &tmpPos);
         pos = getNearest(player.position, pos, tmpPos, &isNearest);
         hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[1], level.allHitboxes[i].vertex[2], level.allHitboxes[i].vertex[5], &tmpPos);
         pos = getNearest(player.position, pos, tmpPos, &isNearest);
-        if (hasHit && isNearest) { orientation.y = 90; isNearest = false; }
+        if (hasHit && isNearest) { orientation.y = 90; isNearest = false; goto hasHit;}
         hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[2], level.allHitboxes[i].vertex[5], level.allHitboxes[i].vertex[4], &tmpPos);
         pos = getNearest(player.position, pos, tmpPos, &isNearest);
         hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[2], level.allHitboxes[i].vertex[3], level.allHitboxes[i].vertex[4], &tmpPos);
         pos = getNearest(player.position, pos, tmpPos, &isNearest);
-        if (hasHit && isNearest) { orientation.y = 0; isNearest = false; }
+        if (hasHit && isNearest) { orientation.y = 0; isNearest = false; goto hasHit;}
         hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[3], level.allHitboxes[i].vertex[4], level.allHitboxes[i].vertex[7], &tmpPos);
         pos = getNearest(player.position, pos, tmpPos, &isNearest);
         hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[3], level.allHitboxes[i].vertex[0], level.allHitboxes[i].vertex[7], &tmpPos);
         pos = getNearest(player.position, pos, tmpPos, &isNearest);
-        if (hasHit && isNearest) { orientation.y = -90; isNearest = false; }
+        if (hasHit && isNearest) { orientation.y = -90; isNearest = false; goto hasHit;}
         hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[0], level.allHitboxes[i].vertex[1], level.allHitboxes[i].vertex[2], &tmpPos);
         pos = getNearest(player.position, pos, tmpPos, &isNearest);
         hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[0], level.allHitboxes[i].vertex[3], level.allHitboxes[i].vertex[2], &tmpPos);
         pos = getNearest(player.position, pos, tmpPos, &isNearest);
-        if (hasHit && isNearest) { orientation.y = player.rotation.y; orientation.z = 90; isNearest = false; }
+        if (hasHit && isNearest) { orientation.y = player.rotation.y; orientation.z = 90; isNearest = false; goto hasHit;}
         hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[7], level.allHitboxes[i].vertex[6], level.allHitboxes[i].vertex[5], &tmpPos);
         pos = getNearest(player.position, pos, tmpPos, &isNearest);
         hasHit += ray_intersects_triangle(player.position, ray, level.allHitboxes[i].vertex[7], level.allHitboxes[i].vertex[4], level.allHitboxes[i].vertex[5], &tmpPos);
         pos = getNearest(player.position, pos, tmpPos, &isNearest);
-        if (hasHit && isNearest) { orientation.y = player.rotation.y; orientation.z = -90; isNearest = false; }
+        if (hasHit && isNearest) { orientation.y = player.rotation.y; orientation.z = -90; isNearest = false; goto hasHit;}
         //printf("\x1b[7;2H%f %f %f", along.x, along.y, pos.z);
         //for (int j = 0; j < 3; j++) {
         //    Vector2 boundsShape = SATtest(player.lookVector, level.allHitboxes[1].vector);
@@ -294,6 +297,7 @@ bool setPlayerPortalPosition(PLAYER player, hitbox* hitbox, bool portal) {
         //    }
         //}
         if (hasHit) {
+            hasHit:
             Vector3 rotation = level.allHitboxes[i].rotation;
             rotation.y += level.allHitboxes[i].vector[1].y * 90 + orientation.y;
             rotation.z += orientation.z;
