@@ -39,28 +39,6 @@ typedef struct
 	bool isGrounded;
 } PHYSICS;
 
-typedef struct
-{
-	Vector3 vertex[8];
-	Vector3 vector[3];
-	float sizeX;
-	float sizeY;
-	float sizeZ;
-	Vector3 position;
-	Vector3 rotation;
-	Vector3* attachedPosition; // Position for dynamic hitboxes
-	Vector3* attachedRotation; // Rotation for dynamic hitboxes
-	bool isDynamic; //if the hitbox can't move
-	bool isPlane; // id is only a Plane
-} hitbox;
-
-typedef struct
-{
-	Vector3 position;
-	Vector3 rotation;
-} Cube;
-
-
 // Plane values
 typedef struct
 {
@@ -82,10 +60,39 @@ typedef struct
 
 typedef struct
 {
+	Vector3 vertex[8];
+	Vector3 vector[3];
+	float sizeX;
+	float sizeY;
+	float sizeZ;
+	Vector3 position;
+	Vector3 rotation;
+	Vector3* attachedPosition; // Position for dynamic hitboxes
+	Vector3* attachedRotation; // Rotation for dynamic hitboxes
+	bool isDynamic; //if the hitbox can't move
+	bool isPlane; // it is only a Plane
+	PLANE* attachedPlane; // The plane it belongs to
+} hitbox;
+
+typedef struct
+{
+	Vector3 position;
+	Vector3 rotation;
+} Cube;
+
+typedef struct
+{
+	PLANE* plane;
+	Vector2 portalPosition;
+} PortaledPlane;
+
+typedef struct
+{
 	bool type; //color
 	bool onFloor; //if the portal is on the floor/cieling
 	Vector3 position;
 	Vector3 rotation;
+	PortaledPlane portaledPlane;
 } Portal;
 
 

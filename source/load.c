@@ -417,6 +417,7 @@ int loadLevel() {
                     level.allHitboxes[level.currentHitbox].vertex[5] = tempPlane.vertex3;
                     level.allHitboxes[level.currentHitbox].vertex[4] = tempPlane.vertex4;
                 }
+                level.allHitboxes[level.currentHitbox].attachedPlane = &level.Plane[i];
                 level.currentHitbox++;
                 //printf("\nplane id:%d\nmaterial:%s\nx1:%s y1:%.0f z1:%.0f\nx2:%.0f y2:%.0f z2:%.0f\nx3:%.0f y3:%.0f z3:%.0f\n", planeId, tempMaterial, tempx1, level.Plane[i].vertex1.y, level.Plane[i].vertex1.z, level.Plane[i].vertex2.x, level.Plane[i].vertex2.y, level.Plane[i].vertex2.z, level.Plane[i].vertex3.x, level.Plane[i].vertex3.y, level.Plane[i].vertex3.z);
                 //printf("\nplane id:%d\nuaxis:%.0f uscale:%.2f\nvaxis:%.0f vscale:%.2f\n", planeId, level.Plane[i].uaxis, level.Plane[i].uscale, level.Plane[i].vaxis, level.Plane[i].vscale);
