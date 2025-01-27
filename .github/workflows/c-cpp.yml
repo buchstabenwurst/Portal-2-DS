@@ -18,17 +18,16 @@ jobs:
         submodules: recursive
     - name: make
       run: |
-            cd "/home/joshua/Dokumente/Programming/actions-runner/_work/Portal-DS/Portal-DS"
             make
-            mkdir "/home/joshua/Dokumente/Programming/actions-runner/_work/Portal-DS/upload/_nds/PortalDS/levels\"
-            copy "/home/joshua/Dokumente/Programming/actions-runner/_work/Portal-DS/Portal-DS/assets/Maps/*.vmf" "/home/joshua/Dokumente/Programming/actions-runner/_work/Portal-DS/Portal-DS/upload/_nds/PortalDS/levels\"
-            copy "/home/joshua/Dokumente/Programming/actions-runner/_work/Portal-DS/Portal-DS/Portal-DS.nds" "/home/joshua/Dokumente/Programming/actions-runner/_work/Portal-DS/Portal-DS/upload/"
-            cd "/home/joshua/Dokumente/Programming/actions-runner/_work/Portal-DS/Portal-DS"
+            mkdir "./upload/_nds/PortalDS/levels/"
+            copy "./assets/Maps/*.vmf" "./upload/_nds/PortalDS/levels/"
+            copy "./Portal-DS.nds" "./upload/"
+      working-directory: ./Portal-DS/Portal-DS/
     - uses:
           actions/upload-artifact@v3
       with:
        name: Portal DS
-       path: /home/joshua/Dokumente/Programming/actions-runner/_work/Portal-DS/Portal-DS/upload
+       path: ./upload
 
     #- name: clean
     #  run: |
