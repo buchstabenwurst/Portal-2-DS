@@ -20,8 +20,8 @@ jobs:
       run: |
             make
             mkdir -p "./upload/_nds/PortalDS/levels/"
-            copy "./assets/Maps/*.vmf" "./upload/_nds/PortalDS/levels/"
-            copy "./Portal-DS.nds" "./upload/"
+            cp ./assets/Maps/*.vmf ./upload/_nds/PortalDS/levels/
+            cp ./Portal-DS.nds ./upload/
     - uses:
           actions/upload-artifact@v3
       with:
