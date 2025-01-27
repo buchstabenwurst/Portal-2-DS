@@ -22,7 +22,6 @@ jobs:
             mkdir "./upload/_nds/PortalDS/levels/"
             copy "./assets/Maps/*.vmf" "./upload/_nds/PortalDS/levels/"
             copy "./Portal-DS.nds" "./upload/"
-      working-directory: ./Portal-DS/Portal-DS/
     - uses:
           actions/upload-artifact@v3
       with:
