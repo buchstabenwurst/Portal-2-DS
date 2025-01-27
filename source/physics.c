@@ -304,8 +304,9 @@ bool setPlayerPortalPosition(PLAYER player, hitbox* hitbox, bool portal) {
             level.portal[portal].rotation = rotation;
             level.portal[portal].position = pos;
             hitbox = &level.allHitboxes[i];
-            // unhide previous portaled plane
-            level.portal[portal].portaledPlane.plane->isDrawn = true;
+            // unhide previous portaled plane (if it exists)
+            if(level.portal[portal].portaledPlane.plane != NULL)
+                level.portal[portal].portaledPlane.plane->isDrawn = true;
             // hide current portaled plane
             hitbox->attachedPlane->isDrawn = false;
             level.portal[portal].portaledPlane.plane = hitbox->attachedPlane;

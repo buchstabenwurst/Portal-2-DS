@@ -9,6 +9,8 @@
 #include <nds/arm9/trig_lut.h>
 #include <fat.h>
 #include <filesystem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <dirent.h>
 #include <stdio.h>
 #include <time.h>
@@ -103,7 +105,7 @@ int main(void)
     NE_LightSet(1, NE_Blue, -1, -1, 0);
 
     // Background
-    NE_ClearColorSet(NE_White, 31, 63);
+    NE_ClearColorSet(NE_Blue, 31, 63);
 
 
     int fpscount = 0;

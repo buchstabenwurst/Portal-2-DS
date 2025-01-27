@@ -59,7 +59,7 @@ void consoleClearLine(){
 
 void OnKeyPressed(int key) {
     if(key > 0){
-        iprintf("%c", key);
+        //iprintf("%c", key);
         if(key != DVK_ENTER)
             sprintf(inputBuffer, "%s%c", inputBuffer, key); // copy the currently pressed key into the input buffer
     }
