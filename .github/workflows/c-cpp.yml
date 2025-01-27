@@ -19,7 +19,7 @@ jobs:
     - name: make
       run: |
             make
-            mkdir "./upload/_nds/PortalDS/levels/"
+            mkdir -p "./upload/_nds/PortalDS/levels/"
             copy "./assets/Maps/*.vmf" "./upload/_nds/PortalDS/levels/"
             copy "./Portal-DS.nds" "./upload/"
     - uses:
