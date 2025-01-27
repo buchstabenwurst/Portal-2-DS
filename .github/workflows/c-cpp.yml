@@ -23,7 +23,7 @@ jobs:
             cp ./assets/Maps/*.vmf ./upload/_nds/PortalDS/levels/
             cp ./Portal-DS.nds ./upload/
     - uses:
-          actions/upload-artifact@v3
+          actions/upload-artifact@v4
       with:
        name: Portal DS
        path: ./upload
