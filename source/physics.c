@@ -332,7 +332,7 @@ void doCollisions(void) {
             if (getDistance(level.allHitboxes[i].vertex[0], level.allHitboxes[j].vertex[0]) > 500)
                 continue;
             if (intersects(&level.allHitboxes[level.dynamicHitbxes[i]], &level.allHitboxes[j])) {
-                printf("\x1b[15;2Hamogus");
+                //printf("\x1b[15;2Hamogus");
             }
 
 

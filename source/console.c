@@ -19,7 +19,7 @@ typedef struct
 } command;
 
 void Comand_PrintHello(char arguments[4][10]){
-    printf("Hello World!");
+    printf("Hello World!\n");
     if (arguments != NULL) {
         printf("%s", arguments[0]);
     }
@@ -31,7 +31,7 @@ void Comand_Clear(char arguments[4][10]){
 
 void Comand_Echo(char arguments[4][10]){
     if (arguments != NULL) {
-        printf("%s %s %s %s", arguments[0], arguments[1], arguments[2], arguments[3]);
+        printf("%s %s %s %s\n", arguments[0], arguments[1], arguments[2], arguments[3]);
     }else{
         printf("error, no arguments given");
     }
@@ -59,7 +59,7 @@ void consoleClearLine(){
 
 void OnKeyPressed(int key) {
     if(key > 0){
-        //iprintf("%c", key);
+        printf("%c", key);
         if(key != DVK_ENTER)
             sprintf(inputBuffer, "%s%c", inputBuffer, key); // copy the currently pressed key into the input buffer
     }
