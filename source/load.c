@@ -164,8 +164,7 @@ void loadSave() {
 }
 
 // loads a .vmf file
-int loadLevel() {
-    char* levelName = level.name;
+int loadLevelVmf(char* levelName) {
     FILE* levelFile;
     PLANE tempPlane;
     char* location = "fat:/_nds/PortalDS/levels/";
@@ -441,9 +440,11 @@ int loadLevel() {
     if (i >= MAX_PLANES)
         printf("Warning max Planes reached:%d", i);
 
-    level.planeCount = i;
-
     fclose(levelFile);
+    
+    level.planeCount = i;
+    level.name = levelName;
+
     return 0;
 }
 

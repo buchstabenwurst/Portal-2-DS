@@ -21,7 +21,7 @@ extern NE_Palette* white_ceiling_tile002aPal, * white_floor_tile002aPal, * white
 
 void LoadTextures();
 
-int loadLevel();
+int loadLevelVmf(char* levelName);
 
 void LoadMisc(void);
 //i split blocks to sides for using the nodraw texture

@@ -89,7 +89,6 @@ int main(void)
     NE_ClippingPlanesSet(0.01, 10);
 
     LoadTextures(textureMode);
-    level.name = "test_map";
     //if (Plane->isDrawn)
     //printf("\nplane id:%d\nx1:%.0f x2:%.0f x3:%.0f\ny1:%.0f y2:%.0f y3:%.0f\nz1:%.0f z2:%.0f z3:%.0f\n", Plane->id, Plane->vertex1.x, Plane->vertex1.y, Plane->vertex1.z, Plane->vertex2.x, Plane->vertex2.y, Plane->vertex2.z, Plane->vertex3.x, Plane->vertex3.y, Plane->vertex3.z);
 
@@ -119,7 +118,7 @@ int main(void)
     addHitbox(playerHitboxSize, &localPlayer.position, &localPlayer.rotation, 1);
 
     save();
-    loadLevel();
+    loadLevelVmf("test_map");
     LoadMisc();
 
     int freemem = NE_TextureFreeMemPercent();
