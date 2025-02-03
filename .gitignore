@@ -33,6 +33,7 @@ bld/
 [Oo]ut/
 [Ll]og/
 [Ll]ogs/
+nitrofiles/
 *.nds
 *.elf
 *.bsp
