@@ -18,6 +18,10 @@ jobs:
         submodules: recursive
     - name: make
       run: |
+            export PATH=/opt/wonderful/bin:$PATH
+            export WONDERFUL_TOOLCHAIN=/opt/wonderful
+            export BLOCKSDS=/opt/wonderful/thirdparty/blocksds/core
+            export BLOCKSDSEXT=/opt/wonderful/thirdparty/blocksds/external
             cd ./libs/squirrel
             cmake --fresh -DCMAKE_TOOLCHAIN_FILE=/opt/blocksds/core/cmake/BlocksDS.cmake -DDISABLE_DYNAMIC=ON -DSQ_DISABLE_INTERPRETER=ON ./CMakeLists.txt 
             make
