@@ -47,9 +47,10 @@ DEFINES		:= -DSAMPLE_DEFINE -DSAMPLE_DEFINE_WITH_VALUE=123
 
 ARM7ELF		:= $(BLOCKSDS)/sys/arm7/main_core/arm7_dswifi_maxmod.elf
 
-LIBS		:= -lNE -lmm9 -lnds9
+LIBS		:= -lstdc++ -lsquirrel_static -lsqstdlib_static -lNE -lmm9 -lnds9
 LIBDIRS		:= $(BLOCKSDS)/libs/maxmod \
 		   $(BLOCKSDS)/libs/libnds \
+		   libs/squirrel \
        $(BLOCKSDSEXT)/nitro-engine
 
 # Build artifacts
@@ -198,7 +199,8 @@ else
 endif
 
 $(ROM): $(ELF)
-	@rsync -ruE --delete $(CURDIR)/assets/Maps/*.vmf $(CURDIR)/nitrofiles/levels
+	@rsync -ruE --mkpath --delete $(CURDIR)/assets/Maps/*.vmf $(CURDIR)/assets/Maps/*.bsp $(CURDIR)/nitrofiles/levels
+	@rsync -ruE --mkpath --delete $(CURDIR)/assets/scripts/vscripts/*.nut $(CURDIR)/nitrofiles/scripts/vscripts/
 	@echo "  NDSTOOL $@"
 	$(V)$(BLOCKSDS)/tools/ndstool/ndstool -c $@ \
 		-7 $(ARM7ELF) -9 $(ELF) \

@@ -9,6 +9,10 @@ Requires [BlocksDS](https://blocksds.skylyrac.net/docs/) to build.
 
 Simply run
 ```shell
+cd ./libs/squirrel
+cmake --fresh -DCMAKE_TOOLCHAIN_FILE=/opt/blocksds/core/cmake/BlocksDS.cmake -DDISABLE_DYNAMIC=ON -DSQ_DISABLE_INTERPRETER=ON ./CMakeLists.txt 
+make
+cd ../../
 make
 ```
 ## Installation

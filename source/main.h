@@ -1,6 +1,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 #include <NEMain.h>
+#include <squirrel.h>
 
 #define LEVEL_SIZE 1
 #define LEVEL_RENDER_SIZE 4
@@ -130,4 +131,8 @@ extern PLAYER localPlayer;
 extern hitbox testBox, testBox2;
 extern bool isConsoleOpen;
 extern Keyboard *keyboard;
+
+// Call a Squirrel (ingame script language) function
+int callSquirrel(HSQUIRRELVM vm, const char* function);
+
 #endif

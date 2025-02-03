@@ -12,7 +12,15 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
+#include <squirrel.h>
+#include <sqstdio.h>
+#include <sqstdblob.h>
+#include <sqstdsystem.h>
+#include <sqstdmath.h>
+#include <sqstdstring.h>
+#include <sqstdaux.h>
 #include "main.h"
 #include "draw3d.h"
 #include "load.h"
@@ -44,6 +52,36 @@ void addCube(Vector3 position) {
 
     addHitbox(size, &cubes[lastCube].position, &cubes[lastCube].rotation, 1);
     lastCube++;
+}
+
+#include <stdarg.h>
+void printfunc(HSQUIRRELVM SQ_UNUSED_ARG(v),const SQChar *s,...)
+{
+    va_list vl;
+    va_start(vl, s);
+    vfprintf(stdout, s, vl);
+    va_end(vl);
+}
+
+void errorfunc(HSQUIRRELVM SQ_UNUSED_ARG(v),const SQChar *s,...)
+{
+    va_list vl;
+    va_start(vl, s);
+    vfprintf(stderr, s, vl);
+    va_end(vl);
+}
+
+
+// Call a Squirrel (ingame script language) function
+int callSquirrel(HSQUIRRELVM vm, const char* function){
+	int ret;
+    sq_pushroottable(vm);
+    sq_pushstring(vm,function,-1);
+    sq_get(vm,-2); //get the function from the root table
+    sq_pushroottable(vm); //'this' (function environment object)
+    ret = sq_call(vm,1,SQFalse,SQTrue);
+    sq_pop(vm,2); //pops the roottable and the function
+	return ret;
 }
 
 int main(void)
@@ -91,6 +129,24 @@ int main(void)
     LoadTextures(textureMode);
     //if (Plane->isDrawn)
     //printf("\nplane id:%d\nx1:%.0f x2:%.0f x3:%.0f\ny1:%.0f y2:%.0f y3:%.0f\nz1:%.0f z2:%.0f z3:%.0f\n", Plane->id, Plane->vertex1.x, Plane->vertex1.y, Plane->vertex1.z, Plane->vertex2.x, Plane->vertex2.y, Plane->vertex2.z, Plane->vertex3.x, Plane->vertex3.y, Plane->vertex3.z);
+
+    HSQUIRRELVM v;
+    v = sq_open(1024); //creates a VM with initial stack size 1024
+    sq_pushroottable(v);
+    sq_enabledebuginfo(v, true);
+    sqstd_register_bloblib(v);
+    sqstd_register_iolib(v);
+    sqstd_register_systemlib(v);
+    sqstd_register_mathlib(v);
+    sqstd_register_stringlib(v);
+    sqstd_seterrorhandlers(v);
+
+    
+    //do some stuff with squirrel here
+    sq_setprintfunc(v, printfunc, errorfunc);
+    sqstd_dofile(v, "nitro:/scripts/vscripts/hello.nut", false, true);
+    
+    callSquirrel(v, "hi");
 
 
     mkdir("/_nds", 0777);
@@ -249,5 +305,6 @@ int main(void)
         fpscount++;
     }
 
+    sq_close(v);
     return 0;
 }

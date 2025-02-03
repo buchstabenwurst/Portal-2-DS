@@ -1,3 +1,6 @@
 [submodule "dswifi"]
 	path = libs/dswifi
 	url = https://github.com/buchstabenwurst/dswifi.git
+[submodule "libs/squirrel"]
+	path = libs/squirrel
+	url = https://github.com/albertodemichelis/squirrel.git
