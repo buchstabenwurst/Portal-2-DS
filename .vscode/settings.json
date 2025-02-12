@@ -9,5 +9,9 @@
         "black_wall_metal_002c_pal_bin.h": "c",
         "black_floor_metal_001c_tex_bin.h": "c"
     },
-    "cmake.configureOnOpen": false
+    "cmake.configureOnOpen": false,
+    "C_Cpp.default.includePath": [
+        "${workspaceFolder}/libs/dswifi/include",
+        "${workspaceFolder}/libs/squirrel/include",
+    ]
 }
