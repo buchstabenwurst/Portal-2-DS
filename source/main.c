@@ -36,6 +36,7 @@ bool isConsoleOpen = false;
 bool debugText = false;
 bool debugVision = false;
 
+HSQUIRRELVM squirrelvm;
 Level level;
 PLAYER localPlayer;
 Cube cubes[10];
@@ -124,29 +125,28 @@ int main(void)
     localPlayer.position.y = 0;
     localPlayer.position.z = 0;
 
-    NE_ClippingPlanesSet(0.01, 10);
+    NE_ClippingPlanesSet(0.01, 1000);
 
     LoadTextures(textureMode);
     //if (Plane->isDrawn)
     //printf("\nplane id:%d\nx1:%.0f x2:%.0f x3:%.0f\ny1:%.0f y2:%.0f y3:%.0f\nz1:%.0f z2:%.0f z3:%.0f\n", Plane->id, Plane->vertex1.x, Plane->vertex1.y, Plane->vertex1.z, Plane->vertex2.x, Plane->vertex2.y, Plane->vertex2.z, Plane->vertex3.x, Plane->vertex3.y, Plane->vertex3.z);
 
-    HSQUIRRELVM v;
-    v = sq_open(1024); //creates a VM with initial stack size 1024
-    sq_pushroottable(v);
-    sq_enabledebuginfo(v, true);
-    sqstd_register_bloblib(v);
-    sqstd_register_iolib(v);
-    sqstd_register_systemlib(v);
-    sqstd_register_mathlib(v);
-    sqstd_register_stringlib(v);
-    sqstd_seterrorhandlers(v);
+    squirrelvm = sq_open(1024); //creates a VM with initial stack size 1024
+    sq_pushroottable(squirrelvm);
+    sq_enabledebuginfo(squirrelvm, true);
+    sqstd_register_bloblib(squirrelvm);
+    sqstd_register_iolib(squirrelvm);
+    sqstd_register_systemlib(squirrelvm);
+    sqstd_register_mathlib(squirrelvm);
+    sqstd_register_stringlib(squirrelvm);
+    sqstd_seterrorhandlers(squirrelvm);
 
     
     //do some stuff with squirrel here
-    sq_setprintfunc(v, printfunc, errorfunc);
-    sqstd_dofile(v, "nitro:/scripts/vscripts/hello.nut", false, true);
+    sq_setprintfunc(squirrelvm, printfunc, errorfunc);
+    sqstd_dofile(squirrelvm, "nitro:/scripts/vscripts/hello.nut", false, true);
     
-    callSquirrel(v, "hi");
+    callSquirrel(squirrelvm, "hi");
 
 
     mkdir("/_nds", 0777);
@@ -174,7 +174,8 @@ int main(void)
     addHitbox(playerHitboxSize, &localPlayer.position, &localPlayer.rotation, 1);
 
     save();
-    loadLevelVmf("test_map");
+    // loadLevelVmf("test_map");
+    loadLevelBsp("test_map");
     LoadMisc();
 
     int freemem = NE_TextureFreeMemPercent();
@@ -305,6 +306,6 @@ int main(void)
         fpscount++;
     }
 
-    sq_close(v);
+    sq_close(squirrelvm);
     return 0;
 }

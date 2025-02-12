@@ -53,82 +53,95 @@ void CameraMoveGlobal(NE_Camera *cam, PLAYER player) {
 
 void renderPortals(void){
     for(int i = 0; i < 2; i++){
-        NE_PolyFormat(31, 1, NE_LIGHT_0, NE_CULL_NONE, 0);
+        NE_PolyFormat(31, 1, NE_LIGHT_0, NE_CULL_BACK, 0);
 
         NE_ModelSetCoord(i ? portal_blue_model : portal_orange_model, level.portal[i].position.x / (1 << 12 - LEVEL_RENDER_SIZE), level.portal[i].position.z / (1 << 12 - LEVEL_RENDER_SIZE), level.portal[i].position.y / (1 << 12 - LEVEL_RENDER_SIZE));
         NE_ModelSetRot(i ? portal_blue_model : portal_orange_model, 0, level.portal[i].rotation.y / DERGEESTO511, level.portal[i].rotation.z / DERGEESTO511);
         NE_ModelDraw(i ? portal_blue_model : portal_orange_model);
-        // put plane.isdrawn =true and implement something to render wall with hoe (PortaledPlane type)
-        if(level.portal[i].portaledPlane.plane != NULL){
-            // make a pointer so it dosnt have to be "level.portal[i].portaledPlane.plane" evry time
-            PLANE* plane = level.portal[i].portaledPlane.plane;
+        
+        if(level.portal[i].portaledPlane.plane == NULL)
+            continue;
 
-            /*
-            Wall Fragments
-                1  |  2
-            -----    -----
-            3            4
-            ---        ---
-            5   portal   6
-            ---        ---
-            7            8
-            -----    -----
-               9   |   10
-            */
-            PLANE wallFragments[10];
-            // WallFragment 0
-            wallFragments[0].vertex1 = plane->vertex1;
-            wallFragments[0].vertex1.z = plane->vertex1.z - (plane->vertex1.z - level.portal[i].position.z);
-            wallFragments[0].vertex2 = plane->vertex2;
-            wallFragments[0].vertex2.x = plane->vertex2.x - (plane->vertex2.x - level.portal[i].position.x);
-            wallFragments[0].vertex2.y = plane->vertex2.y - (plane->vertex2.y - level.portal[i].position.y);
-            wallFragments[0].vertex2.z = plane->vertex2.z - (plane->vertex2.z - level.portal[i].position.z);
-            wallFragments[0].vertex3 = plane->vertex3;
-            wallFragments[0].vertex3.x = plane->vertex3.x - (plane->vertex3.x - level.portal[i].position.x);
-            wallFragments[0].vertex3.y = plane->vertex3.y - (plane->vertex3.y - level.portal[i].position.y);
-            wallFragments[0].vertex4 = plane->vertex4;
+        Vector2 texCoord0 = { 
+            .x=level.portal[i].portaledPlane.plane->x0,
+            .y=level.portal[i].portaledPlane.plane->y0
+            };
+        Vector2 texCoord1 = { 
+            .x=level.portal[i].portaledPlane.plane->x1,
+            .y=level.portal[i].portaledPlane.plane->y1
+            };
+        RenderQuad(level.portal[i].portaledPlane.plane->vertex1, level.portal[i].portaledPlane.plane->vertex2, level.portal[i].portaledPlane.plane->vertex3, level.portal[i].portaledPlane.plane->vertex4, level.portal[i].portaledPlane.plane->material, texCoord0, texCoord1);
+        
+        // // make a pointer so it dosnt have to be "level.portal[i].portaledPlane.plane" evry time
+        // PLANE* plane = level.portal[i].portaledPlane.plane;
+
+        // /*
+        // Wall Fragments
+        //         0
+        // ----------------
+        //     |4/    \5|   
+        //     |/      \| 
+        //  1  | portal |  2
+        //     |\      /|
+        //     |6\    /7|  
+        // ----------------
+        //         3
+        // */
+        // PLANE wallFragments[8];
+        // // WallFragment 0
+        // wallFragments[0].vertex1 = plane->vertex1;
+        // wallFragments[0].vertex1.z = plane->vertex1.z - (plane->vertex1.z - level.portal[i].position.z);
+        // wallFragments[0].vertex2 = plane->vertex2;
+        // wallFragments[0].vertex2.z = plane->vertex2.z - (plane->vertex2.z - level.portal[i].position.z);
+        // wallFragments[0].vertex3 = plane->vertex3;
+        // wallFragments[0].vertex4 = plane->vertex4;
+
+        // wallFragments[0].x0 = plane->x0;
+        // wallFragments[0].x1 = plane->x1 + (plane->vertex2.z - level.portal[i].position.z) / 2;
+        // wallFragments[0].y0 = plane->y0;
+        // wallFragments[0].y1 = plane->y1;
+        
+        // // WallFragment 1
+        // wallFragments[1].vertex1 = plane->vertex1;
+        // wallFragments[1].vertex2 = plane->vertex2;
+        // wallFragments[1].vertex2.x = plane->vertex2.x - (plane->vertex2.x - level.portal[i].position.x) - 21 * (level.portal->rotation.y / 360);
+        // wallFragments[1].vertex2.y = plane->vertex2.y - (plane->vertex2.y - level.portal[i].position.y) - 21 * ((level.portal->rotation.y + 90) / 360);
+        // wallFragments[1].vertex3 = plane->vertex3;
+        // wallFragments[1].vertex3.z = plane->vertex3.z - (plane->vertex3.z - level.portal[i].position.z);
+        // wallFragments[1].vertex3.x = plane->vertex3.x - (plane->vertex3.x - level.portal[i].position.x) - 21 * (level.portal->rotation.y / 360);
+        // wallFragments[1].vertex3.y = plane->vertex3.y - (plane->vertex3.y - level.portal[i].position.y) - 21 * ((level.portal->rotation.y + 90) / 360);
+        // wallFragments[1].vertex4 = plane->vertex4;
+        // wallFragments[1].vertex4.z = plane->vertex4.z - (plane->vertex4.z - level.portal[i].position.z);
+
+        // wallFragments[1].x0 = plane->x0 + (plane->vertex4.z - level.portal[i].position.z) / 2;
+        // wallFragments[1].x1 = plane->x1;
+        // wallFragments[1].y0 = plane->y0;
+        // wallFragments[1].y1 = plane->y1 + (((plane->vertex2.x - level.portal[i].position.x) + (plane->vertex2.y - level.portal[i].position.y)) / 2) + 10.5 * (level.portal->rotation.y / 90);
+        // printf("%f\n",level.portal->rotation.y);
+        
+        // // use the same materials
+        // for(int j=0; j<8; j++){
+        //     wallFragments[j].material = plane->material;
+        //     // wallFragments[j].vertex1 = plane->vertex1;
+        //     // wallFragments[j].vertex2 = plane->vertex2;
+        //     // wallFragments[j].vertex3 = plane->vertex3;
+        //     // wallFragments[j].vertex4 = plane->vertex4;
+        // }
+        
+        // for(int j=0; j<8; j++){
             
-            // WallFragment 1
-            wallFragments[1].vertex1 = plane->vertex1;
-            wallFragments[1].vertex1.z = plane->vertex1.z - (plane->vertex1.z - level.portal[i].position.z);
-            wallFragments[1].vertex2 = plane->vertex2;
-            wallFragments[1].vertex2.x = plane->vertex2.x - (plane->vertex2.x - level.portal[i].position.x);
-            wallFragments[1].vertex2.y = plane->vertex2.y - (plane->vertex2.y - level.portal[i].position.y);
-            wallFragments[1].vertex2.z = plane->vertex2.z - (plane->vertex2.z - level.portal[i].position.z);
-            wallFragments[1].vertex3 = plane->vertex3;
-            wallFragments[1].vertex3.x = plane->vertex3.x - (plane->vertex3.x - level.portal[i].position.x);
-            wallFragments[1].vertex3.y = plane->vertex3.y - (plane->vertex3.y - level.portal[i].position.y);
-            wallFragments[1].vertex4 = plane->vertex4;
-            
-            
-            // use the same uv coordinates
-            for(int j=0; j<10; j++){
-                wallFragments[j].x0 = plane->x0;
-                wallFragments[j].x1 = plane->x1 + (plane->vertex2.z - level.portal[i].position.z) / 2;
-                wallFragments[j].y0 = plane->y0;
-                wallFragments[j].y1 = plane->y1 + ((plane->vertex2.x - level.portal[i].position.x) / 2) + (plane->vertex2.y - level.portal[i].position.y);
-                wallFragments[j].material = plane->material;
-                // wallFragments[j].vertex1 = plane->vertex1;
-                // wallFragments[j].vertex2 = plane->vertex2;
-                // wallFragments[j].vertex3 = plane->vertex3;
-                // wallFragments[j].vertex4 = plane->vertex4;
-            }
-            
-            for(int j=0; j<10; j++){
-                
-            // TODO change the plane type to use Vector2 texture coordinates
-                Vector2 texCoord0 = { 
-                    .x=wallFragments[j].x0,
-                    .y=wallFragments[j].y0
-                    };
-                Vector2 texCoord1 = { 
-                    .x=wallFragments[j].x1,
-                    .y=wallFragments[j].y1
-                    };
-                RenderQuad(wallFragments[j].vertex1, wallFragments[j].vertex2, wallFragments[j].vertex3, wallFragments[j].vertex4, wallFragments[j].material, texCoord0, texCoord1);
-            }
-            //RenderQuad(plane->vertex1, plane->vertex2, plane->vertex3, plane->vertex4, plane->material, texCoord0, texCoord1);
-        }
+        //     // TODO change the plane type to use Vector2 texture coordinates
+        //     Vector2 texCoord0 = { 
+        //         .x=wallFragments[j].x0,
+        //         .y=wallFragments[j].y0
+        //         };
+        //     Vector2 texCoord1 = { 
+        //         .x=wallFragments[j].x1,
+        //         .y=wallFragments[j].y1
+        //         };
+        //     RenderQuad(wallFragments[j].vertex1, wallFragments[j].vertex2, wallFragments[j].vertex3, wallFragments[j].vertex4, wallFragments[j].material, texCoord0, texCoord1);
+        //     
+        // }
     }
 }
 
@@ -168,7 +181,7 @@ void RenderPlanes(Level level) {
             continue;
 
         // Render a plane
-        NE_PolyFormat(31, 1, NE_LIGHT_0, NE_CULL_BACK, 0);
+        NE_PolyFormat(31, 1, NE_LIGHT_0, NE_CULL_NONE, 0);
 
         NE_MaterialUse(level.Plane[i].material);
 

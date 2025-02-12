@@ -1,6 +1,8 @@
 #include <nds/arm9/console.h>
 #include <nds/arm9/keyboard.h>
 #include <stdio.h>
+#include <squirrel.h>
+#include <sqstdio.h>
 #include "main.h"
 #include "console.h"
 
@@ -37,7 +39,18 @@ void Comand_Echo(char arguments[4][10]){
     }
 }
 
-command commands[3] = 
+void Comand_Script_Execute(char arguments[4][10]){
+    if (arguments != NULL) {
+        char fileLocation[64];
+        sprintf(fileLocation, "nitro:/scripts/vscripts/%s.nut", arguments[0]);
+        sqstd_dofile(squirrelvm, fileLocation, false, true);
+        //printf("%s %s %s %s\n", arguments[0], arguments[1], arguments[2], arguments[3]);
+    }else{
+        printf("error, no arguments given");
+    }
+}
+
+command commands[4] = 
 {
     {
         .command = "test",
@@ -51,6 +64,10 @@ command commands[3] =
         .command = "echo",
         .function = Comand_Echo,
     },
+    {
+        .command = "script_execute",
+        .function = Comand_Script_Execute,
+    }
 };
 
 void consoleClearLine(){
@@ -69,7 +86,7 @@ void OnKeyPressed(int key) {
         break;
     case DVK_ENTER: // Enter key
         bool foundCommand = false;
-        char inputCommand[10] = "";
+        char inputCommand[24] = "";
         char inputArguments[4][10] = {"","","",""};
         sscanf(inputBuffer, "%s %s %s %s %s", inputCommand, inputArguments[0], inputArguments[1], inputArguments[2], inputArguments[3]);
         //if(inputArguments[0][0] == '\"'){ // if arguments start with ", ignore the spaces

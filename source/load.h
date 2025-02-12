@@ -21,7 +21,11 @@ extern NE_Palette* white_ceiling_tile002aPal, * white_floor_tile002aPal, * white
 
 void LoadTextures();
 
+// Loads a level from raw Hammer editor file format.
+// Prefers to load from the filesystem and will fallback to nitrofs if file is not found
+// @param levelName Level name to try to load for example "sp_a2_triple_laser"
 int loadLevelVmf(char* levelName);
+int loadLevelBsp(char* levelName);
 
 void LoadMisc(void);
 //i split blocks to sides for using the nodraw texture

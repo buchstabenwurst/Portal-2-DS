@@ -6,7 +6,9 @@
 #define LEVEL_SIZE 1
 #define LEVEL_RENDER_SIZE 4
 
-#define MAX_PLANES 100
+#define BSP_USE_LESS_MEMORY
+
+#define MAX_PLANES 800
 #define MAX_HITBOXES 120
 #define PLAYER_HIGHT 64 * LEVEL_SIZE //space below the camera
 #define PLAYER_HIGHT_TOP 2 * LEVEL_SIZE //space above the camera
@@ -126,6 +128,7 @@ extern int sensitivityVertical;
 extern bool debugText;
 extern bool debugVision;
 extern bool drawCollision;
+extern HSQUIRRELVM squirrelvm;
 extern Level level;
 extern PLAYER localPlayer;
 extern hitbox testBox, testBox2;

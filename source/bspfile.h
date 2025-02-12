@@ -645,14 +645,14 @@ struct doccluderpolydata_t
 // };
 
 
-// // note that edge 0 is never used, because negative edge nums are used for
-// // counterclockwise use of the edge in a face
-// struct dedge_t
-// {
-// 	unsigned short	v[2];		// vertex numbers
-// };
+// note that edge 0 is never used, because negative edge nums are used for
+// counterclockwise use of the edge in a face
+struct dedge_t
+{
+	unsigned short	v[2];		// vertex numbers
+};
 
-// #define	MAXLIGHTMAPS	4
+#define	MAXLIGHTMAPS	4
 
 // enum dprimitive_type
 // {
@@ -674,57 +674,57 @@ struct doccluderpolydata_t
 // 	Vector3		pos;
 // };
 
-// struct dface_t
-// {
-// 	unsigned short	planenum;
-// 	byte		side;	// faces opposite to the node's plane direction
-// 	byte		onNode; // 1 of on node, 0 if in leaf
+struct dface_t
+{
+	unsigned short	planenum;
+	byte		side;	// faces opposite to the node's plane direction
+	byte		onNode; // 1 of on node, 0 if in leaf
 
-// 	int			firstedge;		// we must support > 64k edges
-// 	short		numedges;	
-// 	short		texinfo;
-// 	// This is a union under the assumption that a fog volume boundary (ie. water surface)
-// 	// isn't a displacement map.
-// 	// FIXME: These should be made a union with a flags or type field for which one it is
-// 	// if we can add more to this.
-// //	union
-// //	{
-// 	    short       dispinfo;
-// 		// This is only for surfaces that are the boundaries of fog volumes
-// 		// (ie. water surfaces)
-// 		// All of the rest of the surfaces can look at their leaf to find out
-// 		// what fog volume they are in.
-// 		short		surfaceFogVolumeID;
-// //	};
+	int			firstedge;		// we must support > 64k edges
+	short		numedges;	
+	short		texinfo;
+	// This is a union under the assumption that a fog volume boundary (ie. water surface)
+	// isn't a displacement map.
+	// FIXME: These should be made a union with a flags or type field for which one it is
+	// if we can add more to this.
+//	union
+//	{
+	    short       dispinfo;
+		// This is only for surfaces that are the boundaries of fog volumes
+		// (ie. water surfaces)
+		// All of the rest of the surfaces can look at their leaf to find out
+		// what fog volume they are in.
+		short		surfaceFogVolumeID;
+//	};
 
-// 	// lighting info
-// 	byte		styles[MAXLIGHTMAPS];
-// 	int			lightofs;		// start of [numstyles*surfsize] samples
-//     float       area;
+	// lighting info
+	byte		styles[MAXLIGHTMAPS];
+	int			lightofs;		// start of [numstyles*surfsize] samples
+    float       area;
 
-// 	// TODO: make these unsigned chars?
-// 	int			m_LightmapTextureMinsInLuxels[2];
-// 	int			m_LightmapTextureSizeInLuxels[2];
+	// TODO: make these unsigned chars?
+	int			m_LightmapTextureMinsInLuxels[2];
+	int			m_LightmapTextureSizeInLuxels[2];
 
-// 	int origFace;				// reference the original face this face was derived from
+	int origFace;				// reference the original face this face was derived from
 
 
-// public:
+//public:
 
-// 	unsigned short GetNumPrims() const;
-// 	void SetNumPrims( unsigned short nPrims );
-// 	bool AreDynamicShadowsEnabled();
-// 	void SetDynamicShadowsEnabled( bool bEnabled );
+	// const unsigned short GetNumPrims();
+	// void SetNumPrims( unsigned short nPrims );
+	// bool AreDynamicShadowsEnabled();
+	// void SetDynamicShadowsEnabled( bool bEnabled );
 
-// 	// non-polygon primitives (strips and lists)
-// private:
-// 	unsigned short m_NumPrims;	// Top bit, if set, disables shadows on this surface (this is why there are accessors).
+	// non-polygon primitives (strips and lists)
+//private:
+	unsigned short m_NumPrims;	// Top bit, if set, disables shadows on this surface (this is why there are accessors).
 
-// public:
-// 	unsigned short	firstPrimID; 
+//public:
+	unsigned short	firstPrimID; 
 	
-// 	unsigned int	smoothingGroups;
-// };
+	unsigned int	smoothingGroups;
+};
 
 
 // inline unsigned short dface_t::GetNumPrims() const

@@ -1,8 +1,10 @@
 #include <NEMain.h>
+#include <string.h>
 #include "assets.h"
 #include "main.h"
 #include "load.h"
 #include "physics.h"
+#include "bspfile.h"
 
 
 //Models
@@ -441,11 +443,181 @@ int loadLevelVmf(char* levelName) {
         printf("Warning max Planes reached:%d", i);
 
     fclose(levelFile);
-    
+
     level.planeCount = i;
     level.name = levelName;
 
     return 0;
+}
+
+// loads a .bsp file
+int loadLevelBsp(char* levelName) {
+    FILE* levelFile;
+    PLANE tempPlane;
+    char* location = "fat:/_nds/PortalDS/levels/";
+    char* extension = ".bsp";
+    char fileLocation[strlen(location) + strlen(levelName) + strlen(extension) + 1];
+    snprintf(fileLocation, sizeof(fileLocation), "%s%s%s", location, levelName, extension);
+    if ((levelFile = fopen(fileLocation, "rb")) == NULL) {
+        location = "nitro:/levels/";
+        snprintf(fileLocation, sizeof(fileLocation), "%s%s%s", location, levelName, extension);
+        levelFile = fopen(fileLocation, "rb");
+    }
+
+    // Read the VBSP Header
+    struct dheader_t header;
+    fread(&header, 1, sizeof(struct dheader_t), levelFile);
+    // Check the file identifier
+    if(header.ident != IDBSPHEADER)
+        printf("ERROR: Wrong File header\n");
+    // Check the VBSP version (Portal 2 = 21)
+    if(header.version != 21)
+        printf("WARNING: Wrong BSP version\n");
+    
+    // Read faces
+    struct dface_t faceLump[header.lumps[LUMP_FACES].filelen / sizeof(struct dface_t)];
+    // struct dface_t faceLump[MAX_MAP_FACES];
+    fseek(levelFile, header.lumps[LUMP_FACES].fileofs, SEEK_SET);
+    fread(&faceLump, header.lumps[LUMP_FACES].filelen, 1, levelFile);
+
+    // Read edges
+    struct dedge_t edgeLump[header.lumps[LUMP_EDGES].filelen / sizeof(struct dedge_t)];
+    // struct dedge_t edgeLump[MAX_MAP_EDGES];
+    fseek(levelFile, header.lumps[LUMP_EDGES].fileofs, SEEK_SET);
+    fread(&edgeLump, header.lumps[LUMP_EDGES].filelen, 1, levelFile);
+
+    // Read vertecies
+    struct dvertex_t vertexLump[header.lumps[LUMP_VERTEXES].filelen / sizeof(struct dvertex_t)];
+    // struct dvertex_t vertexLump[MAX_MAP_VERTS];
+    fseek(levelFile, header.lumps[LUMP_VERTEXES].fileofs, SEEK_SET);
+    fread(&vertexLump, header.lumps[LUMP_VERTEXES].filelen, 1, levelFile);
+    // every face
+    for (int face = 0; face < MAX_PLANES; face++)
+    {
+
+        Vector3* tmpvertex[faceLump[face].numedges];
+        for (int n = 0; n < faceLump[face].numedges; n++)
+        {
+            tmpvertex[n] = &vertexLump[edgeLump[faceLump[face].firstedge + n].v[0]].point;
+        }
+
+        level.Plane[face].vertex1 = *tmpvertex[0];
+        level.Plane[face].vertex2 = *tmpvertex[1];
+        level.Plane[face].vertex3 = *tmpvertex[2];
+        level.Plane[face].vertex4 = *tmpvertex[3];
+        level.Plane[face].isDrawn = true;
+
+    }
+
+
+
+    // Read models
+    struct dmodel_t modelLump[header.lumps[LUMP_MODELS].filelen / sizeof(struct dmodel_t)];
+    // struct dmodel_t faceLump[MAX_MAP_MODELS];
+    fseek(levelFile, header.lumps[LUMP_MODELS].fileofs, SEEK_SET);
+    fread(&modelLump, header.lumps[LUMP_MODELS].filelen, 1, levelFile);
+
+    // Read Entitys
+    fseek(levelFile, header.lumps[LUMP_ENTITIES].fileofs, SEEK_SET);
+    while (1)
+    {
+        char word[256];
+        int res = fscanf(levelFile, "%s", word);
+        tempPlane.isDrawn = 1;
+        fpos_t fpos;
+        fpos_t fStartPos;
+        fgetpos(levelFile, &fpos);
+        if (res == EOF || (long)fpos >= (header.lumps[LUMP_ENTITIES].fileofs + header.lumps[LUMP_ENTITIES].filelen)) {
+            break; // EOF = End Of File. Quit the loop.
+        }
+        if (strcmp(word, "{") == 0)
+        {
+            fgetpos(levelFile, &fStartPos);
+            
+        }
+        
+        if (strcmp(word, "\"info_player_start\"") == 0){ // Read Player spawn
+            // remember current cursor position
+            fgetpos(levelFile, &fpos);
+            // go to the position value
+            fsetpos(levelFile, &fStartPos);
+            for (int timeout = 0; timeout < 30; timeout++)
+            {
+                fscanf(levelFile, "%s", word);
+                if(strcmp(word, "\"origin\"") == 0){
+                    fseek(levelFile, 1, SEEK_CUR);
+                    break;
+                }
+            }
+            
+            // fseek(levelFile, -88, SEEK_CUR);
+            float tmpx, tmpy, tmpz;
+            fscanf(levelFile, "%f %f %f", &tmpx, &tmpy, &tmpz);
+            // Set the player positon
+            // localPlayer.position.x = tmpx;
+            // localPlayer.position.y = tmpy;
+            // localPlayer.position.z = tmpz;
+
+            localPlayer.position.x = -3000;
+            localPlayer.position.y = -1000;
+            localPlayer.position.z = 100;
+            // Read worldspawn
+            Vector3 playerStartPosition;
+            Vector3 playerStartRotation;
+            printf("info_player_start:\n%f\n%f\n%f\n", tmpx, tmpy, tmpz);
+            // go to where we left off
+            fsetpos(levelFile, &fpos);
+        }
+        if (strcmp(word, "\"trigger_once\"") == 0){ // Read Trigger_once
+            char model[64];
+            int modelIndex;
+            Vector3 position;
+            // remember current cursor position
+            fgetpos(levelFile, &fpos);
+            // go to the position value
+            fsetpos(levelFile, &fStartPos);
+            for (int timeout = 0; timeout < 30; timeout++)
+            {
+                fscanf(levelFile, "%s", word);
+                if(strcmp(word, "\"model\"") == 0){
+                    fseek(levelFile, 1, SEEK_CUR);
+                    fscanf(levelFile, "%s", &model);
+                    model[strlen(model) - 1] = 0; // remove the "
+                    if(model[0] == '*'){
+                        // remove the *
+                        for (int i = 0; i < 63; i++)
+                        {
+                            model[i] = model[i+1];
+                        }
+                        modelIndex = atoi(model);
+                    }
+                }
+                if(strcmp(word, "\"origin\"") == 0){
+                    fseek(levelFile, 1, SEEK_CUR);
+                    fscanf(levelFile, "%f %f %f", &position.x, &position.y, &position.z);
+                }
+            }
+            // printf("trigger_once:\n%f\n%f\n%f\n", position.x, position.y, position.z);
+            // printf("trigger_once:\n%d\n", modelIndex);
+            Vector3 size = {
+                .x = modelLump[modelIndex].maxs.x - modelLump[modelIndex].mins.x,
+                .y = modelLump[modelIndex].maxs.y - modelLump[modelIndex].mins.y,
+                .z = modelLump[modelIndex].maxs.z - modelLump[modelIndex].mins.z
+            };
+            Vector3 rotation;
+            addHitbox(size,&position, &rotation, false);
+            // go to where we left off
+            fsetpos(levelFile, &fpos);
+
+        }
+    }
+    
+
+    // printf("%d\n", faceLump[0].numedges);
+    level.planeCount = header.lumps[LUMP_FACES].filelen / sizeof(struct dface_t);
+    level.name = levelName;
+    
+    fclose(levelFile);
 }
 
 void LoadMisc (void)
